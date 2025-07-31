@@ -235,33 +235,33 @@ const eventRoutes = [
     label: "By Child",
     icon: "fas fa-child",
   },
-  {
-    name: "EventsBulk",
-    path: "/admin/events/bulk",
-    label: "Bulk Operations",
-    icon: "fas fa-tasks",
-  },
+  // {
+  //   name: "EventsBulk",
+  //   path: "/admin/events/bulk",
+  //   label: "Bulk Operations",
+  //   icon: "fas fa-tasks",
+  // },
 ];
 
 const systemRoutes = [
-  {
-    name: "DatabaseInfo",
-    path: "/admin/system/database",
-    label: "Database Info",
-    icon: "fas fa-database",
-  },
+  // {
+  //   name: "DatabaseInfo",
+  //   path: "/admin/system/database",
+  //   label: "Database Info",
+  //   icon: "fas fa-database",
+  // },
   {
     name: "ApiTesting",
     path: "/admin/system/api-test",
     label: "API Testing",
     icon: "fas fa-flask",
   },
-  {
-    name: "SystemLogs",
-    path: "/admin/system/logs",
-    label: "System Logs",
-    icon: "fas fa-file-alt",
-  },
+  // {
+  //   name: "SystemLogs",
+  //   path: "/admin/system/logs",
+  //   label: "System Logs",
+  //   icon: "fas fa-file-alt",
+  // },
 ];
 
 // Computed page title and description based on current route

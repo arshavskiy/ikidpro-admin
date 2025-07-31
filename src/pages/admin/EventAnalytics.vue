@@ -230,38 +230,12 @@
       </div>
 
       <!-- Sensor Values Line Chart -->
-      <div class="bg-white p-6 rounded-lg shadow-sm border">
-        <div class="flex justify-between items-center mb-4">
-          <h3 class="text-lg font-medium text-gray-900">
-            Sensor Values Over Time
-          </h3>
-          <div class="text-sm text-gray-500">Real-time sensor measurements</div>
-        </div>
-
-        <!-- ECharts Line Chart for Values -->
-        <div
-          v-if="analytics.sensorValues && analytics.sensorValues.length > 0"
-          class="h-96"
-        >
-          <v-chart
-            :option="sensorValuesChartOption"
-            :autoresize="true"
-            class="h-full w-full"
-          />
-        </div>
-
-        <!-- Empty State -->
-        <div
-          v-else
-          class="h-96 flex items-center justify-center bg-gray-50 rounded"
-        >
-          <div class="text-center">
-            <i class="fas fa-chart-area text-gray-400 text-3xl mb-2"></i>
-            <p class="text-gray-500 text-sm">No sensor values available</p>
-            <p class="text-gray-400 text-xs mt-1">for the selected period</p>
-          </div>
-        </div>
-      </div>
+      <SensorValuesLineChart
+        :sensor-values="analytics.sensorValues"
+        :selected-event-type="selectedEventType"
+        :selected-time-range="selectedTimeRange"
+        :event-type-options="eventTypeOptions"
+      />
 
       <!-- Charts Row -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -660,6 +634,7 @@ import {
 import VChart from "vue-echarts";
 import * as echarts from "echarts";
 import * as eventApi from "../../services/eventApi";
+import SensorValuesLineChart from "../../components/SensorValuesLineChart.vue";
 
 // Register ECharts components
 use([
@@ -684,6 +659,7 @@ const availableChildren = ref([]);
 const eventTypeOptions = [
   { value: "all", label: "All Events" },
   { value: "HeartRate", label: "Heart Rate" },
+  { value: "HRV", label: "Heart Rate Variability" },
   { value: "TemperatureC", label: "Temperature" },
   { value: "SoundLevel", label: "Sound Level" },
   { value: "gps", label: "GPS Location" },
@@ -960,79 +936,6 @@ const eventTimelineChartOption = computed(() => ({
       : [],
 }));
 
-const sensorValuesChartOption = computed(() => ({
-  title: {
-    text: `Sensor Values Over Time (${
-      selectedEventType.value === "all"
-        ? "All Sensors"
-        : eventTypeOptions.find((opt) => opt.value === selectedEventType.value)
-            ?.label
-    })`,
-    left: "center",
-    textStyle: {
-      fontSize: 16,
-      fontWeight: "bold",
-    },
-  },
-  tooltip: {
-    trigger: "axis",
-    axisPointer: {
-      type: "cross",
-      label: {
-        backgroundColor: "#6a7985",
-      },
-    },
-    formatter: (params) => {
-      let result = `${params[0].axisValue}<br/>`;
-      params.forEach((param) => {
-        const unit = getSensorUnit(param.seriesName);
-        result += `${param.seriesName}: ${param.value}${unit}<br/>`;
-      });
-      return result;
-    },
-  },
-  legend: {
-    data: getSensorValuesSeriesNames(),
-    top: 30,
-  },
-  grid: {
-    left: "3%",
-    right: "4%",
-    bottom: "3%",
-    top: "15%",
-    containLabel: true,
-  },
-  xAxis: {
-    type: "category",
-    boundaryGap: false,
-    data: analytics.value.sensorValues.map((item) =>
-      new Date(item.timestamp).toLocaleTimeString("en-US", {
-        month: "short",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      })
-    ),
-    axisLabel: {
-      rotate: selectedTimeRange.value > 30 ? 45 : 0,
-      fontSize: 12,
-    },
-  },
-  yAxis: getSensorValuesYAxis(),
-  series: getSensorValuesSeries(),
-  dataZoom:
-    analytics.value.sensorValues.length > 50
-      ? [
-          {
-            type: "slider",
-            show: true,
-            start: 70,
-            end: 100,
-          },
-        ]
-      : [],
-}));
-
 // Helper functions for timeline chart
 const getTimelineSeriesNames = () => {
   if (selectedEventType.value === "all") {
@@ -1152,155 +1055,6 @@ const getTimelineSeries = () => {
   }
 };
 
-// Helper functions for sensor values chart
-const getSensorValuesSeriesNames = () => {
-  if (selectedEventType.value === "all") {
-    return ["Heart Rate", "Temperature", "Sound Level"];
-  } else {
-    return [
-      eventTypeOptions.find((opt) => opt.value === selectedEventType.value)
-        ?.label || "Values",
-    ];
-  }
-};
-
-const getSensorUnit = (seriesName) => {
-  switch (seriesName) {
-    case "Heart Rate":
-      return " BPM";
-    case "Temperature":
-      return "°C";
-    case "Sound Level":
-      return " dB";
-    default:
-      return "";
-  }
-};
-
-const getSensorValuesYAxis = () => {
-  if (selectedEventType.value === "all") {
-    return [
-      {
-        type: "value",
-        name: "Heart Rate (BPM)",
-        position: "left",
-        axisLabel: {
-          formatter: "{value} BPM",
-        },
-      },
-      {
-        type: "value",
-        name: "Temperature (°C)",
-        position: "right",
-        axisLabel: {
-          formatter: "{value}°C",
-        },
-      },
-    ];
-  } else {
-    const unit = getSensorUnit(
-      eventTypeOptions.find((opt) => opt.value === selectedEventType.value)
-        ?.label
-    );
-    return {
-      type: "value",
-      name: `${
-        eventTypeOptions.find((opt) => opt.value === selectedEventType.value)
-          ?.label
-      }${unit}`,
-      nameLocation: "middle",
-      nameGap: 50,
-    };
-  }
-};
-
-const getSensorValuesSeries = () => {
-  if (
-    !analytics.value.sensorValues ||
-    analytics.value.sensorValues.length === 0
-  ) {
-    return [];
-  }
-
-  if (selectedEventType.value === "all") {
-    return [
-      {
-        name: "Heart Rate",
-        type: "line",
-        yAxisIndex: 0,
-        smooth: true,
-        data: analytics.value.sensorValues.map(
-          (item) => item.heartRate || null
-        ),
-        itemStyle: { color: "#ef4444" },
-        lineStyle: { width: 2 },
-        connectNulls: false,
-      },
-      {
-        name: "Temperature",
-        type: "line",
-        yAxisIndex: 1,
-        smooth: true,
-        data: analytics.value.sensorValues.map(
-          (item) => item.temperature || null
-        ),
-        itemStyle: { color: "#3b82f6" },
-        lineStyle: { width: 2 },
-        connectNulls: false,
-      },
-      {
-        name: "Sound Level",
-        type: "line",
-        yAxisIndex: 0,
-        smooth: true,
-        data: analytics.value.sensorValues.map(
-          (item) => item.soundLevel || null
-        ),
-        itemStyle: { color: "#8b5cf6" },
-        lineStyle: { width: 2 },
-        connectNulls: false,
-      },
-    ];
-  } else {
-    const seriesName =
-      eventTypeOptions.find((opt) => opt.value === selectedEventType.value)
-        ?.label || "Values";
-    return [
-      {
-        name: seriesName,
-        type: "line",
-        smooth: true,
-        data: analytics.value.sensorValues.map((item) => {
-          switch (selectedEventType.value) {
-            case "HeartRate":
-              return item.heartRate || null;
-            case "TemperatureC":
-              return item.temperature || null;
-            case "SoundLevel":
-              return item.soundLevel || null;
-            default:
-              return null;
-          }
-        }),
-        itemStyle: {
-          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-            { offset: 0, color: "#3b82f6" },
-            { offset: 1, color: "#1d4ed8" },
-          ]),
-        },
-        lineStyle: { width: 3 },
-        areaStyle: {
-          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-            { offset: 0, color: "rgba(59, 130, 246, 0.3)" },
-            { offset: 1, color: "rgba(59, 130, 246, 0.1)" },
-          ]),
-        },
-        connectNulls: false,
-      },
-    ];
-  }
-};
-
 // Methods
 const loadAnalytics = async () => {
   try {
@@ -1330,6 +1084,8 @@ const loadAnalytics = async () => {
         switch (selectedEventType.value) {
           case "HeartRate":
             return event.HeartRate !== null && event.HeartRate !== undefined;
+          case "HRV":
+            return event.HRV !== null && event.HRV !== undefined;
           case "TemperatureC":
             return (
               event.TemperatureC !== null && event.TemperatureC !== undefined
@@ -1589,22 +1345,20 @@ const calculateEventTimeline = (events, days) => {
 
 const calculateSensorValues = (events, days) => {
   const values = [];
-  const maxDataPoints = 200; // Limit for performance
-  const interval = Math.max(1, Math.floor(events.length / maxDataPoints));
 
-  // Sort events by timestamp
+  // Sort all events by timestamp
   const sortedEvents = events
     .filter((event) => event.Timestamp)
     .sort((a, b) => new Date(a.Timestamp) - new Date(b.Timestamp));
 
-  // Sample events at regular intervals
-  for (let i = 0; i < sortedEvents.length; i += interval) {
-    const event = sortedEvents[i];
+  // Include ALL events in the sensor values list
+  sortedEvents.forEach((event) => {
     const timestamp = new Date(event.Timestamp);
 
     values.push({
       timestamp: timestamp.toISOString(),
       heartRate: event.HeartRate || null,
+      hrv: event.HRV || null,
       temperature: event.TemperatureC || null,
       soundLevel: event.SoundLevel || null,
       gpsLat: event.latitude || null,
@@ -1612,7 +1366,38 @@ const calculateSensorValues = (events, days) => {
       accelX: event.AccelX || null,
       accelY: event.AccelY || null,
       accelZ: event.AccelZ || null,
+      // Additional event data
+      eventId: event._id || event.id,
+      childId: event.aid,
+      batteryLevel: event.BatteryLevel || null,
+      signalStrength: event.SignalStrength || null,
+      deviceId: event.DeviceId || null,
     });
+  });
+
+  // If there are too many events for chart performance,
+  // we can still provide sampling for the chart while keeping all data available
+  const maxChartPoints = 1000;
+  if (values.length > maxChartPoints) {
+    console.log(
+      `📊 Sensor values: ${values.length} total events, sampling ${maxChartPoints} for chart performance`
+    );
+
+    // Create a sampled version for chart rendering
+    const interval = Math.floor(values.length / maxChartPoints);
+    const sampledForChart = [];
+
+    for (let i = 0; i < values.length; i += interval) {
+      sampledForChart.push(values[i]);
+    }
+
+    // Store both full data and sampled data
+    values.chartData = sampledForChart;
+    values.fullData = values.slice(); // Copy of all events
+  } else {
+    // Use all data for chart if under the limit
+    values.chartData = values;
+    values.fullData = values.slice();
   }
 
   return values;
