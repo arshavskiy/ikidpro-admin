@@ -91,15 +91,69 @@
             <!-- Parent ID -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">
-                Parent ID <span class="text-red-500">*</span>
+                Parent <span class="text-red-500">*</span>
               </label>
-              <input
-                v-model="form.parentId"
-                type="text"
-                required
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Enter parent's MongoDB ObjectId"
-              />
+              <p class="text-xs text-gray-500 mb-2">
+                Select the parent who will be responsible for this child
+                <i
+                  v-if="loadingParents"
+                  class="fas fa-spinner animate-spin ml-1"
+                ></i>
+              </p>
+              <div class="space-y-2">
+                <!-- Parent Selection Dropdown -->
+                <select
+                  v-model="form.parentId"
+                  required
+                  :disabled="loadingParents || showManualParentId"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                >
+                  <option value="">
+                    {{
+                      loadingParents ? "Loading parents..." : "Select a parent"
+                    }}
+                  </option>
+                  <option
+                    v-for="parent in availableParents"
+                    :key="parent._id"
+                    :value="parent._id"
+                  >
+                    {{ parent.firstName }} {{ parent.lastName }}
+                    <span class="text-gray-500">({{ parent.email }})</span>
+                  </option>
+                  <option
+                    v-if="!loadingParents && availableParents.length === 0"
+                    value=""
+                    disabled
+                  >
+                    No parents found
+                  </option>
+                </select>
+
+                <!-- Manual Entry Toggle -->
+                <div class="flex items-center space-x-2">
+                  <input
+                    id="manualParentId"
+                    v-model="showManualParentId"
+                    type="checkbox"
+                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    @change="handleManualToggle"
+                  />
+                  <label for="manualParentId" class="text-sm text-gray-600">
+                    Enter Parent ID manually
+                  </label>
+                </div>
+
+                <!-- Manual Parent ID Input -->
+                <input
+                  v-if="showManualParentId"
+                  v-model="form.parentId"
+                  type="text"
+                  required
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Enter parent's MongoDB ObjectId"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -326,9 +380,10 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import * as childUserApi from "../../services/childUserApi";
+import * as userApi from "../../services/userApi";
 
 const router = useRouter();
 
@@ -358,7 +413,33 @@ const loading = ref(false);
 const error = ref("");
 const success = ref("");
 
+// Parent selection
+const availableParents = ref([]);
+const showManualParentId = ref(false);
+const loadingParents = ref(false);
+
 // Methods
+const loadParents = async () => {
+  try {
+    loadingParents.value = true;
+    const response = await userApi.getAllUsers();
+    // Filter to show only parent users (you might want to adjust this filter based on your user roles)
+    availableParents.value = response.data.data || [];
+  } catch (err) {
+    console.error("Error loading parents:", err);
+    error.value = "Failed to load parents list";
+  } finally {
+    loadingParents.value = false;
+  }
+};
+
+const handleManualToggle = () => {
+  // Clear parentId when switching to manual mode
+  if (showManualParentId.value) {
+    form.value.parentId = "";
+  }
+};
+
 const addMedicalCondition = () => {
   if (newMedicalCondition.value.trim()) {
     form.value.medicalCondition.push(newMedicalCondition.value.trim());
@@ -449,4 +530,9 @@ const createChild = async () => {
     loading.value = false;
   }
 };
+
+// Lifecycle hooks
+onMounted(() => {
+  loadParents();
+});
 </script>
