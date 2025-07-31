@@ -114,10 +114,10 @@
       <header class="bg-white shadow-sm border-b border-gray-200">
         <div class="flex items-center justify-between px-6 py-4">
           <div>
-            <h1 class="text-2xl font-semibold text-gray-800">
+            <!-- <h1 class="text-2xl font-semibold text-gray-800">
               {{ pageTitle }}
             </h1>
-            <p class="text-sm text-gray-600">{{ pageDescription }}</p>
+            <p class="text-sm text-gray-600">{{ pageDescription }}</p> -->
           </div>
           <div class="flex items-center space-x-4">
             <span class="text-sm text-gray-600"
@@ -184,7 +184,7 @@ const userRoutes = [
   {
     name: "UserCreate",
     path: "/admin/users/create",
-    label: "Add User",
+    label: "Add Parent User",
     icon: "fas fa-plus",
   },
   {
