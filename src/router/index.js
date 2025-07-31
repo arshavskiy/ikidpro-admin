@@ -4,13 +4,6 @@ import KidProCrud from "../pages/KidPage.vue";
 import Login from "../pages/Login.vue";
 import Register from "../pages/Register.vue";
 
-// Admin components
-import AdminLayout from "../components/AdminLayout.vue";
-import Dashboard from "../pages/admin/Dashboard.vue";
-import UserManagement from "../pages/admin/UserManagement.vue";
-import ChildManagement from "../pages/admin/ChildManagement.vue";
-import EventManagement from "../pages/admin/EventManagement.vue";
-
 const routes = [
   {
     path: "/",
@@ -37,18 +30,18 @@ const routes = [
   // Admin routes
   {
     path: "/admin",
-    component: AdminLayout,
+    component: () => import("../components/AdminLayout.vue"),
     meta: { requiresAuth: true },
     children: [
       {
         path: "dashboard",
         name: "Dashboard",
-        component: Dashboard,
+        component: () => import("../pages/admin/Dashboard.vue"),
       },
       {
         path: "users",
         name: "UsersList",
-        component: UserManagement,
+        component: () => import("../pages/admin/UserManagement.vue"),
       },
       {
         path: "users/create",
@@ -58,12 +51,12 @@ const routes = [
       {
         path: "users/profiles",
         name: "UserProfiles",
-        component: UserManagement, // Reuse with different filter
+        component: () => import("../pages/admin/UserManagement.vue"), // Reuse with different filter
       },
       {
         path: "children",
         name: "ChildrenList",
-        component: ChildManagement,
+        component: () => import("../pages/admin/ChildManagement.vue"),
       },
       {
         path: "children/create",
@@ -83,7 +76,7 @@ const routes = [
       {
         path: "events",
         name: "EventsList",
-        component: EventManagement,
+        component: () => import("../pages/admin/EventManagement.vue"),
       },
       {
         path: "events/create",
