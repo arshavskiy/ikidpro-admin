@@ -556,7 +556,175 @@ add a line-chart for evend data
 
 _**Assistant**_
 
-I'll add a line chart for event data to the EventAnalytics.vue file. First, let me check the current state of the file and then add the line chart functionality. Let me check the script section to see the current imports and structure: 
+I'll add a line chart for event data to the EventAnalytics.vue file. First, let me check the current state of the file and then add the line chart functionality. Let me check the script section to see the current imports and structure: Now let me check the script section to see the current structure: First, I need to add LineChart to the imports and registration. Then I'll add a new line chart section to the template and create the chart options. 
+```
+
+```
+Now I'll add a line chart section to the template. Let me find where the charts are located and add a new one: I'll add the line chart after the current charts row. Let me add it right before the Sensor Data Distribution section: 
+```
+
+```
+Now I need to add the eventTimeline data to the analytics object and create the chart option. Let me first find where the analytics object is defined: I need to add the eventTimeline property to the analytics object: Let me be more specific by including more context: 
+```
+
+```
+Now I need to add the eventTimelineChartOption computed property. Let me find where the other chart options are defined: Let me find the end of the hourlyDistributionChartOption and add the new one: Perfect! I'll add the eventTimelineChartOption right before the // Methods comment: 
+```
+
+```
+Now I need to add the helper functions for the timeline chart. Let me add them right before the loadAnalytics function: 
+```
+
+```
+Now I need to update the calculateAnalytics function to generate the eventTimeline data. Let me find that function: Let me find where the calculateAnalytics function returns its result and add the eventTimeline calculation: I need to find where the eventTimeline calculation should be added. Let me first add the calculation logic before the return statement: I need to add the eventTimeline calculation before the return statement. Let me find where the Generate health insights comment is: I'll add the eventTimeline calculation right before the Generate health insights comment: 
+```
+
+```
+Now I need to add eventTimeline to the return object. Let me find where dailyTrend and hourlyDistribution are returned: 
+```
+
+```
+Now I need to implement the calculateEventTimeline function. Let me add it after the calculateDailyTrend function: Copilot has been working on this problem for a while. It can continue to iterate, or you can send a new message to refine your prompt.
+
+---
+
+_**User**_
+
+@agent Continue: "Continue to iterate?"
+
+---
+
+_**Assistant**_
+
+I'll add the calculateEventTimeline function right after calculateDailyTrend: 
+```
+
+```
+I also need to update the getDefaultAnalytics function to include the eventTimeline field: 
+```
+
+```
+Now let's test the implementation. Let me check if there are any compilation errors: Great! The development server is running and hot reloading the changes. Let me check if there are any console errors by opening the browser: Perfect! I've successfully implemented a comprehensive line chart for event data in the `EventAnalytics.vue` component. Here's a summary of what I added:
+
+## Key Features of the New Line Chart:
+
+### 1. **LineChart Integration**
+- Added `LineChart` import from ECharts
+- Registered LineChart component with ECharts
+
+### 2. **Event Data Timeline Chart**
+- **Position**: Added between the bar charts and sensor distribution
+- **Height**: Larger container (h-96) for better visualization
+- **Title**: Dynamic title showing selected event type
+- **Data**: Real-time timeline data based on filters
+
+### 3. **Smart Data Aggregation**
+- **Short periods (≤7 days)**: 6-hour intervals for detailed view
+- **Longer periods**: Daily intervals to maintain performance
+- **Maximum 100 data points**: Prevents performance issues with large datasets
+
+### 4. **Multi-Series Support**
+- **"All Events" mode**: Shows 4 separate lines:
+  - Heart Rate (red line)
+  - Temperature (blue line) 
+  - Sound Level (purple line)
+  - Motion Events (green line)
+- **Single event type mode**: Shows one line with gradient fill area
+
+### 5. **Advanced Chart Features**
+- **Smooth line interpolation** for better visual appeal
+- **Interactive tooltips** with detailed information
+- **Legend** for multi-series charts
+- **Data zoom** for datasets with >50 points
+- **Responsive axis labels** with smart rotation
+- **Gradient colors and area fills** for enhanced visuals
+
+### 6. **Dynamic Functionality**
+- **Real-time filtering**: Updates based on event type and child selectors
+- **Smart Y-axis labels**: Shows appropriate units (BPM, °C, dB, etc.)
+- **Adaptive time formatting**: Shows hours/minutes for short periods, dates for longer ones
+- **Empty state handling**: Shows friendly message when no data available
+
+### 7. **Performance Optimizations**
+- **Limited data points**: Max 100 points to maintain performance
+- **Efficient data processing**: Aggregates data by time intervals
+- **Smart interval calculation**: Balances detail vs performance
+- **Computed properties**: Reactive chart options that update automatically
+
+### 8. **Data Structure**
+The timeline data includes:
+- **Timestamp**: Time point for x-axis
+- **Event Count**: Total events in time period
+- **Heart Rate**: Average heart rate (BPM)
+- **Temperature**: Average temperature (°C)
+- **Sound Level**: Average sound level (dB)
+- **GPS Count**: Number of GPS events
+- **Motion Count**: Number of motion events
+
+## Usage:
+1. **Select event filters** at the top (event type, child, time range)
+2. **View real-time line chart** showing trends over time
+3. **Hover tooltips** for detailed data points
+4. **Zoom and pan** for large datasets
+5. **Legend interaction** for multi-series charts
+
+The line chart provides valuable insights into how sensor data changes over time, helping identify patterns, trends, and anomalies in child monitoring data. It complements the existing bar charts by showing temporal relationships and trends that are harder to see in daily/hourly aggregations.
+
+---
+
+_**User**_
+
+add a line chart for event data value
+
+---
+
+_**Assistant**_
+
+I can see that you already have a line chart for event data timeline in your `EventAnalytics.vue` file. However, I'll enhance it to better display event data values. Let me add a more comprehensive line chart that shows actual sensor values over time. 
+```
+
+```
+Now I need to add the sensorValues property to the analytics object: Let me be more specific by including more context: 
+```
+
+```
+Now I need to add the sensorValuesChartOption computed property. Let me find where the other chart options end: Let me find the exact location where the eventTimelineChartOption ends: Perfect! Now I can add the new chart option right after the eventTimelineChartOption: 
+```
+
+```
+Now I need to add the helper functions for the sensor values chart. Let me add them after the existing helper functions: Let me find where the getTimelineSeries function ends: Perfect! I'll add the helper functions right before the // Methods comment: 
+```
+
+```
+Now I need to update the calculateAnalytics function to generate the sensorValues data. Let me find where it returns the analytics object and add the calculation: Let me find where eventTimeline is calculated and add sensorValues after it: Perfect! I'll add the sensorValues calculation right after the eventTimeline calculation: 
+```
+
+```
+Now I need to add sensorValues to the return object. Let me find where eventTimeline is returned: 
+```
+
+```
+Now I need to add the calculateSensorValues function. Let me add it after the calculateEventTimeline function: Let me find the end of the calculateEventTimeline function: Perfect! I'll add the calculateSensorValues function right after calculateEventTimeline: 
+```
+
+```
+Finally, I need to add sensorValues to the getDefaultAnalytics function: 
+```
+
+```
+Now let's test the implementation by checking if there are any compilation errors: Great! The development server is running and successfully hot-reloading our changes. Let me open the browser to see the updated analytics page: Copilot has been working on this problem for a while. It can continue to iterate, or you can send a new message to refine your prompt.
+
+---
+
+_**User**_
+
+@agent Continue: "Continue to iterate?"
+
+---
+
+_**Assistant**_
+
+
 
 ---
 

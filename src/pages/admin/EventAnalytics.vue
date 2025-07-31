@@ -229,6 +229,40 @@
         </div>
       </div>
 
+      <!-- Sensor Values Line Chart -->
+      <div class="bg-white p-6 rounded-lg shadow-sm border">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-lg font-medium text-gray-900">
+            Sensor Values Over Time
+          </h3>
+          <div class="text-sm text-gray-500">Real-time sensor measurements</div>
+        </div>
+
+        <!-- ECharts Line Chart for Values -->
+        <div
+          v-if="analytics.sensorValues && analytics.sensorValues.length > 0"
+          class="h-96"
+        >
+          <v-chart
+            :option="sensorValuesChartOption"
+            :autoresize="true"
+            class="h-full w-full"
+          />
+        </div>
+
+        <!-- Empty State -->
+        <div
+          v-else
+          class="h-96 flex items-center justify-center bg-gray-50 rounded"
+        >
+          <div class="text-center">
+            <i class="fas fa-chart-area text-gray-400 text-3xl mb-2"></i>
+            <p class="text-gray-500 text-sm">No sensor values available</p>
+            <p class="text-gray-400 text-xs mt-1">for the selected period</p>
+          </div>
+        </div>
+      </div>
+
       <!-- Charts Row -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Daily Events Chart -->
@@ -296,6 +330,47 @@
                 for the selected time period
               </p>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Event Data Line Chart -->
+      <div class="bg-white p-6 rounded-lg shadow-sm border">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-lg font-medium text-gray-900">Event Data Timeline</h3>
+          <div class="text-sm text-gray-500">
+            {{
+              selectedEventType === "all"
+                ? "All sensors"
+                : eventTypeOptions.find(
+                    (opt) => opt.value === selectedEventType
+                  )?.label
+            }}
+            over time
+          </div>
+        </div>
+
+        <!-- ECharts Line Chart -->
+        <div
+          v-if="analytics.eventTimeline && analytics.eventTimeline.length > 0"
+          class="h-96"
+        >
+          <v-chart
+            :option="eventTimelineChartOption"
+            :autoresize="true"
+            class="h-full w-full"
+          />
+        </div>
+
+        <!-- Empty State -->
+        <div
+          v-else
+          class="h-96 flex items-center justify-center bg-gray-50 rounded"
+        >
+          <div class="text-center">
+            <i class="fas fa-chart-line text-gray-400 text-3xl mb-2"></i>
+            <p class="text-gray-500 text-sm">No timeline data available</p>
+            <p class="text-gray-400 text-xs mt-1">for the selected filters</p>
           </div>
         </div>
       </div>
@@ -639,6 +714,8 @@ const analytics = ref({
   },
   dailyTrend: [],
   hourlyDistribution: [],
+  eventTimeline: [],
+  sensorValues: [],
   sensorDistribution: {
     heartRate: 0,
     temperature: 0,
@@ -812,6 +889,418 @@ const hourlyDistributionChartOption = computed(() => ({
   ],
 }));
 
+const eventTimelineChartOption = computed(() => ({
+  title: {
+    text: `Event Data Timeline (${
+      selectedEventType.value === "all"
+        ? "All Sensors"
+        : eventTypeOptions.find((opt) => opt.value === selectedEventType.value)
+            ?.label
+    })`,
+    left: "center",
+    textStyle: {
+      fontSize: 16,
+      fontWeight: "bold",
+    },
+  },
+  tooltip: {
+    trigger: "axis",
+    formatter: (params) => {
+      let result = `${params[0].axisValue}<br/>`;
+      params.forEach((param) => {
+        result += `${param.seriesName}: ${param.value}<br/>`;
+      });
+      return result;
+    },
+  },
+  legend: {
+    data: getTimelineSeriesNames(),
+    top: 30,
+  },
+  grid: {
+    left: "3%",
+    right: "4%",
+    bottom: "3%",
+    top: "15%",
+    containLabel: true,
+  },
+  xAxis: {
+    type: "category",
+    boundaryGap: false,
+    data: analytics.value.eventTimeline.map((item) =>
+      new Date(item.timestamp).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        hour: selectedTimeRange.value <= 7 ? "2-digit" : undefined,
+        minute: selectedTimeRange.value <= 7 ? "2-digit" : undefined,
+      })
+    ),
+    axisLabel: {
+      rotate: selectedTimeRange.value > 30 ? 45 : 0,
+      fontSize: 12,
+    },
+  },
+  yAxis: {
+    type: "value",
+    name: getYAxisLabel(),
+    nameLocation: "middle",
+    nameGap: 50,
+  },
+  series: getTimelineSeries(),
+  dataZoom:
+    analytics.value.eventTimeline.length > 50
+      ? [
+          {
+            type: "slider",
+            show: true,
+            start: 70,
+            end: 100,
+          },
+        ]
+      : [],
+}));
+
+const sensorValuesChartOption = computed(() => ({
+  title: {
+    text: `Sensor Values Over Time (${
+      selectedEventType.value === "all"
+        ? "All Sensors"
+        : eventTypeOptions.find((opt) => opt.value === selectedEventType.value)
+            ?.label
+    })`,
+    left: "center",
+    textStyle: {
+      fontSize: 16,
+      fontWeight: "bold",
+    },
+  },
+  tooltip: {
+    trigger: "axis",
+    axisPointer: {
+      type: "cross",
+      label: {
+        backgroundColor: "#6a7985",
+      },
+    },
+    formatter: (params) => {
+      let result = `${params[0].axisValue}<br/>`;
+      params.forEach((param) => {
+        const unit = getSensorUnit(param.seriesName);
+        result += `${param.seriesName}: ${param.value}${unit}<br/>`;
+      });
+      return result;
+    },
+  },
+  legend: {
+    data: getSensorValuesSeriesNames(),
+    top: 30,
+  },
+  grid: {
+    left: "3%",
+    right: "4%",
+    bottom: "3%",
+    top: "15%",
+    containLabel: true,
+  },
+  xAxis: {
+    type: "category",
+    boundaryGap: false,
+    data: analytics.value.sensorValues.map((item) =>
+      new Date(item.timestamp).toLocaleTimeString("en-US", {
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    ),
+    axisLabel: {
+      rotate: selectedTimeRange.value > 30 ? 45 : 0,
+      fontSize: 12,
+    },
+  },
+  yAxis: getSensorValuesYAxis(),
+  series: getSensorValuesSeries(),
+  dataZoom:
+    analytics.value.sensorValues.length > 50
+      ? [
+          {
+            type: "slider",
+            show: true,
+            start: 70,
+            end: 100,
+          },
+        ]
+      : [],
+}));
+
+// Helper functions for timeline chart
+const getTimelineSeriesNames = () => {
+  if (selectedEventType.value === "all") {
+    return ["Heart Rate", "Temperature", "Sound Level", "Motion Events"];
+  } else {
+    return [
+      eventTypeOptions.find((opt) => opt.value === selectedEventType.value)
+        ?.label || "Events",
+    ];
+  }
+};
+
+const getYAxisLabel = () => {
+  switch (selectedEventType.value) {
+    case "HeartRate":
+      return "BPM";
+    case "TemperatureC":
+      return "°C";
+    case "SoundLevel":
+      return "dB";
+    case "gps":
+      return "GPS Points";
+    case "motion":
+      return "Motion Events";
+    default:
+      return "Event Count";
+  }
+};
+
+const getTimelineSeries = () => {
+  if (
+    !analytics.value.eventTimeline ||
+    analytics.value.eventTimeline.length === 0
+  ) {
+    return [];
+  }
+
+  if (selectedEventType.value === "all") {
+    return [
+      {
+        name: "Heart Rate",
+        type: "line",
+        smooth: true,
+        data: analytics.value.eventTimeline.map((item) => item.heartRate || 0),
+        itemStyle: { color: "#ef4444" },
+        lineStyle: { width: 2 },
+      },
+      {
+        name: "Temperature",
+        type: "line",
+        smooth: true,
+        data: analytics.value.eventTimeline.map(
+          (item) => item.temperature || 0
+        ),
+        itemStyle: { color: "#3b82f6" },
+        lineStyle: { width: 2 },
+      },
+      {
+        name: "Sound Level",
+        type: "line",
+        smooth: true,
+        data: analytics.value.eventTimeline.map((item) => item.soundLevel || 0),
+        itemStyle: { color: "#8b5cf6" },
+        lineStyle: { width: 2 },
+      },
+      {
+        name: "Motion Events",
+        type: "line",
+        smooth: true,
+        data: analytics.value.eventTimeline.map(
+          (item) => item.motionCount || 0
+        ),
+        itemStyle: { color: "#10b981" },
+        lineStyle: { width: 2 },
+      },
+    ];
+  } else {
+    const seriesName =
+      eventTypeOptions.find((opt) => opt.value === selectedEventType.value)
+        ?.label || "Events";
+    return [
+      {
+        name: seriesName,
+        type: "line",
+        smooth: true,
+        data: analytics.value.eventTimeline.map((item) => {
+          switch (selectedEventType.value) {
+            case "HeartRate":
+              return item.heartRate || 0;
+            case "TemperatureC":
+              return item.temperature || 0;
+            case "SoundLevel":
+              return item.soundLevel || 0;
+            case "gps":
+              return item.gpsCount || 0;
+            case "motion":
+              return item.motionCount || 0;
+            default:
+              return item.eventCount || 0;
+          }
+        }),
+        itemStyle: {
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            { offset: 0, color: "#3b82f6" },
+            { offset: 1, color: "#1d4ed8" },
+          ]),
+        },
+        lineStyle: { width: 3 },
+        areaStyle: {
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            { offset: 0, color: "rgba(59, 130, 246, 0.3)" },
+            { offset: 1, color: "rgba(59, 130, 246, 0.1)" },
+          ]),
+        },
+      },
+    ];
+  }
+};
+
+// Helper functions for sensor values chart
+const getSensorValuesSeriesNames = () => {
+  if (selectedEventType.value === "all") {
+    return ["Heart Rate", "Temperature", "Sound Level"];
+  } else {
+    return [
+      eventTypeOptions.find((opt) => opt.value === selectedEventType.value)
+        ?.label || "Values",
+    ];
+  }
+};
+
+const getSensorUnit = (seriesName) => {
+  switch (seriesName) {
+    case "Heart Rate":
+      return " BPM";
+    case "Temperature":
+      return "°C";
+    case "Sound Level":
+      return " dB";
+    default:
+      return "";
+  }
+};
+
+const getSensorValuesYAxis = () => {
+  if (selectedEventType.value === "all") {
+    return [
+      {
+        type: "value",
+        name: "Heart Rate (BPM)",
+        position: "left",
+        axisLabel: {
+          formatter: "{value} BPM",
+        },
+      },
+      {
+        type: "value",
+        name: "Temperature (°C)",
+        position: "right",
+        axisLabel: {
+          formatter: "{value}°C",
+        },
+      },
+    ];
+  } else {
+    const unit = getSensorUnit(
+      eventTypeOptions.find((opt) => opt.value === selectedEventType.value)
+        ?.label
+    );
+    return {
+      type: "value",
+      name: `${
+        eventTypeOptions.find((opt) => opt.value === selectedEventType.value)
+          ?.label
+      }${unit}`,
+      nameLocation: "middle",
+      nameGap: 50,
+    };
+  }
+};
+
+const getSensorValuesSeries = () => {
+  if (
+    !analytics.value.sensorValues ||
+    analytics.value.sensorValues.length === 0
+  ) {
+    return [];
+  }
+
+  if (selectedEventType.value === "all") {
+    return [
+      {
+        name: "Heart Rate",
+        type: "line",
+        yAxisIndex: 0,
+        smooth: true,
+        data: analytics.value.sensorValues.map(
+          (item) => item.heartRate || null
+        ),
+        itemStyle: { color: "#ef4444" },
+        lineStyle: { width: 2 },
+        connectNulls: false,
+      },
+      {
+        name: "Temperature",
+        type: "line",
+        yAxisIndex: 1,
+        smooth: true,
+        data: analytics.value.sensorValues.map(
+          (item) => item.temperature || null
+        ),
+        itemStyle: { color: "#3b82f6" },
+        lineStyle: { width: 2 },
+        connectNulls: false,
+      },
+      {
+        name: "Sound Level",
+        type: "line",
+        yAxisIndex: 0,
+        smooth: true,
+        data: analytics.value.sensorValues.map(
+          (item) => item.soundLevel || null
+        ),
+        itemStyle: { color: "#8b5cf6" },
+        lineStyle: { width: 2 },
+        connectNulls: false,
+      },
+    ];
+  } else {
+    const seriesName =
+      eventTypeOptions.find((opt) => opt.value === selectedEventType.value)
+        ?.label || "Values";
+    return [
+      {
+        name: seriesName,
+        type: "line",
+        smooth: true,
+        data: analytics.value.sensorValues.map((item) => {
+          switch (selectedEventType.value) {
+            case "HeartRate":
+              return item.heartRate || null;
+            case "TemperatureC":
+              return item.temperature || null;
+            case "SoundLevel":
+              return item.soundLevel || null;
+            default:
+              return null;
+          }
+        }),
+        itemStyle: {
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            { offset: 0, color: "#3b82f6" },
+            { offset: 1, color: "#1d4ed8" },
+          ]),
+        },
+        lineStyle: { width: 3 },
+        areaStyle: {
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            { offset: 0, color: "rgba(59, 130, 246, 0.3)" },
+            { offset: 1, color: "rgba(59, 130, 246, 0.1)" },
+          ]),
+        },
+        connectNulls: false,
+      },
+    ];
+  }
+};
+
 // Methods
 const loadAnalytics = async () => {
   try {
@@ -944,6 +1433,12 @@ const calculateAnalytics = (events) => {
     .sort((a, b) => b.eventCount - a.eventCount)
     .slice(0, 10);
 
+  // Calculate event timeline
+  const eventTimeline = calculateEventTimeline(events, selectedTimeRange.value);
+
+  // Calculate sensor values over time
+  const sensorValues = calculateSensorValues(events, selectedTimeRange.value);
+
   // Generate health insights
   const healthInsights = generateHealthInsights(
     events,
@@ -994,6 +1489,8 @@ const calculateAnalytics = (events) => {
     },
     dailyTrend,
     hourlyDistribution,
+    eventTimeline,
+    sensorValues,
     sensorDistribution: {
       heartRate:
         totalEvents > 0
@@ -1029,6 +1526,96 @@ const calculateDailyTrend = (events, days) => {
     trend.push(dayEvents.length);
   }
   return trend;
+};
+
+const calculateEventTimeline = (events, days) => {
+  const timeline = [];
+  const dataPoints = Math.min(days <= 7 ? days * 4 : days, 100); // 4 points per day for <= 7 days, otherwise daily
+  const intervalHours = days <= 7 ? 6 : 24; // 6-hour intervals for short periods, daily for longer
+
+  for (let i = dataPoints - 1; i >= 0; i--) {
+    const endTime = new Date();
+    endTime.setHours(endTime.getHours() - i * intervalHours);
+
+    const startTime = new Date(endTime);
+    startTime.setHours(startTime.getHours() - intervalHours);
+
+    const periodEvents = events.filter((event) => {
+      const eventTime = new Date(event.Timestamp);
+      return eventTime >= startTime && eventTime < endTime;
+    });
+
+    // Calculate aggregated data for this time period
+    const heartRateEvents = periodEvents.filter((e) => e.HeartRate);
+    const temperatureEvents = periodEvents.filter((e) => e.TemperatureC);
+    const soundEvents = periodEvents.filter((e) => e.SoundLevel);
+    const gpsEvents = periodEvents.filter((e) => e.latitude && e.longitude);
+    const motionEvents = periodEvents.filter(
+      (e) => e.AccelX || e.AccelY || e.AccelZ
+    );
+
+    timeline.push({
+      timestamp: endTime.toISOString(),
+      eventCount: periodEvents.length,
+      heartRate:
+        heartRateEvents.length > 0
+          ? Math.round(
+              heartRateEvents.reduce((sum, e) => sum + e.HeartRate, 0) /
+                heartRateEvents.length
+            )
+          : 0,
+      temperature:
+        temperatureEvents.length > 0
+          ? Math.round(
+              (temperatureEvents.reduce((sum, e) => sum + e.TemperatureC, 0) /
+                temperatureEvents.length) *
+                10
+            ) / 10
+          : 0,
+      soundLevel:
+        soundEvents.length > 0
+          ? Math.round(
+              soundEvents.reduce((sum, e) => sum + e.SoundLevel, 0) /
+                soundEvents.length
+            )
+          : 0,
+      gpsCount: gpsEvents.length,
+      motionCount: motionEvents.length,
+    });
+  }
+
+  return timeline;
+};
+
+const calculateSensorValues = (events, days) => {
+  const values = [];
+  const maxDataPoints = 200; // Limit for performance
+  const interval = Math.max(1, Math.floor(events.length / maxDataPoints));
+
+  // Sort events by timestamp
+  const sortedEvents = events
+    .filter((event) => event.Timestamp)
+    .sort((a, b) => new Date(a.Timestamp) - new Date(b.Timestamp));
+
+  // Sample events at regular intervals
+  for (let i = 0; i < sortedEvents.length; i += interval) {
+    const event = sortedEvents[i];
+    const timestamp = new Date(event.Timestamp);
+
+    values.push({
+      timestamp: timestamp.toISOString(),
+      heartRate: event.HeartRate || null,
+      temperature: event.TemperatureC || null,
+      soundLevel: event.SoundLevel || null,
+      gpsLat: event.latitude || null,
+      gpsLng: event.longitude || null,
+      accelX: event.AccelX || null,
+      accelY: event.AccelY || null,
+      accelZ: event.AccelZ || null,
+    });
+  }
+
+  return values;
 };
 
 const generateHealthInsights = (events, heartRates, temperatures) => {
@@ -1101,6 +1688,8 @@ const getDefaultAnalytics = () => ({
   activity: { gpsCount: 0, soundCount: 0, motionCount: 0, avgSoundLevel: 0 },
   dailyTrend: [],
   hourlyDistribution: [],
+  eventTimeline: [],
+  sensorValues: [],
   sensorDistribution: { heartRate: 0, temperature: 0, gps: 0, sound: 0 },
   topActiveChildren: [],
   healthInsights: [],
