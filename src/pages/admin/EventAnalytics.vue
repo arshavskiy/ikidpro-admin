@@ -70,6 +70,12 @@
       <!-- Overview Statistics -->
       <OverviewStatistics :analytics="analytics" />
 
+      <!-- GPS Activity Map -->
+      <GpsActivityMap
+        :gps-events="gpsEventsForMap"
+        :selected-child-id="selectedChildId"
+      />
+
       <!-- Sensor Values Line Chart -->
       <SensorValuesLineChart
         :sensor-values="analytics.sensorValues"
@@ -383,6 +389,7 @@ import SensorValuesLineChart from "../../components/SensorValuesLineChart.vue";
 import EventDataTimeline from "../../components/EventDataTimeline.vue";
 import OverviewStatistics from "../../components/OverviewStatistics.vue";
 import ChartsRow from "../../components/ChartsRow.vue";
+import GpsActivityMap from "../../components/GpsActivityMap.vue";
 
 // Register ECharts components
 use([
@@ -455,6 +462,16 @@ const analytics = ref({
   },
 });
 
+// Computed properties
+const gpsEventsForMap = computed(() => {
+  // Get all events that have GPS data from the loadAnalytics function
+  // We'll store this in a new reactive variable
+  return allEventsWithGps.value;
+});
+
+// Add reactive variable to store all events for map
+const allEventsWithGps = ref([]);
+
 // Methods
 const loadAnalytics = async () => {
   try {
@@ -508,6 +525,39 @@ const loadAnalytics = async () => {
         (event) => event.aid === selectedChildId.value
       );
     }
+
+    // Store GPS events for the map (include all GPS events regardless of other filters)
+    const gpsEvents = allEvents.filter(
+      (event) =>
+        event.latitude &&
+        event.longitude &&
+        !isNaN(event.latitude) &&
+        !isNaN(event.longitude)
+    );
+
+    console.log(
+      `📍 Found ${gpsEvents.length} GPS events out of ${allEvents.length} total events`
+    );
+
+    // Apply time range filter to GPS events
+    const cutoffDateForGps = new Date();
+    cutoffDateForGps.setDate(
+      cutoffDateForGps.getDate() - selectedTimeRange.value
+    );
+    allEventsWithGps.value = gpsEvents.filter(
+      (event) => new Date(event.Timestamp) >= cutoffDateForGps
+    );
+
+    // Apply child filter to GPS events if selected
+    if (selectedChildId.value !== "all") {
+      allEventsWithGps.value = allEventsWithGps.value.filter(
+        (event) => event.aid === selectedChildId.value
+      );
+    }
+
+    console.log(
+      `📍 GPS events for map: ${allEventsWithGps.value.length} after filters`
+    );
 
     // Calculate analytics
     analytics.value = calculateAnalytics(filteredEvents);

@@ -16,6 +16,7 @@
     "echarts": "^5.6.0",
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
+    "leaflet": "^1.9.4",
     "pinia": "^3.0.3",
     "tailwind": "^2.3.1",
     "tailwindcss": "^4.1.11",
