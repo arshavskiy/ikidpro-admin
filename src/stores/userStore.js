@@ -18,10 +18,11 @@ export const useUserStore = defineStore("user", {
       this.loading = true;
       this.error = null;
       try {
-        const response = await axios.post("/api/auth/login", credentials);
-        this.token = response.data.token;
+        const response = await axios.post("/api/admin/login", credentials);
+        this.token = response.data.data.token;
         localStorage.setItem("userToken", this.token);
-        this.user = await this.fetchUserInfo();
+        this.user = response.data.data.admin;
+        debugger;
       } catch (error) {
         this.error = error.response?.data?.message || "Login failed";
         throw error;

@@ -105,11 +105,11 @@ const routes = [
         name: "EventStats",
         component: () => import("../pages/admin/EventAnalytics.vue"),
       },
-      {
-        path: "analytics/users",
-        name: "UserStats",
-        component: () => import("../pages/admin/UserAnalytics.vue"),
-      },
+      // {
+      //   path: "analytics/users",
+      //   name: "UserStats",
+      //   component: () => import("../pages/admin/UserAnalytics.vue"),
+      // },
       {
         path: "system/database",
         name: "DatabaseInfo",

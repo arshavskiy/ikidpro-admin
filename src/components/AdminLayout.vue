@@ -16,6 +16,22 @@
           </h2>
         </div>
 
+        <!-- Analytics & Reports -->
+        <div class="mt-4">
+          <div class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50">
+            <i class="fas fa-analytics mr-2"></i>Analytics
+          </div>
+          <router-link
+            v-for="route in analyticsRoutes"
+            :key="route.name"
+            :to="route.path"
+            class="block px-6 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+            :class="{ 'bg-blue-100 text-blue-700': $route.path === route.path }"
+          >
+            <i :class="route.icon + ' mr-2'"></i>{{ route.label }}
+          </router-link>
+        </div>
+
         <!-- User Management -->
         <div class="mt-2">
           <div class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50">
@@ -55,22 +71,6 @@
           </div>
           <router-link
             v-for="route in eventRoutes"
-            :key="route.name"
-            :to="route.path"
-            class="block px-6 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-colors"
-            :class="{ 'bg-blue-100 text-blue-700': $route.path === route.path }"
-          >
-            <i :class="route.icon + ' mr-2'"></i>{{ route.label }}
-          </router-link>
-        </div>
-
-        <!-- Analytics & Reports -->
-        <div class="mt-4">
-          <div class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50">
-            <i class="fas fa-analytics mr-2"></i>Analytics
-          </div>
-          <router-link
-            v-for="route in analyticsRoutes"
             :key="route.name"
             :to="route.path"
             class="block px-6 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-colors"
@@ -152,6 +152,28 @@ const userStore = useUserStore();
 const user = computed(() => userStore.user);
 
 // Route definitions for sidebar menu
+
+const analyticsRoutes = [
+  {
+    name: "Dashboard",
+    path: "/admin/dashboard",
+    label: "Dashboard",
+    icon: "fas fa-tachometer-alt",
+  },
+  {
+    name: "EventStats",
+    path: "/admin/analytics/events",
+    label: "Event Statistics",
+    icon: "fas fa-chart-bar",
+  },
+  // {
+  //   name: "UserStats",
+  //   path: "/admin/analytics/users",
+  //   label: "User Statistics",
+  //   icon: "fas fa-chart-pie",
+  // },
+];
+
 const userRoutes = [
   {
     name: "UsersList",
@@ -218,27 +240,6 @@ const eventRoutes = [
     path: "/admin/events/bulk",
     label: "Bulk Operations",
     icon: "fas fa-tasks",
-  },
-];
-
-const analyticsRoutes = [
-  {
-    name: "Dashboard",
-    path: "/admin/dashboard",
-    label: "Dashboard",
-    icon: "fas fa-tachometer-alt",
-  },
-  {
-    name: "EventStats",
-    path: "/admin/analytics/events",
-    label: "Event Statistics",
-    icon: "fas fa-chart-bar",
-  },
-  {
-    name: "UserStats",
-    path: "/admin/analytics/users",
-    label: "User Statistics",
-    icon: "fas fa-chart-pie",
   },
 ];
 

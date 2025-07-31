@@ -4,7 +4,10 @@
   >
     <div class="max-w-md w-full space-y-8">
       <div>
-        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+        <h1 class="text-center text-5xl mb-10 font-extrabold text-gray-900">
+          - IkidPro -
+        </h1>
+        <h2 class="text-center text-3xl font-extrabold text-gray-900">
           Sign in to your account
         </h2>
       </div>
@@ -79,7 +82,7 @@ async function handleLogin() {
     });
 
     // Redirect to original destination or kids page
-    const redirectPath = route.query.redirect || "/kids";
+    const redirectPath = route.query.redirect || "/admin/dashboard";
     router.push(redirectPath);
   } catch (e) {
     error.value = e.message;

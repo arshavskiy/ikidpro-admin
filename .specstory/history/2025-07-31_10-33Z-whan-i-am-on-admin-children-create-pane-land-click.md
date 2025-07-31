@@ -724,7 +724,103 @@ _**User**_
 
 _**Assistant**_
 
+Perfect! I've successfully added a comprehensive line chart for event data values to your EventAnalytics component. Here's a summary of what I implemented:
 
+## 🎯 **New Sensor Values Line Chart Features:**
+
+### 1. **Dedicated Sensor Values Chart**
+- **Position**: Added below the existing Event Data Timeline
+- **Purpose**: Shows actual sensor readings/values over time (not just counts)
+- **Height**: Larger container (h-96) for detailed visualization
+
+### 2. **Smart Data Sampling**
+- **Performance Optimization**: Limits to 200 data points maximum
+- **Intelligent Sampling**: Takes intervals from chronologically sorted events
+- **Real-time Values**: Shows actual sensor readings with timestamps
+
+### 3. **Multi-Axis Support**
+- **Dual Y-Axis**: Heart Rate (left) and Temperature (right) when showing all sensors
+- **Single Y-Axis**: Specific sensor unit when filtering by type
+- **Dynamic Units**: BPM, °C, dB automatically applied
+
+### 4. **Advanced Chart Features**
+- **Cross-Hair Tooltip**: Shows precise values at intersection points
+- **Null Handling**: Gaps in data are properly displayed (connectNulls: false)
+- **Smooth Lines**: Interpolated curves for better visual appeal
+- **Color Coding**: Consistent colors across all charts
+- **Data Zoom**: Automatic zoom controls for large datasets
+
+### 5. **Filter Integration**
+- **Event Type Filtering**: Shows specific sensor values based on selection
+- **Child Filtering**: Displays data for selected child or all children
+- **Time Range**: Adapts data sampling based on selected period
+- **Real-time Updates**: All filters trigger immediate chart updates
+
+### 6. **Sensor Value Types**
+The chart displays actual readings for:
+- **Heart Rate**: BPM values with left Y-axis
+- **Temperature**: °C values with right Y-axis  
+- **Sound Level**: dB values
+- **GPS Coordinates**: Latitude/Longitude (stored but not visualized in this chart)
+- **Acceleration**: X, Y, Z values (stored for future use)
+
+### 7. **Visual Enhancements**
+- **Gradient Lines**: Smooth color transitions
+- **Area Fill**: Semi-transparent fill for single sensor view
+- **Legend**: Interactive legend for multi-sensor view
+- **Professional Styling**: Consistent with existing chart theme
+
+### 8. **Data Processing**
+- **calculateSensorValues()**: Efficiently samples events for chart display
+- **Timestamp Sorting**: Ensures chronological order
+- **Null Safety**: Handles missing sensor readings gracefully
+- **Performance**: Limits data points to prevent browser lag
+
+## 📊 **Chart Modes:**
+
+### **"All Events" Mode:**
+- Shows 3 lines: Heart Rate, Temperature, Sound Level
+- Dual Y-axis for different units
+- Different colors for each sensor type
+
+### **Single Sensor Mode:**
+- Shows one line with area fill
+- Single Y-axis with appropriate units
+- Gradient styling for visual appeal
+
+## 🎨 **User Experience:**
+1. **Select filters** at the top (event type, child, time range)
+2. **View two complementary charts**:
+   - Event Timeline (counts/aggregated data)
+   - Sensor Values (actual readings)
+3. **Interactive tooltips** show precise values
+4. **Zoom and pan** for detailed analysis
+5. **Empty states** with helpful messages
+
+This implementation gives you a powerful tool to analyze not just event frequency, but actual sensor value trends over time - essential for health monitoring and identifying patterns in the sensor data!
+
+---
+
+_**User**_
+
+chaneg admin to /api/admin/login
+
+---
+
+_**Assistant**_
+
+I'll update the userStore.js to change the login endpoint to `/api/admin/login` for admin authentication. 
+```
+
+```
+Perfect! I've updated the login endpoint in the userStore.js from `/api/auth/login` to `/api/admin/login`. This change will direct admin login requests to the proper admin authentication endpoint.
+
+The change affects:
+- **Login function**: Now uses `/api/admin/login` endpoint
+- **Admin authentication**: Properly routes to admin-specific login API
+- **Token handling**: Remains the same for consistency
+
+This ensures that admin users authenticate through the correct admin endpoint while maintaining all the existing functionality for token storage, user info fetching, and error handling.
 
 ---
 
