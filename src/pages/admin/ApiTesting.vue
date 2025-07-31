@@ -261,7 +261,13 @@ const userEndpoints = [
   { name: "Register User", method: "POST", url: "/api/auth/register" },
   { name: "Login User", method: "POST", url: "/api/auth/login" },
   { name: "Get Current User", method: "GET", url: "/api/auth/me" },
-  { name: "Get All Users", method: "GET", url: "/api/auth/all" },
+  { name: "Get All Users", method: "GET", url: "/api/users" },
+  {
+    name: "Get Users by ID",
+    method: "GET",
+    url: "/api/users/:id",
+    params: ["id"],
+  },
   { name: "Logout User", method: "POST", url: "/api/auth/logout" },
   { name: "Refresh Token", method: "POST", url: "/api/auth/refresh" },
 ];

@@ -49,6 +49,11 @@ const routes = [
         component: () => import("../pages/admin/UserCreate.vue"),
       },
       {
+        path: "users/edit/:id",
+        name: "UserEdit",
+        component: () => import("../pages/admin/UserEdit.vue"),
+      },
+      {
         path: "users/profiles",
         name: "UserProfiles",
         component: () => import("../pages/admin/UserManagement.vue"), // Reuse with different filter

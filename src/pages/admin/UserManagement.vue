@@ -285,9 +285,11 @@
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import { useUserStore } from "../../stores/userStore";
 import * as userApi from "../../services/userApi";
 
+const router = useRouter();
 const userStore = useUserStore();
 
 // Reactive data
@@ -360,8 +362,8 @@ const viewUser = (user) => {
 };
 
 const editUser = (user) => {
-  // Navigate to edit page or open edit modal
-  console.log("Edit user:", user);
+  // Navigate to edit page
+  router.push(`/admin/users/edit/${user._id}`);
 };
 
 const deleteUser = async (user) => {
