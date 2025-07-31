@@ -284,7 +284,7 @@ const initializeMap = async () => {
     // Add tile layer (OpenStreetMap)
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: "© OpenStreetMap contributors",
-      maxZoom: 19,
+      maxZoom: 18,
     }).addTo(map.value);
 
     // Initialize layer groups
