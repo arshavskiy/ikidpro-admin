@@ -46,14 +46,6 @@
       <div v-if="error" class="mt-2 text-red-600 text-sm text-center">
         {{ error }}
       </div>
-      <div class="text-center mt-4">
-        <router-link
-          to="/register"
-          class="text-indigo-600 hover:text-indigo-800 font-medium transition-colors"
-        >
-          Don't have an account? Create one
-        </router-link>
-      </div>
     </div>
   </div>
 </template>
@@ -81,8 +73,7 @@ async function handleLogin() {
       password: password.value,
     });
 
-    // Redirect to original destination or kids page
-    const redirectPath = route.query.redirect || "/admin/dashboard";
+    const redirectPath = route.query.redirect || "dashboard";
     router.push(redirectPath);
   } catch (e) {
     error.value = e.message;

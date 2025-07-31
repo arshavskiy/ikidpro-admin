@@ -4,7 +4,7 @@ const API_BASE = "/api";
 
 // Add axios interceptor to include token
 axios.interceptors.request.use((config) => {
-  const token = localStorage.getItem("userToken");
+  const token = sessionStorage.getItem("userToken");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -40,7 +40,7 @@ export const registerParentWithChildren = async ({ parent, children }) => {
       parentResponse.user?._id || parentResponse.user?.id || parentResponse._id;
     const token = parentResponse.user?.token || null;
     if (token) {
-      localStorage.setItem("userToken", token);
+      sessionStorage.setItem("userToken", token);
     }
 
     if (!parentId) {

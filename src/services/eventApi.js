@@ -10,7 +10,7 @@ const API_BASE = "/api/event"; // Use relative path for proxy
 
 // Add axios interceptor to include token
 axios.interceptors.request.use((config) => {
-  const token = localStorage.getItem("userToken");
+  const token = sessionStorage.getItem("userToken");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }

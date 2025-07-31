@@ -9,7 +9,7 @@ const apiClient = axios.create({
 // Request interceptor to add auth token
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("userToken");
+    const token = sessionStorage.getItem("userToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -58,7 +58,7 @@ apiClient.interceptors.response.use(
 
     // If token is invalid, redirect to login
     if (error.response?.status === 401 || error.response?.status === 403) {
-      localStorage.removeItem("userToken");
+      sessionStorage.removeItem("userToken");
       // You might want to redirect to login page here
       console.warn("🔒 Token invalid, removed from storage");
     }
