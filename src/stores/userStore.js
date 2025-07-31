@@ -3,7 +3,7 @@ import axios from "axios";
 
 export const useUserStore = defineStore("user", {
   state: () => ({
-    token: localStorage.getItem("userToken"),
+    token: sessionStorage.getItem("userToken"),
     user: null,
     loading: false,
     error: null,
@@ -20,7 +20,7 @@ export const useUserStore = defineStore("user", {
       try {
         const response = await axios.post("/api/admin/login", credentials);
         this.token = response.data.data.token;
-        localStorage.setItem("userToken", this.token);
+        sessionStorage.setItem("userToken", this.token);
         this.user = response.data.data.admin;
         debugger;
       } catch (error) {
@@ -38,7 +38,7 @@ export const useUserStore = defineStore("user", {
         const response = await axios.post("/api/auth/register", userData);
         this.token = response.data.token;
         if (this.token) {
-          localStorage.setItem("userToken", this.token);
+          sessionStorage.setItem("userToken", this.token);
           await this.fetchUserInfo();
         }
         return response.data;
@@ -67,7 +67,7 @@ export const useUserStore = defineStore("user", {
     logout() {
       this.token = null;
       this.user = null;
-      localStorage.removeItem("userToken");
+      sessionStorage.removeItem("userToken");
     },
   },
 });

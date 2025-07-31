@@ -127,6 +127,11 @@ const routes = [
       },
     ],
   },
+  // Catch-all route: redirect to dashboard if no route matches
+  {
+    path: "/:pathMatch(.*)*",
+    redirect: "/admin/dashboard",
+  },
 ];
 
 const router = createRouter({
@@ -138,24 +143,13 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore();
 
-  // Check if route requires auth
-  // if (to.meta.requiresAuth) {
-  //   if (!userStore.isAuthenticated) {
-  //     // Redirect to login if not authenticated
-  //     next({ name: "Login", query: { redirect: to.fullPath } });
-  //     return;
-  //   }
-  //   // Fetch user info if authenticated but no user data
-  //   if (!userStore.user) {
-  //     await userStore.fetchUserInfo();
-  //   }
-  // }
-
-  // // Prevent authenticated users from accessing login or register pages
-  // if ((to.name === "Login" || to.name === "Register") && userStore.isAuthenticated) {
-  //   next({ name: "Kids" });
-  //   return;
-  // }
+  if (to.meta.requiresAuth) {
+    if (!userStore.isAuthenticated) {
+      // Redirect to login if not authenticated
+      next({ name: "Login", query: { redirect: to.fullPath } });
+      return;
+    }
+  }
 
   next();
 });
