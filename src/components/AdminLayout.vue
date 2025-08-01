@@ -80,6 +80,22 @@
           </router-link>
         </div>
 
+        <!-- Data Management -->
+        <div class="mt-4">
+          <div class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50">
+            <i class="fas fa-database mr-2"></i>Data Management
+          </div>
+          <router-link
+            v-for="route in dataRoutes"
+            :key="route.name"
+            :to="route.path"
+            class="block px-6 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+            :class="{ 'bg-blue-100 text-blue-700': $route.path === route.path }"
+          >
+            <i :class="route.icon + ' mr-2'"></i>{{ route.label }}
+          </router-link>
+        </div>
+
         <!-- System -->
         <div class="mt-4">
           <div class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50">
@@ -243,6 +259,15 @@ const eventRoutes = [
   // },
 ];
 
+const dataRoutes = [
+  {
+    name: "DataManagement",
+    path: "/admin/data/management",
+    label: "CSV Import/Export",
+    icon: "fas fa-file-csv",
+  },
+];
+
 const systemRoutes = [
   {
     name: "DatabaseInfo",
@@ -278,6 +303,7 @@ const pageTitle = computed(() => {
     "/admin/events/create": "Create New Event",
     "/admin/events/by-child": "Events by Child",
     "/admin/events/bulk": "Bulk Event Operations",
+    "/admin/data/management": "Data Management",
     "/admin/analytics/events": "Event Analytics",
     "/admin/analytics/users": "User Analytics",
     "/admin/system/database": "Database Information",
@@ -298,6 +324,7 @@ const pageDescription = computed(() => {
     "/admin/children/by-parent": "View children grouped by parent",
     "/admin/events": "Manage sensor events and data",
     "/admin/events/create": "Add a new sensor event",
+    "/admin/data/management": "Import and export data using CSV files",
     "/admin/events/by-child": "View events filtered by child",
     "/admin/events/bulk": "Perform bulk operations on events",
     "/admin/analytics/events": "Event data analysis and insights",

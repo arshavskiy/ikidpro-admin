@@ -3,8 +3,8 @@
     <!-- Page Header -->
     <div class="flex justify-between items-center">
       <div>
-        <h2 class="text-2xl font-bold text-gray-900">Create New Event</h2>
-        <p class="text-gray-600">Add a new sensor event to the system</p>
+        <h2 class="text-2xl font-bold text-gray-900">Edit Event</h2>
+        <p class="text-gray-600">Modify sensor event data</p>
       </div>
       <router-link
         to="/admin/events"
@@ -14,15 +14,33 @@
       </router-link>
     </div>
 
-    <!-- Event Creation Form -->
-    <div class="bg-white p-6 rounded-lg shadow-sm border">
-      <form @submit.prevent="createEvent" class="space-y-6">
+    <!-- Loading State -->
+    <div v-if="loadingEvent" class="text-center py-12">
+      <i class="fas fa-spinner animate-spin text-gray-400 text-4xl mb-4"></i>
+      <p class="text-gray-500">Loading event data...</p>
+    </div>
+
+    <!-- Event Edit Form -->
+    <div v-else-if="form" class="bg-white p-6 rounded-lg shadow-sm border">
+      <form @submit.prevent="updateEvent" class="space-y-6">
         <!-- Basic Information -->
         <div>
           <h3 class="text-lg font-medium text-gray-900 mb-4">
             Basic Information
           </h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Event ID (Read-only) -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Event ID
+              </label>
+              <input
+                :value="eventId"
+                readonly
+                class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500"
+              />
+            </div>
+
             <!-- Child ID -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">
@@ -339,49 +357,6 @@
           </div>
         </div>
 
-        <!-- Quick Fill Options -->
-        <div>
-          <h3 class="text-lg font-medium text-gray-900 mb-4">
-            Quick Fill Options
-          </h3>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <button
-              type="button"
-              @click="fillSampleData('resting')"
-              class="flex flex-col items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
-            >
-              <i class="fas fa-bed text-blue-600 text-2xl mb-2"></i>
-              <span class="text-sm font-medium text-blue-700"
-                >Resting Data</span
-              >
-            </button>
-
-            <button
-              type="button"
-              @click="fillSampleData('active')"
-              class="flex flex-col items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors"
-            >
-              <i class="fas fa-running text-green-600 text-2xl mb-2"></i>
-              <span class="text-sm font-medium text-green-700"
-                >Active Data</span
-              >
-            </button>
-
-            <button
-              type="button"
-              @click="fillSampleData('gps')"
-              class="flex flex-col items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors"
-            >
-              <i
-                class="fas fa-map-marker-alt text-purple-600 text-2xl mb-2"
-              ></i>
-              <span class="text-sm font-medium text-purple-700"
-                >Sample GPS</span
-              >
-            </button>
-          </div>
-        </div>
-
         <!-- Error Message -->
         <div v-if="error" class="p-3 bg-red-50 border border-red-200 rounded">
           <p class="text-sm text-red-600">{{ error }}</p>
@@ -404,69 +379,77 @@
             Cancel
           </router-link>
           <button
-            type="button"
-            @click="resetForm"
-            class="px-4 py-2 text-sm text-gray-700 bg-yellow-100 rounded hover:bg-yellow-200 transition-colors"
-          >
-            Clear Form
-          </button>
-          <button
             type="submit"
             :disabled="loading || !isFormValid"
             class="px-4 py-2 text-sm text-white bg-blue-600 rounded hover:bg-blue-700 disabled:opacity-50 transition-colors"
           >
             <i v-if="loading" class="fas fa-spinner animate-spin mr-2"></i>
-            Create Event
+            Update Event
           </button>
         </div>
       </form>
+    </div>
+
+    <!-- Error State -->
+    <div v-else class="text-center py-12">
+      <i class="fas fa-exclamation-triangle text-red-400 text-4xl mb-4"></i>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">Event Not Found</h3>
+      <p class="text-gray-500">The requested event could not be loaded.</p>
+      <router-link
+        to="/admin/events"
+        class="mt-4 inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+      >
+        Back to Events
+      </router-link>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import * as eventApi from "../../services/eventApi";
 import * as childUserApi from "../../services/childUserApi";
 
 const router = useRouter();
+const route = useRoute();
 
 // Reactive data
-const form = ref({
-  aid: "",
-  Timestamp: "",
-  HeartRate: null,
-  HRV: null,
-  AccelX: null,
-  AccelY: null,
-  AccelZ: null,
-  GyroX: null,
-  GyroY: null,
-  GyroZ: null,
-  EDA: null,
-  TemperatureC: null,
-  SoundLevel: null,
-  latitude: null,
-  longitude: null,
-  altitude: null,
-  speed_mps: null,
-  bearing_deg: null,
-  accuracy_m: null,
-  satellites: null,
-});
-
+const form = ref(null);
 const availableChildren = ref([]);
 const loading = ref(false);
+const loadingEvent = ref(true);
 const error = ref("");
 const success = ref("");
+const eventId = ref(route.params.id);
 
 // Computed properties
 const isFormValid = computed(() => {
-  return form.value.aid && form.value.Timestamp;
+  return form.value && form.value.aid && form.value.Timestamp;
 });
 
 // Methods
+const loadEvent = async () => {
+  try {
+    loadingEvent.value = true;
+    const response = await eventApi.getById(eventId.value);
+    const event = response.data;
+
+    // Convert timestamp for datetime-local input
+    if (event.Timestamp) {
+      event.Timestamp = new Date(event.Timestamp).toISOString().slice(0, 16);
+    }
+
+    form.value = event;
+  } catch (err) {
+    console.error("Error loading event:", err);
+    error.value = "Failed to load event data";
+    form.value = null;
+  } finally {
+    loadingEvent.value = false;
+  }
+};
+
 const loadChildren = async () => {
   try {
     const response = await childUserApi.getAllChildUsers();
@@ -478,57 +461,9 @@ const loadChildren = async () => {
   }
 };
 
-const fillSampleData = (type) => {
-  const now = new Date();
-  const timestamp = new Date(
-    now.getTime() - Math.random() * 24 * 60 * 60 * 1000
-  );
-
-  // Set timestamp
-  form.value.Timestamp = timestamp.toISOString().slice(0, 16);
-
-  switch (type) {
-    case "resting":
-      form.value.HeartRate = Math.floor(Math.random() * 20) + 60; // 60-80 BPM
-      form.value.HRV = Math.random() * 20 + 30; // 30-50
-      form.value.TemperatureC = Math.random() * 2 + 36.5; // 36.5-38.5°C
-      form.value.SoundLevel = Math.random() * 20 + 30; // 30-50 dB
-      form.value.AccelX = (Math.random() - 0.5) * 0.2; // Small movements
-      form.value.AccelY = (Math.random() - 0.5) * 0.2;
-      form.value.AccelZ = 0.98 + (Math.random() - 0.5) * 0.1; // Mostly gravity
-      break;
-
-    case "active":
-      form.value.HeartRate = Math.floor(Math.random() * 40) + 120; // 120-160 BPM
-      form.value.HRV = Math.random() * 15 + 15; // 15-30
-      form.value.TemperatureC = Math.random() * 1.5 + 37; // 37-38.5°C
-      form.value.SoundLevel = Math.random() * 30 + 50; // 50-80 dB
-      form.value.AccelX = (Math.random() - 0.5) * 2; // Larger movements
-      form.value.AccelY = (Math.random() - 0.5) * 2;
-      form.value.AccelZ = 0.5 + (Math.random() - 0.5) * 1;
-      form.value.GyroX = (Math.random() - 0.5) * 200;
-      form.value.GyroY = (Math.random() - 0.5) * 200;
-      form.value.GyroZ = (Math.random() - 0.5) * 200;
-      form.value.speed_mps = Math.random() * 3 + 1; // 1-4 m/s
-      break;
-
-    case "gps":
-      // Sample coordinates (New York City area)
-      form.value.latitude = 40.7589 + (Math.random() - 0.5) * 0.01;
-      form.value.longitude = -73.9851 + (Math.random() - 0.5) * 0.01;
-      form.value.altitude = Math.random() * 50 + 10; // 10-60m
-      form.value.speed_mps = Math.random() * 2;
-      form.value.bearing_deg = Math.random() * 360;
-      form.value.accuracy_m = Math.random() * 10 + 2; // 2-12m
-      form.value.satellites = Math.floor(Math.random() * 8) + 4; // 4-12 satellites
-      break;
-  }
-};
-
-const createEvent = async () => {
+const updateEvent = async () => {
   error.value = "";
   success.value = "";
-
   loading.value = true;
 
   try {
@@ -549,57 +484,24 @@ const createEvent = async () => {
       eventData.Timestamp = new Date(eventData.Timestamp).toISOString();
     }
 
-    await eventApi.create(eventData);
-    success.value = "Event created successfully!";
+    await eventApi.update(eventId.value, eventData);
+    success.value = "Event updated successfully!";
 
-    // Reset form after success
+    // Redirect after success
     setTimeout(() => {
       router.push("/admin/events");
     }, 2000);
   } catch (err) {
-    console.error("❌ Error creating event:", err);
-    error.value = err.response?.data?.error || "Error creating event";
+    console.error("❌ Error updating event:", err);
+    error.value = err.response?.data?.error || "Error updating event";
   } finally {
     loading.value = false;
   }
 };
 
-const resetForm = () => {
-  form.value = {
-    aid: "",
-    Timestamp: "",
-    HeartRate: null,
-    HRV: null,
-    AccelX: null,
-    AccelY: null,
-    AccelZ: null,
-    GyroX: null,
-    GyroY: null,
-    GyroZ: null,
-    EDA: null,
-    TemperatureC: null,
-    SoundLevel: null,
-    latitude: null,
-    longitude: null,
-    altitude: null,
-    speed_mps: null,
-    bearing_deg: null,
-    accuracy_m: null,
-    satellites: null,
-  };
-  error.value = "";
-  success.value = "";
-};
-
-// Set default timestamp to now
-const setDefaultTimestamp = () => {
-  const now = new Date();
-  form.value.Timestamp = now.toISOString().slice(0, 16);
-};
-
 // Lifecycle
 onMounted(() => {
+  loadEvent();
   loadChildren();
-  setDefaultTimestamp();
 });
 </script>

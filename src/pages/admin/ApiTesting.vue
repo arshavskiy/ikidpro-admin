@@ -265,7 +265,7 @@ const userEndpoints = [
   {
     name: "Get Users by ID",
     method: "GET",
-    url: "/api/users/:id",
+    url: "/api/user/id/:id",
     params: ["id"],
   },
   { name: "Logout User", method: "POST", url: "/api/auth/logout" },

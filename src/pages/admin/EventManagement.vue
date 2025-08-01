@@ -574,7 +574,10 @@
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import * as eventApi from "../../services/eventApi";
+
+const router = useRouter();
 
 // Reactive data
 const events = ref([]);
@@ -707,7 +710,7 @@ const viewEvent = (event) => {
 };
 
 const editEvent = (event) => {
-  console.log("Edit event:", event);
+  router.push({ name: "EventEdit", params: { id: event._id } });
 };
 
 const deleteEvent = (event) => {

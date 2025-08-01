@@ -12,9 +12,12 @@ export const me = () => apiClient.get(`${API_BASE}/me`);
 export const refresh = () => apiClient.post(`${API_BASE}/refresh`);
 
 // Admin User Management APIs
+export const getAll = () => apiClient.get(`users`);
 export const getAllUsers = () => apiClient.get(`users`);
-export const getUserById = (id) => apiClient.get(`users/${id}`);
+export const getCount = () => apiClient.get(`users/count`);
+export const getUserById = (id) => apiClient.get(`user/id/${id}`);
+export const create = (userData) => apiClient.post(`users`, userData);
 export const updateUser = (id, userData) =>
-  apiClient.put(`users/${id}`, userData);
+  apiClient.put(`user/id/${id}`, userData);
 export const deleteUser = (id) => apiClient.delete(`${API_BASE}/${id}`);
 export const getUserStats = () => apiClient.get(`${API_BASE}/stats`);

@@ -89,6 +89,11 @@ const routes = [
         component: () => import("../pages/admin/EventCreate.vue"),
       },
       {
+        path: "events/edit/:id",
+        name: "EventEdit",
+        component: () => import("../pages/admin/EventEdit.vue"),
+      },
+      {
         path: "events/by-child",
         name: "EventsByChild",
         component: () => import("../pages/admin/EventsByChild.vue"),
@@ -97,6 +102,11 @@ const routes = [
         path: "events/bulk",
         name: "EventsBulk",
         component: () => import("../pages/admin/EventsBulk.vue"),
+      },
+      {
+        path: "data/management",
+        name: "DataManagement",
+        component: () => import("../pages/admin/DataManagement.vue"),
       },
       {
         path: "analytics/events",
