@@ -1,11 +1,1 @@
 @import "tailwindcss";
-
-:root {
-  --color-bg: #1a0d2e;
-  --color-surface: #251542;
-  --color-text: #e0d4f7;
-  --color-primary: #a855f7; /* Tailwind purple-500 */
-  --color-primary-dark: #6b21a8;
-  --color-secondary: #9333ea; /* purple-600 */
-  --color-accent: #d946ef; /* fuchsia-500 */
-}
