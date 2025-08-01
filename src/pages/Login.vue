@@ -286,7 +286,7 @@
                 type="email"
                 required
                 class="w-full px-4 py-3 bg-slate-900/50 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all duration-200 backdrop-blur-sm"
-                placeholder="admin@ikidpro.com"
+                placeholder="Email"
                 autocomplete="email"
               />
               <!-- Animated Border Effect -->

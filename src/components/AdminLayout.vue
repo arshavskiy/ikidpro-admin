@@ -114,7 +114,7 @@
       </nav>
 
       <!-- Logout Button -->
-      <div class="absolute bottom-4 left-4">
+      <div class="top-10 left-20 relative">
         <button
           @click="logout"
           class="px-4 py-2 text-sm text-white bg-red-600 rounded hover:bg-red-700 transition-colors"
