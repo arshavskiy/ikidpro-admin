@@ -1,18 +1,16 @@
 <template>
-  <div class="flex h-screen bg-dark-900">
+  <div class="flex h-screen bg-gray-100">
     <!-- Sidebar -->
-    <div
-      class="w-64 bg-dark-800/50 backdrop-blur-xl shadow-neural border-r border-slate-700/50"
-    >
-      <div class="p-4 border-b border-slate-700/50">
-        <h1 class="text-xl font-bold text-white">IKidPro Admin</h1>
+    <div class="w-64 bg-white shadow-lg">
+      <div class="p-4 border-b border-gray-200">
+        <h1 class="text-xl font-bold text-gray-800">IKidPro Admin</h1>
       </div>
 
       <!-- Navigation Menu -->
       <nav class="mt-4">
         <div class="px-4 py-2">
           <h2
-            class="text-sm font-semibold text-slate-400 uppercase tracking-wide"
+            class="text-sm font-semibold text-gray-600 uppercase tracking-wide"
           >
             API Management
           </h2>
@@ -20,20 +18,15 @@
 
         <!-- Analytics & Reports -->
         <div class="mt-4">
-          <div
-            class="px-4 py-2 text-sm font-medium text-primary-400 bg-primary-400/10 border border-primary-400/20 rounded-lg mx-2"
-          >
+          <div class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50">
             <i class="fas fa-analytics mr-2"></i>Analytics
           </div>
           <router-link
             v-for="route in analyticsRoutes"
             :key="route.name"
             :to="route.path"
-            class="block px-6 py-2 text-sm text-slate-300 hover:bg-primary-400/10 hover:text-primary-400 transition-all duration-200 rounded-lg mx-2 my-1"
-            :class="{
-              'bg-primary-400/20 text-primary-400 border border-primary-400/30':
-                $route.path === route.path,
-            }"
+            class="block px-6 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+            :class="{ 'bg-blue-100 text-blue-700': $route.path === route.path }"
           >
             <i :class="route.icon + ' mr-2'"></i>{{ route.label }}
           </router-link>
@@ -41,20 +34,15 @@
 
         <!-- User Management -->
         <div class="mt-2">
-          <div
-            class="px-4 py-2 text-sm font-medium text-neural-400 bg-neural-400/10 border border-neural-400/20 rounded-lg mx-2"
-          >
+          <div class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50">
             <i class="fas fa-users mr-2"></i>User Management
           </div>
           <router-link
             v-for="route in userRoutes"
             :key="route.name"
             :to="route.path"
-            class="block px-6 py-2 text-sm text-slate-300 hover:bg-neural-400/10 hover:text-neural-400 transition-all duration-200 rounded-lg mx-2 my-1"
-            :class="{
-              'bg-neural-400/20 text-neural-400 border border-neural-400/30':
-                $route.path === route.path,
-            }"
+            class="block px-6 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+            :class="{ 'bg-blue-100 text-blue-700': $route.path === route.path }"
           >
             <i :class="route.icon + ' mr-2'"></i>{{ route.label }}
           </router-link>
@@ -62,20 +50,15 @@
 
         <!-- Child User Management -->
         <div class="mt-4">
-          <div
-            class="px-4 py-2 text-sm font-medium text-data-400 bg-data-400/10 border border-data-400/20 rounded-lg mx-2"
-          >
+          <div class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50">
             <i class="fas fa-child mr-2"></i>Child Management
           </div>
           <router-link
             v-for="route in childRoutes"
             :key="route.name"
             :to="route.path"
-            class="block px-6 py-2 text-sm text-slate-300 hover:bg-data-400/10 hover:text-data-400 transition-all duration-200 rounded-lg mx-2 my-1"
-            :class="{
-              'bg-data-400/20 text-data-400 border border-data-400/30':
-                $route.path === route.path,
-            }"
+            class="block px-6 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+            :class="{ 'bg-blue-100 text-blue-700': $route.path === route.path }"
           >
             <i :class="route.icon + ' mr-2'"></i>{{ route.label }}
           </router-link>
@@ -83,20 +66,15 @@
 
         <!-- Event Management -->
         <div class="mt-4">
-          <div
-            class="px-4 py-2 text-sm font-medium text-success-400 bg-success-400/10 border border-success-400/20 rounded-lg mx-2"
-          >
+          <div class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50">
             <i class="fas fa-chart-line mr-2"></i>Event Management
           </div>
           <router-link
             v-for="route in eventRoutes"
             :key="route.name"
             :to="route.path"
-            class="block px-6 py-2 text-sm text-slate-300 hover:bg-success-400/10 hover:text-success-400 transition-all duration-200 rounded-lg mx-2 my-1"
-            :class="{
-              'bg-success-400/20 text-success-400 border border-success-400/30':
-                $route.path === route.path,
-            }"
+            class="block px-6 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+            :class="{ 'bg-blue-100 text-blue-700': $route.path === route.path }"
           >
             <i :class="route.icon + ' mr-2'"></i>{{ route.label }}
           </router-link>
@@ -104,20 +82,15 @@
 
         <!-- Data Management -->
         <div class="mt-4">
-          <div
-            class="px-4 py-2 text-sm font-medium text-warning-400 bg-warning-400/10 border border-warning-400/20 rounded-lg mx-2"
-          >
+          <div class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50">
             <i class="fas fa-database mr-2"></i>Data Management
           </div>
           <router-link
             v-for="route in dataRoutes"
             :key="route.name"
             :to="route.path"
-            class="block px-6 py-2 text-sm text-slate-300 hover:bg-warning-400/10 hover:text-warning-400 transition-all duration-200 rounded-lg mx-2 my-1"
-            :class="{
-              'bg-warning-400/20 text-warning-400 border border-warning-400/30':
-                $route.path === route.path,
-            }"
+            class="block px-6 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+            :class="{ 'bg-blue-100 text-blue-700': $route.path === route.path }"
           >
             <i :class="route.icon + ' mr-2'"></i>{{ route.label }}
           </router-link>
@@ -154,22 +127,20 @@
     <!-- Main Content -->
     <div class="flex-1 flex flex-col overflow-hidden">
       <!-- Header -->
-      <header
-        class="bg-dark-800/50 backdrop-blur-xl shadow-neural border-b border-slate-700/50"
-      >
+      <header class="bg-white shadow-sm border-b border-gray-200">
         <div class="flex items-center justify-between px-6 py-4">
           <div>
-            <!-- <h1 class="text-2xl font-semibold text-white">
+            <!-- <h1 class="text-2xl font-semibold text-gray-800">
               {{ pageTitle }}
             </h1>
-            <p class="text-sm text-slate-300">{{ pageDescription }}</p> -->
+            <p class="text-sm text-gray-600">{{ pageDescription }}</p> -->
           </div>
           <div class="flex items-center space-x-4">
-            <span class="text-sm text-slate-300"
+            <span class="text-sm text-gray-600"
               >Welcome, {{ user?.firstName || "Admin" }}</span
             >
             <div
-              class="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center border border-primary-400/30"
+              class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center"
             >
               <i class="fas fa-user text-white text-xs"></i>
             </div>
@@ -178,16 +149,8 @@
       </header>
 
       <!-- Page Content -->
-      <main
-        class="flex-1 overflow-x-hidden overflow-y-auto bg-dark-900 p-6 relative"
-      >
-        <!-- Background Pattern -->
-        <div
-          class="absolute inset-0 bg-neural-pattern opacity-5 pointer-events-none"
-        ></div>
-        <div class="relative z-10">
-          <router-view />
-        </div>
+      <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
+        <router-view />
       </main>
     </div>
   </div>
