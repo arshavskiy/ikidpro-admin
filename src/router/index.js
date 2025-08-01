@@ -143,7 +143,7 @@ const routes = [
   // Catch-all route: redirect to dashboard if no route matches
   {
     path: "/:pathMatch(.*)*",
-    redirect: "/admin/dashboard",
+    redirect: "/admin/analytics/events",
   },
 ];
 

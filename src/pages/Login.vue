@@ -75,7 +75,7 @@ async function handleLogin() {
       password: password.value,
     });
 
-    const redirectPath = route.query.redirect || "dashboard";
+    const redirectPath = route.query.redirect || "/admin/analytics/events";
     router.push(redirectPath);
   } catch (e) {
     error.value = e.message;
