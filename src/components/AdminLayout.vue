@@ -263,8 +263,14 @@ const dataRoutes = [
   {
     name: "DataManagement",
     path: "/admin/data/management",
-    label: "CSV Import/Export",
-    icon: "fas fa-file-csv",
+    label: "Data Import",
+    icon: "fas fa-file-upload",
+  },
+  {
+    name: "DataExport",
+    path: "/admin/data/export",
+    label: "Data Export",
+    icon: "fas fa-file-download",
   },
 ];
 

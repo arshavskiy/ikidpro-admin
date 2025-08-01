@@ -19,5 +19,5 @@ export const getUserById = (id) => apiClient.get(`user/id/${id}`);
 export const create = (userData) => apiClient.post(`users`, userData);
 export const updateUser = (id, userData) =>
   apiClient.put(`user/id/${id}`, userData);
-export const deleteUser = (id) => apiClient.delete(`${API_BASE}/${id}`);
+export const deleteUser = (id) => apiClient.delete(`user/id/${id}`);
 export const getUserStats = () => apiClient.get(`${API_BASE}/stats`);

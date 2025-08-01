@@ -109,6 +109,11 @@ const routes = [
         component: () => import("../pages/admin/DataManagement.vue"),
       },
       {
+        path: "data/export",
+        name: "DataExport",
+        component: () => import("../pages/admin/DataExport.vue"),
+      },
+      {
         path: "analytics/events",
         name: "EventStats",
         component: () => import("../pages/admin/EventAnalytics.vue"),

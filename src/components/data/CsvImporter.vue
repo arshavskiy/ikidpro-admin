@@ -57,6 +57,7 @@
       </label>
       <select
         v-model="selectedDataType"
+        @change="onDataTypeChange"
         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
       >
         <option value="">Select data type</option>
@@ -64,6 +65,32 @@
         <option value="children">Children</option>
         <option value="events">Events</option>
       </select>
+    </div>
+
+    <!-- Child Selector (for Events that need child association) -->
+    <div v-if="selectedFile && selectedDataType === 'events'">
+      <label class="block text-sm font-medium text-gray-700 mb-2">
+        Select Child <span class="text-red-500">*</span>
+      </label>
+      <select
+        v-model="selectedChildId"
+        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        :disabled="loadingChildren"
+      >
+        <option value="">
+          {{ loadingChildren ? "Loading children..." : "Select a child" }}
+        </option>
+        <option
+          v-for="child in childrenList"
+          :key="child.aid"
+          :value="child.aid"
+        >
+          {{ child.firstName }} {{ child.lastName }} (ID: {{ child.aid }})
+        </option>
+      </select>
+      <p class="text-xs text-gray-500 mt-1">
+        This child will be associated with all imported events
+      </p>
     </div>
 
     <!-- Import Options -->
@@ -155,19 +182,19 @@
       <div class="flex space-x-2">
         <button
           @click="autoMapFields"
-          class="text-xs text-blue-600 hover:text-blue-800"
+          class="text-xs text-blue-600 hover:text-blue-800 cursor-pointer"
         >
           Auto-Map Similar Names
         </button>
         <button
           @click="clearAllMappings"
-          class="text-xs text-gray-600 hover:text-gray-800"
+          class="text-xs text-gray-600 hover:text-gray-800 cursor-pointer"
         >
           Clear All Mappings
         </button>
         <button
           @click="mapAllFields"
-          class="text-xs text-green-600 hover:text-green-800"
+          class="text-xs text-green-600 hover:text-green-800 cursor-pointer"
         >
           Map All Fields
         </button>
@@ -180,10 +207,12 @@
     </div>
 
     <!-- Preview -->
-    <div v-if="csvPreview.length > 0" class="space-y-4">
-      <h4 class="text-sm font-medium text-gray-700">Preview (First 5 rows)</h4>
-      <div class="overflow-x-auto border border-gray-200 rounded">
-        <table class="min-w-full divide-y divide-gray-200">
+    <div v-if="csvPreview.length > 0" class="space-y-4 rounded">
+      <h4 class="text-sm font-medium text-gray-700">Preview</h4>
+      <div
+        class="overflow-x-auto border border-gray-200 overflow-y-auto max-h-110"
+      >
+        <table class="min-w-full divide-y divide-gray-200 max-h-110">
           <thead class="bg-gray-50">
             <tr>
               <th
@@ -207,7 +236,7 @@
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
             <tr
-              v-for="(row, rowIndex) in csvDataRows.slice(0, 5)"
+              v-for="(row, rowIndex) in csvDataRows"
               :key="rowIndex"
               class="hover:bg-gray-50"
             >
@@ -252,7 +281,9 @@
       <button
         @click="importCsv"
         :disabled="
-          loading || csvPreview.length === 0 || mappedFieldsCount === 0
+          loading ||
+          csvPreview.length === 0 ||
+          (selectedDataType === 'events' && !selectedChildId)
         "
         class="px-4 py-2 text-sm text-white bg-blue-600 rounded hover:bg-blue-700 disabled:opacity-50 transition-colors"
       >
@@ -294,7 +325,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from "vue";
+import { ref, reactive, computed, watch } from "vue";
 import * as userApi from "../../services/userApi";
 import * as childUserApi from "../../services/childUserApi";
 import * as eventApi from "../../services/eventApi";
@@ -304,6 +335,9 @@ const emit = defineEmits(["import-success", "import-error"]);
 // Reactive data
 const selectedFile = ref(null);
 const selectedDataType = ref("");
+const selectedChildId = ref("");
+const childrenList = ref([]);
+const loadingChildren = ref(false);
 const csvPreview = ref([]);
 const fieldMapping = ref({});
 const loading = ref(false);
@@ -321,38 +355,41 @@ const importOptions = reactive({
 // Field definitions (same as CsvExporter)
 const fieldDefinitions = {
   users: [
-    { key: "firstName", label: "First Name" },
-    { key: "lastName", label: "Last Name" },
-    { key: "email", label: "Email" },
-    { key: "phone", label: "Phone" },
-    { key: "role", label: "Role" },
-    { key: "isActive", label: "Active" },
+    { key: "firstName", label: "First Name", value: "firstName" },
+    { key: "lastName", label: "Last Name", value: "lastName" },
+    { key: "email", label: "Email", value: "email" },
+    { key: "phone", label: "Phone", value: "phone" },
+    { key: "role", label: "Role", value: "role" },
+    { key: "isActive", label: "Active", value: "isActive" },
   ],
   children: [
-    { key: "firstName", label: "First Name" },
-    { key: "lastName", label: "Last Name" },
-    { key: "dateOfBirth", label: "Date of Birth" },
-    { key: "gender", label: "Gender" },
-    { key: "parentId", label: "Parent ID" },
-    { key: "isActive", label: "Active" },
+    { key: "firstName", label: "First Name", value: "firstName" },
+    { key: "lastName", label: "Last Name", value: "lastName" },
+    { key: "dateOfBirth", label: "Date of Birth", value: "dateOfBirth" },
+    { key: "gender", label: "Gender", value: "gender" },
+    { key: "parentId", label: "Parent ID", value: "parentId" },
+    { key: "isActive", label: "Active", value: "isActive" },
+    { key: "aid", label: "App ID", value: "aid" },
   ],
   events: [
-    { key: "aid", label: "Child ID" },
-    { key: "Timestamp", label: "Timestamp" },
-    { key: "HeartRate", label: "Heart Rate" },
-    { key: "HRV", label: "HRV" },
-    { key: "TemperatureC", label: "Temperature (°C)" },
-    { key: "SoundLevel", label: "Sound Level (dB)" },
-    { key: "AccelX", label: "Accel X" },
-    { key: "AccelY", label: "Accel Y" },
-    { key: "AccelZ", label: "Accel Z" },
-    { key: "GyroX", label: "Gyro X" },
-    { key: "GyroY", label: "Gyro Y" },
-    { key: "GyroZ", label: "Gyro Z" },
-    { key: "latitude", label: "Latitude" },
-    { key: "longitude", label: "Longitude" },
-    { key: "altitude", label: "Altitude" },
-    { key: "speed_mps", label: "Speed (m/s)" },
+    { key: "parentId", label: "parentId ID", value: "parentId" },
+    { key: "aid", label: "Child ID", value: "aid" },
+    { key: "Timestamp", label: "Timestamp", value: "Timestamp" },
+    { key: "HeartRate", label: "Heart Rate", value: "HeartRate" },
+    { key: "HRV", label: "HRV", value: "HRV" },
+    { key: "TemperatureC", label: "Temperature (°C)", value: "TemperatureC" },
+    { key: "SoundLevel", label: "Sound Level (dB)", value: "SoundLevel" },
+    { key: "AccelX", label: "Accel X", value: "AccelX" },
+    { key: "AccelY", label: "Accel Y", value: "AccelY" },
+    { key: "AccelZ", label: "Accel Z", value: "AccelZ" },
+    { key: "GyroX", label: "Gyro X", value: "GyroX" },
+    { key: "GyroY", label: "Gyro Y", value: "GyroY" },
+    { key: "GyroZ", label: "Gyro Z", value: "GyroZ" },
+    { key: "EDA", label: "Electrodermal Activity", value: "EDA" },
+    { key: "latitude", label: "Latitude", value: "latitude" },
+    { key: "longitude", label: "Longitude", value: "longitude" },
+    { key: "altitude", label: "Altitude", value: "altitude" },
+    { key: "speed_mps", label: "Speed (m/s)", value: "speed_mps" },
   ],
 };
 
@@ -379,10 +416,22 @@ const mappedFieldsCount = computed(() => {
   ).length;
 });
 
+// Watchers
+watch(selectedChildId, async (newChildId) => {
+  // Refresh preview when child selection changes (for events)
+  if (
+    selectedDataType.value === "events" &&
+    selectedFile.value &&
+    csvPreview.value.length > 0
+  ) {
+    await previewCsv();
+  }
+});
+
 // Field mapping methods
 const getDbFieldLabel = (fieldKey) => {
   const field = availableDbFields.value.find((f) => f.key === fieldKey);
-  return field ? field.label : fieldKey;
+  return field ? field.value : fieldKey;
 };
 
 const toggleFieldMapping = (csvField, isChecked) => {
@@ -424,6 +473,34 @@ const mapAllFields = () => {
 };
 
 // Methods
+const onDataTypeChange = async () => {
+  // Reset child selection when data type changes
+  selectedChildId.value = "";
+
+  // Load children list if events is selected
+  if (selectedDataType.value === "events") {
+    await loadChildren();
+  }
+};
+
+const loadChildren = async () => {
+  loadingChildren.value = true;
+  try {
+    const response = await childUserApi.getAllChildUsers();
+    childrenList.value = response.data.data || [];
+
+    // If there's only one child, auto-select it
+    if (childrenList.value.length === 1) {
+      selectedChildId.value = childrenList.value[0].aid;
+    }
+  } catch (error) {
+    console.error("Error loading children:", error);
+    childrenList.value = [];
+  } finally {
+    loadingChildren.value = false;
+  }
+};
+
 const handleDrop = (event) => {
   event.preventDefault();
   isDragOver.value = false;
@@ -449,6 +526,8 @@ const clearFile = () => {
   selectedFile.value = null;
   csvPreview.value = [];
   selectedDataType.value = "";
+  selectedChildId.value = "";
+  childrenList.value = [];
   fieldMapping.value = {};
   errors.value = [];
 };
@@ -508,7 +587,72 @@ const previewCsv = async () => {
 
   try {
     const text = await selectedFile.value.text();
-    csvPreview.value = parseCSV(text);
+    let parsedData = parseCSV(text);
+
+    // If we're importing events and have a selected child, add aid column if missing
+    if (
+      selectedDataType.value === "events" &&
+      selectedChildId.value &&
+      parsedData.length > 0
+    ) {
+      const headers = parsedData[0];
+      const aidIndex = headers.findIndex(
+        (header) => header.toLowerCase() === "aid"
+      );
+      const parentIdIndex = headers.findIndex(
+        (header) => header.toLowerCase() === "parentid"
+      );
+
+      // Get the selected child's parent ID
+      const selectedChild = childrenList.value.find(
+        (child) => child.aid === selectedChildId.value
+      );
+      const parentId = selectedChild ? selectedChild.parentId : null;
+
+      // If aid column doesn't exist, add it
+      if (aidIndex === -1) {
+        // Add 'aid' to headers
+        headers.push("aid");
+
+        // Add selected child ID to all data rows
+        for (let i = 1; i < parsedData.length; i++) {
+          parsedData[i].push(selectedChildId.value);
+        }
+      } else {
+        // If aid column exists but has empty values, fill with selected child ID
+        for (let i = 1; i < parsedData.length; i++) {
+          if (
+            !parsedData[i][aidIndex] ||
+            parsedData[i][aidIndex].trim() === ""
+          ) {
+            parsedData[i][aidIndex] = selectedChildId.value;
+          }
+        }
+      }
+
+      // If parentId column doesn't exist and we have a parent ID, add it
+      if (parentIdIndex === -1 && parentId) {
+        // Add 'parentId' to headers
+        headers.push("parentId");
+
+        // Add parent ID to all data rows
+        for (let i = 1; i < parsedData.length; i++) {
+          parsedData[i].push(parentId);
+        }
+      } else if (parentIdIndex !== -1 && parentId) {
+        // If parentId column exists but has empty values, fill with parent ID
+        for (let i = 1; i < parsedData.length; i++) {
+          if (
+            !parsedData[i][parentIdIndex] ||
+            parsedData[i][parentIdIndex].trim() === ""
+          ) {
+            parsedData[i][parentIdIndex] = parentId;
+          }
+        }
+      }
+    }
+
+    csvPreview.value = parsedData;
   } catch (error) {
     console.error("Error parsing CSV:", error);
     errors.value = [{ row: 0, message: "Failed to parse CSV file" }];
@@ -547,9 +691,6 @@ const validateRow = (row, headers, dataType) => {
     }
   } else if (dataType === "events") {
     // Validate event data
-    if (!row[headers.indexOf("aid")]) {
-      errors.push("Child ID is required");
-    }
     if (!row[headers.indexOf("Timestamp")]) {
       errors.push("Timestamp is required");
     }
@@ -564,6 +705,14 @@ const importCsv = async () => {
     !selectedDataType.value ||
     csvPreview.value.length === 0
   ) {
+    return;
+  }
+
+  // Additional validation for events
+  if (selectedDataType.value === "events" && !selectedChildId.value) {
+    errors.value = [
+      { row: 0, message: "Please select a child for event data import" },
+    ];
     return;
   }
 
@@ -627,7 +776,20 @@ const importCsv = async () => {
         } else if (selectedDataType.value === "children") {
           await childUserApi.create(record);
         } else if (selectedDataType.value === "events") {
-          await eventApi.create(record);
+          const selectedChild = childrenList.value.find(
+            (child) => child.aid === selectedChildId.value
+          );
+
+          // Get the selected child's parent ID
+          const parentId = selectedChild ? selectedChild.parentId : null;
+
+          // For events, ensure the selected child ID and parent ID are used
+          const eventRecord = {
+            ...record,
+            aid: selectedChildId.value, // Override aid with selected child ID
+            parentId: parentId, // Add parent ID from selected child
+          };
+          await eventApi.create(eventRecord);
         }
 
         successCount++;

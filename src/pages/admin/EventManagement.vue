@@ -274,19 +274,19 @@
               >
                 <button
                   @click="viewEvent(event)"
-                  class="text-blue-600 hover:text-blue-900"
+                  class="text-blue-600 hover:text-blue-900 cursor-pointer"
                 >
                   <i class="fas fa-eye"></i>
                 </button>
                 <button
                   @click="editEvent(event)"
-                  class="text-indigo-600 hover:text-indigo-900"
+                  class="text-indigo-600 hover:text-indigo-900 cursor-pointer"
                 >
                   <i class="fas fa-edit"></i>
                 </button>
                 <button
                   @click="deleteEvent(event)"
-                  class="text-red-600 hover:text-red-900"
+                  class="text-red-600 hover:text-red-900 cursor-pointer"
                 >
                   <i class="fas fa-trash"></i>
                 </button>
@@ -502,64 +502,96 @@
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
     >
       <div class="bg-white rounded-lg max-w-md w-full mx-4">
-        <div class="p-6 border-b border-gray-200">
-          <div class="flex justify-between items-center">
-            <h3 class="text-lg font-medium text-gray-900">Delete Event</h3>
-            <button
-              @click="eventToDelete = null"
-              class="text-gray-400 hover:text-gray-600"
-            >
-              <i class="fas fa-times"></i>
-            </button>
-          </div>
-        </div>
         <div class="p-6">
-          <div class="flex items-center mb-4">
-            <div class="p-3 bg-red-100 rounded-full mr-4">
-              <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
-            </div>
-            <div>
-              <h4 class="text-lg font-medium text-gray-900">Are you sure?</h4>
-              <p class="text-sm text-gray-600">This action cannot be undone.</p>
-            </div>
+          <div
+            class="flex items-center justify-center w-12 h-12 mx-auto bg-red-100 rounded-full mb-4"
+          >
+            <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
           </div>
 
-          <div class="bg-gray-50 p-4 rounded-lg mb-6">
-            <h5 class="font-medium text-gray-900 mb-2">Event Details:</h5>
-            <div class="text-sm text-gray-600 space-y-1">
-              <p>
-                <strong>Timestamp:</strong>
-                {{ formatDateTime(eventToDelete.Timestamp) }}
-              </p>
-              <p><strong>Child ID:</strong> {{ eventToDelete.aid }}</p>
-              <p><strong>Parent ID:</strong> {{ eventToDelete.parentId }}</p>
+          <h3 class="text-lg font-medium text-gray-900 text-center mb-2">
+            Delete Event
+          </h3>
+
+          <p class="text-sm text-gray-500 text-center mb-6">
+            Are you sure you want to delete this sensor event? This action
+            cannot be undone and will permanently remove the data.
+          </p>
+
+          <div class="bg-gray-50 border border-gray-200 rounded-md p-4 mb-6">
+            <h4 class="text-sm font-medium text-gray-900 mb-3">
+              Event Details
+            </h4>
+            <div class="space-y-2 text-sm text-gray-600">
+              <div class="flex justify-between">
+                <span class="font-medium">Timestamp:</span>
+                <span>{{ formatDateTime(eventToDelete.Timestamp) }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="font-medium">Child ID:</span>
+                <span>{{ eventToDelete.aid }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="font-medium">Parent ID:</span>
+                <span>{{ eventToDelete.parentId }}</span>
+              </div>
+              <div v-if="eventToDelete.HeartRate" class="flex justify-between">
+                <span class="font-medium">Heart Rate:</span>
+                <span>{{ eventToDelete.HeartRate }} bpm</span>
+              </div>
               <div
-                v-if="eventToDelete.HeartRate"
-                class="flex items-center space-x-4"
+                v-if="eventToDelete.TemperatureC"
+                class="flex justify-between"
               >
+                <span class="font-medium">Temperature:</span>
+                <span>{{ eventToDelete.TemperatureC }}°C</span>
+              </div>
+              <div
+                v-if="eventToDelete.latitude && eventToDelete.longitude"
+                class="flex justify-between"
+              >
+                <span class="font-medium">Location:</span>
                 <span
-                  ><strong>Heart Rate:</strong>
-                  {{ eventToDelete.HeartRate }} bpm</span
-                >
-                <span v-if="eventToDelete.TemperatureC"
-                  ><strong>Temperature:</strong>
-                  {{ eventToDelete.TemperatureC }}°C</span
+                  >{{ eventToDelete.latitude.toFixed(4) }},
+                  {{ eventToDelete.longitude.toFixed(4) }}</span
                 >
               </div>
             </div>
           </div>
 
-          <div class="flex justify-end space-x-3">
+          <div
+            class="bg-yellow-50 border border-yellow-200 rounded-md p-4 mb-6"
+          >
+            <div class="flex">
+              <i
+                class="fas fa-exclamation-triangle text-yellow-400 mr-3 mt-0.5"
+              ></i>
+              <div>
+                <h4 class="text-sm font-medium text-yellow-800">Warning</h4>
+                <p class="text-sm text-yellow-700 mt-1">
+                  Deleting this event will permanently remove:
+                </p>
+                <ul class="text-sm text-yellow-700 mt-2 list-disc list-inside">
+                  <li>All sensor data (heart rate, temperature, GPS, etc.)</li>
+                  <li>Motion data (accelerometer, gyroscope)</li>
+                  <li>Environmental data (sound levels, EDA)</li>
+                  <li>Associated analytics and reports</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex space-x-3">
             <button
               @click="eventToDelete = null"
-              class="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded hover:bg-gray-200 transition-colors"
+              class="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               Cancel
             </button>
             <button
               @click="confirmDeleteEvent"
               :disabled="deleting"
-              class="px-4 py-2 text-sm text-white bg-red-600 rounded hover:bg-red-700 disabled:opacity-50 transition-colors"
+              class="flex-1 px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
             >
               <i v-if="deleting" class="fas fa-spinner animate-spin mr-2"></i>
               <i v-else class="fas fa-trash mr-2"></i>

@@ -86,6 +86,7 @@
     <!-- Map Container -->
     <div class="relative">
       <div
+        v-if="mapStats.totalGpsPoints > 0"
         ref="mapContainer"
         class="w-full h-96 rounded-lg border border-gray-200"
         style="min-height: 400px"
@@ -107,7 +108,7 @@
       <!-- No Data Overlay -->
       <div
         v-if="!mapLoading && mapStats.totalGpsPoints === 0"
-        class="absolute inset-0 bg-gray-50 flex items-center justify-center rounded-lg"
+        class="inset-0 bg-gray-50 flex items-center justify-center rounded-lg h-60"
       >
         <div class="text-center">
           <i class="fas fa-map-marker-alt text-4xl text-gray-400 mb-4"></i>
@@ -145,6 +146,7 @@
 import { ref, onMounted, onUnmounted, watch, computed, nextTick } from "vue";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { time } from "echarts";
 
 // Fix Leaflet default icons
 delete L.Icon.Default.prototype._getIconUrl;
@@ -272,7 +274,8 @@ const initializeMap = async () => {
       const firstEvent = filteredGpsEvents.value[0];
       defaultLat = firstEvent.latitude;
       defaultLng = firstEvent.longitude;
-      defaultZoom = 15;
+      defaultZoom = 14;
+    } else {
     }
 
     // Create map instance
@@ -532,7 +535,9 @@ watch(
 // Lifecycle hooks
 onMounted(() => {
   nextTick(() => {
-    initializeMap();
+    setTimeout(() => {
+      initializeMap();
+    }, 1000); // Delay to ensure DOM is ready
   });
 });
 

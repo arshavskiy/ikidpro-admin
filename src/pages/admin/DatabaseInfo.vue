@@ -221,13 +221,13 @@
                 >
                   <button
                     @click="viewCollectionDetails(collection)"
-                    class="text-blue-600 hover:text-blue-900"
+                    class="text-blue-600 hover:text-blue-900 cursor-pointer"
                   >
                     <i class="fas fa-eye"></i>
                   </button>
                   <button
                     @click="exportCollection(collection)"
-                    class="text-green-600 hover:text-green-900"
+                    class="text-green-600 hover:text-green-900 cursor-pointer"
                   >
                     <i class="fas fa-download"></i>
                   </button>
@@ -554,14 +554,29 @@
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
+import { useDbStatsStore } from "../../stores/dbStatsStore";
 import * as eventApi from "../../services/eventApi";
 
+// Store
+const dbStatsStore = useDbStatsStore();
+
 // Reactive data
-const loading = ref(false);
 const backupLoading = ref(false);
 const optimizeLoading = ref(false);
 const selectedCollection = ref(null);
 const dbData = ref(null);
+
+// Use store state
+const {
+  stats,
+  loading,
+  error,
+  fetchDbStats,
+  refreshStats,
+  formattedSize,
+  lastUpdatedFormatted,
+  isStale,
+} = dbStatsStore;
 
 // Computed properties based on real API data
 const dbStatus = computed(() => {
@@ -661,6 +676,8 @@ const getCollectionDescription = (collectionName) => {
 };
 
 const refreshCollections = async () => {
+  await refreshStats();
+  // Also refresh the detailed dbData for backward compatibility
   loading.value = true;
   try {
     console.log("🔄 Loading database statistics...");
@@ -733,7 +750,10 @@ const viewLogs = () => {
 };
 
 // Lifecycle
-onMounted(() => {
+onMounted(async () => {
+  // Load data using the store
+  await fetchDbStats();
+  // Also load detailed data for backward compatibility
   refreshCollections();
 });
 </script>

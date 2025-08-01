@@ -239,19 +239,19 @@
               >
                 <button
                   @click="viewChild(child)"
-                  class="text-blue-600 hover:text-blue-900"
+                  class="text-blue-600 hover:text-blue-900 cursor-pointer"
                 >
                   <i class="fas fa-eye"></i>
                 </button>
                 <button
                   @click="editChild(child)"
-                  class="text-indigo-600 hover:text-indigo-900"
+                  class="text-indigo-600 hover:text-indigo-900 cursor-pointer"
                 >
                   <i class="fas fa-edit"></i>
                 </button>
                 <button
                   @click="deleteChild(child)"
-                  class="text-red-600 hover:text-red-900"
+                  class="text-red-600 hover:text-red-900 cursor-pointer"
                 >
                   <i class="fas fa-trash"></i>
                 </button>
@@ -438,6 +438,72 @@
         </div>
       </div>
     </div>
+
+    <!-- Event Delete Modal -->
+    <div
+      v-if="showDeleteModal && childToDelete"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+    >
+      <div class="bg-white rounded-lg max-w-md w-full mx-4">
+        <div class="p-6">
+          <div
+            class="flex items-center justify-center w-12 h-12 mx-auto bg-red-100 rounded-full mb-4"
+          >
+            <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+          </div>
+
+          <h3 class="text-lg font-medium text-gray-900 text-center mb-2">
+            Delete Child
+          </h3>
+
+          <p class="text-sm text-gray-500 text-center mb-6">
+            Are you sure you want to delete
+            <span class="font-semibold text-gray-900">
+              {{ childToDelete.firstName }} {{ childToDelete.lastName }} </span
+            >? This action cannot be undone and will permanently remove all
+            associated data.
+          </p>
+
+          <div
+            class="bg-yellow-50 border border-yellow-200 rounded-md p-4 mb-6"
+          >
+            <div class="flex">
+              <i
+                class="fas fa-exclamation-triangle text-yellow-400 mr-3 mt-0.5"
+              ></i>
+              <div>
+                <h4 class="text-sm font-medium text-yellow-800">Warning</h4>
+                <p class="text-sm text-yellow-700 mt-1">
+                  Deleting this child will also remove:
+                </p>
+                <ul class="text-sm text-yellow-700 mt-2 list-disc list-inside">
+                  <li>All associated events and sensor data</li>
+                  <li>Medical records and conditions</li>
+                  <li>Emergency contact information</li>
+                  <li>Any related analytics data</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex space-x-3">
+            <button
+              @click="closeDeleteModal"
+              class="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Cancel
+            </button>
+            <button
+              @click="confirmDelete"
+              class="flex-1 px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+            >
+              <i class="fas fa-trash mr-2"></i>
+              Delete Child
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -455,6 +521,8 @@ const searchQuery = ref("");
 const selectedGenderFilter = ref("");
 const selectedAgeFilter = ref("");
 const selectedChild = ref(null);
+const childToDelete = ref(null);
+const showDeleteModal = ref(false);
 
 // Computed properties
 const filteredChildren = computed(() => {
@@ -552,20 +620,29 @@ const editChild = (child) => {
   router.push(`/admin/children/edit/${child._id}`);
 };
 
-const deleteChild = async (child) => {
-  if (
-    confirm(
-      `Are you sure you want to delete ${child.firstName} ${child.lastName}?`
-    )
-  ) {
-    try {
-      await childUserApi.deleteChildUser(child._id);
-      children.value = children.value.filter((c) => c._id !== child._id);
-    } catch (error) {
-      console.error("Error deleting child:", error);
-      alert("Error deleting child");
-    }
+const deleteChild = (child) => {
+  childToDelete.value = child;
+  showDeleteModal.value = true;
+};
+
+const confirmDelete = async () => {
+  if (!childToDelete.value) return;
+
+  try {
+    await childUserApi.deleteChildUser(childToDelete.value._id);
+    children.value = children.value.filter(
+      (c) => c._id !== childToDelete.value._id
+    );
+    closeDeleteModal();
+  } catch (error) {
+    console.error("Error deleting child:", error);
+    alert("Error deleting child");
   }
+};
+
+const closeDeleteModal = () => {
+  showDeleteModal.value = false;
+  childToDelete.value = null;
 };
 
 const getParentName = (parentId) => {

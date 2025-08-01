@@ -13,12 +13,12 @@
         >
           <i class="fas fa-download mr-2"></i>Download Templates
         </button>
-        <button
-          @click="exportAllData"
-          class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+        <router-link
+          to="/admin/data/export"
+          class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors inline-flex items-center"
         >
-          <i class="fas fa-file-export mr-2"></i>Export All Data
-        </button>
+          <i class="fas fa-file-export mr-2"></i>Data Export
+        </router-link>
       </div>
     </div>
 
@@ -61,31 +61,16 @@
       </div>
     </div>
 
-    <!-- CSV Import/Export Section -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <!-- CSV Import -->
-      <div class="bg-white p-6 rounded-lg shadow-sm border">
-        <h3 class="text-lg font-medium text-gray-900 mb-4">
-          <i class="fas fa-upload mr-2 text-blue-600"></i>CSV Import
-        </h3>
+    <!-- CSV Import Section -->
+    <div class="bg-white p-6 rounded-lg shadow-sm border">
+      <h3 class="text-lg font-medium text-gray-900 mb-4">
+        <i class="fas fa-upload mr-2 text-blue-600"></i>CSV Import
+      </h3>
 
-        <CsvImporter
-          @import-success="handleImportSuccess"
-          @import-error="handleImportError"
-        />
-      </div>
-
-      <!-- CSV Export -->
-      <div class="bg-white p-6 rounded-lg shadow-sm border">
-        <h3 class="text-lg font-medium text-gray-900 mb-4">
-          <i class="fas fa-download mr-2 text-green-600"></i>CSV Export
-        </h3>
-
-        <CsvExporter
-          @export-success="handleExportSuccess"
-          @export-error="handleExportError"
-        />
-      </div>
+      <CsvImporter
+        @import-success="handleImportSuccess"
+        @import-error="handleImportError"
+      />
     </div>
 
     <!-- Recent Import History -->
@@ -169,14 +154,14 @@
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                 <button
                   @click="viewImportDetails(item)"
-                  class="text-blue-600 hover:text-blue-900 mr-3"
+                  class="text-blue-600 hover:text-blue-900 mr-3 cursor-pointer"
                 >
                   <i class="fas fa-eye"></i>
                 </button>
                 <button
                   v-if="item.errors && item.errors.length > 0"
                   @click="downloadErrorReport(item)"
-                  class="text-red-600 hover:text-red-900"
+                  class="text-red-600 hover:text-red-900 cursor-pointer"
                 >
                   <i class="fas fa-exclamation-triangle"></i>
                 </button>
@@ -269,7 +254,6 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import CsvImporter from "../../components/data/CsvImporter.vue";
-import CsvExporter from "../../components/data/CsvExporter.vue";
 import * as userApi from "../../services/userApi";
 import * as childUserApi from "../../services/childUserApi";
 import * as eventApi from "../../services/eventApi";
@@ -350,26 +334,6 @@ const handleImportError = (error) => {
   }, 5000);
 };
 
-const handleExportSuccess = (data) => {
-  successMessage.value = `Successfully exported ${data.recordCount} records to ${data.fileName}`;
-  errorMessage.value = "";
-
-  // Clear message after 5 seconds
-  setTimeout(() => {
-    successMessage.value = "";
-  }, 5000);
-};
-
-const handleExportError = (error) => {
-  errorMessage.value = error.message || "Export failed";
-  successMessage.value = "";
-
-  // Clear message after 5 seconds
-  setTimeout(() => {
-    errorMessage.value = "";
-  }, 5000);
-};
-
 const downloadTemplate = (type) => {
   const templates = {
     users: [
@@ -423,22 +387,6 @@ const downloadTemplate = (type) => {
   window.URL.revokeObjectURL(url);
 
   showTemplateModal.value = false;
-};
-
-const exportAllData = async () => {
-  try {
-    // This would trigger a comprehensive export
-    const timestamp = new Date().toISOString().split("T")[0];
-    const filename = `ikidpro_complete_export_${timestamp}.zip`;
-
-    // For now, just show a message
-    successMessage.value = `Export initiated. ${filename} will be downloaded shortly.`;
-
-    // In a real implementation, you would call an API endpoint that generates
-    // a comprehensive export of all data
-  } catch (error) {
-    errorMessage.value = "Failed to export data";
-  }
 };
 
 const viewImportDetails = (item) => {

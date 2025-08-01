@@ -22,7 +22,6 @@ export const useUserStore = defineStore("user", {
         this.token = response.data.data.token;
         sessionStorage.setItem("userToken", this.token);
         this.user = response.data.data.admin;
-        debugger;
       } catch (error) {
         this.error = error.response?.data?.message || "Login failed";
         throw error;

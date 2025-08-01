@@ -170,19 +170,19 @@
               >
                 <button
                   @click="viewUser(user)"
-                  class="text-blue-600 hover:text-blue-900"
+                  class="text-blue-600 hover:text-blue-900 cursor-pointer"
                 >
                   <i class="fas fa-eye"></i>
                 </button>
                 <button
                   @click="editUser(user)"
-                  class="text-indigo-600 hover:text-indigo-900"
+                  class="text-indigo-600 hover:text-indigo-900 cursor-pointer"
                 >
                   <i class="fas fa-edit"></i>
                 </button>
                 <button
                   @click="deleteUser(user)"
-                  class="text-red-600 hover:text-red-900"
+                  class="text-red-600 hover:text-red-900 cursor-pointer"
                   :disabled="user._id === currentUserId"
                 >
                   <i class="fas fa-trash"></i>
@@ -280,6 +280,108 @@
         </div>
       </div>
     </div>
+
+    <!-- User Delete Modal -->
+    <div
+      v-if="showDeleteModal && userToDelete"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+    >
+      <div class="bg-white rounded-lg max-w-md w-full mx-4">
+        <div class="p-6">
+          <div
+            class="flex items-center justify-center w-12 h-12 mx-auto bg-red-100 rounded-full mb-4"
+          >
+            <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+          </div>
+
+          <h3 class="text-lg font-medium text-gray-900 text-center mb-2">
+            Delete User
+          </h3>
+
+          <p class="text-sm text-gray-500 text-center mb-6">
+            Are you sure you want to delete
+            <span class="font-semibold text-gray-900">
+              {{ userToDelete.firstName }} {{ userToDelete.lastName }} </span
+            >? This action cannot be undone and will permanently remove all
+            associated data.
+          </p>
+
+          <div class="bg-gray-50 border border-gray-200 rounded-md p-4 mb-6">
+            <h4 class="text-sm font-medium text-gray-900 mb-3">User Details</h4>
+            <div class="space-y-2 text-sm text-gray-600">
+              <div class="flex justify-between">
+                <span class="font-medium">Name:</span>
+                <span
+                  >{{ userToDelete.firstName }}
+                  {{ userToDelete.lastName }}</span
+                >
+              </div>
+              <div class="flex justify-between">
+                <span class="font-medium">Email:</span>
+                <span>{{ userToDelete.email }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="font-medium">User ID:</span>
+                <span>{{ userToDelete._id }}</span>
+              </div>
+              <div v-if="userToDelete.mobile" class="flex justify-between">
+                <span class="font-medium">Mobile:</span>
+                <span>{{ userToDelete.mobile }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="font-medium">Children:</span>
+                <span>{{ userToDelete.children?.length || 0 }} children</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="font-medium">Joined:</span>
+                <span>{{ formatDate(userToDelete.createdAt) }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="bg-yellow-50 border border-yellow-200 rounded-md p-4 mb-6"
+          >
+            <div class="flex">
+              <i
+                class="fas fa-exclamation-triangle text-yellow-400 mr-3 mt-0.5"
+              ></i>
+              <div>
+                <h4 class="text-sm font-medium text-yellow-800">Warning</h4>
+                <p class="text-sm text-yellow-700 mt-1">
+                  Deleting this user will permanently remove:
+                </p>
+                <ul class="text-sm text-yellow-700 mt-2 list-disc list-inside">
+                  <li>User account and login credentials</li>
+                  <li>All associated children profiles</li>
+                  <li>All sensor data and events for their children</li>
+                  <li>Analytics and reports</li>
+                  <li>Account history and preferences</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex space-x-3">
+            <button
+              @click="closeDeleteModal"
+              class="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Cancel
+            </button>
+            <button
+              @click="confirmDelete"
+              :disabled="deleting"
+              class="flex-1 px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
+            >
+              <i v-if="deleting" class="fas fa-spinner animate-spin mr-2"></i>
+              <i v-else class="fas fa-trash mr-2"></i>
+              {{ deleting ? "Deleting..." : "Delete User" }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -297,6 +399,9 @@ const users = ref([]);
 const loading = ref(false);
 const searchQuery = ref("");
 const selectedUser = ref(null);
+const userToDelete = ref(null);
+const showDeleteModal = ref(false);
+const deleting = ref(false);
 
 // Computed properties
 const currentUserId = computed(() => userStore.user?._id);
@@ -366,25 +471,35 @@ const editUser = (user) => {
   router.push(`/admin/users/edit/${user._id}`);
 };
 
-const deleteUser = async (user) => {
+const deleteUser = (user) => {
   if (user._id === currentUserId.value) {
     alert("You cannot delete your own account");
     return;
   }
 
-  if (
-    confirm(
-      `Are you sure you want to delete ${user.firstName} ${user.lastName}?`
-    )
-  ) {
-    try {
-      await userApi.deleteUser(user._id);
-      users.value = users.value.filter((u) => u._id !== user._id);
-    } catch (error) {
-      console.error("Error deleting user:", error);
-      alert("Error deleting user");
-    }
+  userToDelete.value = user;
+  showDeleteModal.value = true;
+};
+
+const confirmDelete = async () => {
+  if (!userToDelete.value) return;
+
+  try {
+    deleting.value = true;
+    await userApi.deleteUser(userToDelete.value._id);
+    users.value = users.value.filter((u) => u._id !== userToDelete.value._id);
+    closeDeleteModal();
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    alert("Error deleting user");
+  } finally {
+    deleting.value = false;
   }
+};
+
+const closeDeleteModal = () => {
+  showDeleteModal.value = false;
+  userToDelete.value = null;
 };
 
 const formatDate = (dateString) => {

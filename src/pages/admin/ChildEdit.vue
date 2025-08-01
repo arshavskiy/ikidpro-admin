@@ -466,7 +466,6 @@ const updateChild = async () => {
       },
       notes: form.value.notes || undefined,
     };
-    debugger;
 
     // Remove empty emergencyContact if all fields are empty
     if (

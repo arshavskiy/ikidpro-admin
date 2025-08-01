@@ -68,7 +68,7 @@
       <!-- Field Selection -->
       <div class="space-y-3">
         <h4 class="text-sm font-medium text-gray-700">Fields to Export</h4>
-        <div class="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto">
+        <div class="grid grid-cols-4 gap-2 max-h-40 overflow-y-auto">
           <label
             v-for="field in availableFields"
             :key="field.key"
@@ -86,13 +86,13 @@
         <div class="flex space-x-2">
           <button
             @click="selectAllFields"
-            class="text-xs text-blue-600 hover:text-blue-800"
+            class="text-xs text-blue-600 hover:text-blue-800 cursor-pointer"
           >
             Select All
           </button>
           <button
             @click="deselectAllFields"
-            class="text-xs text-gray-600 hover:text-gray-800"
+            class="text-xs text-gray-600 hover:text-gray-800 cursor-pointer"
           >
             Deselect All
           </button>
@@ -101,11 +101,11 @@
 
       <!-- Preview -->
       <div v-if="previewData.length > 0" class="space-y-2">
-        <h4 class="text-sm font-medium text-gray-700">
-          Preview (First 5 records)
-        </h4>
-        <div class="overflow-x-auto border border-gray-200 rounded max-h-48">
-          <table class="min-w-full divide-y divide-gray-200">
+        <h4 class="text-sm font-medium text-gray-700">Preview</h4>
+        <div
+          class="overflow-x-auto border border-gray-200 overflow-y-auto max-h-110"
+        >
+          <table class="min-w-full divide-y divide-gray-200 max-h-110">
             <thead class="bg-gray-50">
               <tr>
                 <th
@@ -119,7 +119,7 @@
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
               <tr
-                v-for="(record, index) in previewData.slice(0, 5)"
+                v-for="(record, index) in previewData"
                 :key="index"
                 class="hover:bg-gray-50"
               >
