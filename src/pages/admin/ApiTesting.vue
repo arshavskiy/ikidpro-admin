@@ -6,6 +6,40 @@
       <p class="text-gray-600">
         Test all available API endpoints directly from the admin panel
       </p>
+
+      <!-- Token Status -->
+      <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <i class="fas fa-key text-blue-600"></i>
+            <span class="text-sm font-medium text-blue-800"
+              >Authentication Status:</span
+            >
+            <span
+              class="text-sm"
+              :class="hasToken ? 'text-green-600' : 'text-red-600'"
+            >
+              {{ hasToken ? "✓ Token Available" : "✗ No Token Found" }}
+            </span>
+          </div>
+          <button
+            @click="refreshTokenStatus"
+            class="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
+          >
+            <i class="fas fa-refresh mr-1"></i>Refresh
+          </button>
+        </div>
+        <div v-if="hasToken" class="mt-2 text-xs text-gray-600">
+          <span class="font-medium">Token Preview:</span>
+          <span class="font-mono bg-gray-100 px-1 rounded">
+            {{ tokenPreview }}
+          </span>
+        </div>
+        <p class="text-xs text-blue-600 mt-1">
+          All requests will automatically include the authentication token if
+          available.
+        </p>
+      </div>
     </div>
 
     <!-- API Categories -->
@@ -184,6 +218,16 @@
 
           <div v-if="response">
             <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Request Headers Sent</label
+            >
+            <pre
+              class="bg-gray-50 p-3 rounded text-xs font-mono overflow-x-auto"
+              >{{ formatJSON(lastRequestHeaders) }}</pre
+            >
+          </div>
+
+          <div v-if="response">
+            <label class="block text-sm font-medium text-gray-700 mb-2"
               >Response Headers</label
             >
             <pre
@@ -215,7 +259,14 @@
       <h3 class="text-lg font-medium text-gray-900 mb-4">
         Sample Request Bodies
       </h3>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div>
+          <h4 class="text-sm font-medium text-gray-700 mb-2">Admin Login</h4>
+          <pre
+            class="bg-gray-50 p-3 rounded text-xs font-mono overflow-x-auto"
+            >{{ samples.adminLogin }}</pre
+          >
+        </div>
         <div>
           <h4 class="text-sm font-medium text-gray-700 mb-2">
             User Registration
@@ -245,8 +296,8 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import axios from "axios";
+import { ref, computed } from "vue";
+import apiClient from "../../services/apiClient";
 
 // Reactive data
 const selectedEndpoint = ref(null);
@@ -255,96 +306,124 @@ const requestBody = ref("");
 const response = ref(null);
 const error = ref("");
 const loading = ref(false);
+const lastRequestHeaders = ref({});
+
+// Computed properties
+const hasToken = computed(() => {
+  return !!sessionStorage.getItem("userToken");
+});
+
+const tokenPreview = computed(() => {
+  const token = sessionStorage.getItem("userToken");
+  if (!token) return "";
+  return token.substring(0, 20) + "..." + token.substring(token.length - 10);
+});
 
 // API endpoint definitions
 const userEndpoints = [
-  { name: "Register User", method: "POST", url: "/api/auth/register" },
-  { name: "Login User", method: "POST", url: "/api/auth/login" },
-  { name: "Get Current User", method: "GET", url: "/api/auth/me" },
-  { name: "Get All Users", method: "GET", url: "/api/users" },
+  { name: "Register User", method: "POST", url: "/auth/register" },
+  { name: "Admin Login", method: "POST", url: "/admin/login" },
+  { name: "Login User", method: "POST", url: "/auth/login" },
+  { name: "Get Current User", method: "GET", url: "/auth/me" },
+  { name: "Get All Users", method: "GET", url: "/users" },
   {
     name: "Get Users by ID",
     method: "GET",
-    url: "/api/user/id/:id",
+    url: "/user/id/:id",
     params: ["id"],
   },
-  { name: "Logout User", method: "POST", url: "/api/auth/logout" },
-  { name: "Refresh Token", method: "POST", url: "/api/auth/refresh" },
+  { name: "Logout User", method: "POST", url: "/auth/logout" },
+  { name: "Refresh Token", method: "POST", url: "/auth/refresh" },
+  {
+    name: "Delete User",
+    method: "DELETE",
+    url: "/users/:id",
+    params: ["id"],
+  },
 ];
 
 const childEndpoints = [
-  { name: "Create Child", method: "POST", url: "/api/child-users" },
-  { name: "Get All Children", method: "GET", url: "/api/child-users" },
+  { name: "Create Child", method: "POST", url: "/child-users" },
+  { name: "Get All Children", method: "GET", url: "/child-users" },
   {
     name: "Get Child by ID",
     method: "GET",
-    url: "/api/child-users/:id",
+    url: "/child-users/:id",
     params: ["id"],
   },
   {
     name: "Update Child",
     method: "PUT",
-    url: "/api/child-users/:id",
+    url: "/child-users/:id",
     params: ["id"],
   },
   {
     name: "Delete Child",
     method: "DELETE",
-    url: "/api/child-users/:id",
+    url: "/child-users/:id",
     params: ["id"],
   },
   {
     name: "Get Children by Parent",
     method: "GET",
-    url: "/api/child-users/parent/:parentId/children",
+    url: "/child-users/parent/:parentId/children",
     params: ["parentId"],
   },
 ];
 
 const eventEndpoints = [
-  { name: "Create Event", method: "POST", url: "/api/event" },
-  { name: "Get All Events", method: "GET", url: "/api/event" },
-  { name: "Get Event Count", method: "GET", url: "/api/event/count" },
-  { name: "Get Collections", method: "GET", url: "/api/event/dbs" },
+  { name: "Create Event", method: "POST", url: "/event" },
+  { name: "Get All Events", method: "GET", url: "/event" },
+  { name: "Get Event Count", method: "GET", url: "/event/count" },
+  { name: "Get Collections", method: "GET", url: "/event/dbs" },
   {
     name: "Get Event by ID",
     method: "GET",
-    url: "/api/event/:id",
+    url: "/event/:id",
     params: ["id"],
   },
   {
     name: "Get Events by Child",
     method: "GET",
-    url: "/api/event/child/:aid",
+    url: "/event/child/:aid",
     params: ["aid"],
   },
   {
     name: "Update Event",
     method: "PUT",
-    url: "/api/event/:id",
+    url: "/event/:id",
     params: ["id"],
   },
   {
     name: "Delete Event",
     method: "DELETE",
-    url: "/api/event/:id",
+    url: "/event/:id",
     params: ["id"],
   },
   {
     name: "Bulk Update Events",
     method: "PUT",
-    url: "/api/event/bulkUpdateByParam",
+    url: "/event/bulkUpdateByParam",
   },
   {
     name: "Update by Child ID",
     method: "PUT",
-    url: "/api/event/update-by-child-id/:aid",
+    url: "/event/update-by-child-id/:aid",
     params: ["aid"],
   },
 ];
 
 // Sample request bodies
 const samples = ref({
+  adminLogin: JSON.stringify(
+    {
+      email: "admin@watchforme.com",
+      password: "adminPassword123",
+    },
+    null,
+    2
+  ),
+
   userRegistration: JSON.stringify(
     {
       firstName: "John",
@@ -370,9 +449,11 @@ const samples = ref({
       limitations: [],
       emergencyContact: {
         name: "Jane Smith",
-        phone: "555-0123",
+        phone: "1234567890",
         relationship: "Mother",
       },
+      parentId: "6883f6ffaec95a456a7ea119",
+      aid: "child123",
     },
     null,
     2
@@ -400,6 +481,7 @@ const samples = ref({
       accuracy_m: 5,
       satellites: 8,
       aid: "child123",
+      parentId: "6883f6ffaec95a456a7ea119",
     },
     null,
     2
@@ -416,7 +498,9 @@ const testEndpoint = (endpoint) => {
 
   // Set sample request body for POST/PUT requests
   if (["POST", "PUT"].includes(endpoint.method)) {
-    if (endpoint.url.includes("/user/register")) {
+    if (endpoint.url.includes("/admin/login")) {
+      requestBody.value = samples.value.adminLogin;
+    } else if (endpoint.url.includes("/auth/register")) {
       requestBody.value = samples.value.userRegistration;
     } else if (endpoint.url.includes("/child-users")) {
       requestBody.value = samples.value.childUser;
@@ -443,6 +527,13 @@ const sendRequest = async () => {
       });
     }
 
+    // Check if token exists and log it
+    const token = sessionStorage.getItem("userToken");
+    console.log("🔑 Token check:", {
+      hasToken: !!token,
+      tokenLength: token?.length,
+    });
+
     // Prepare request config
     const config = {
       method: selectedEndpoint.value.method.toLowerCase(),
@@ -451,6 +542,11 @@ const sendRequest = async () => {
         "Content-Type": "application/json",
       },
     };
+
+    // Manually add Authorization header if token exists (as backup)
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
 
     // Add request body for POST/PUT
     if (
@@ -464,8 +560,18 @@ const sendRequest = async () => {
       }
     }
 
-    // Send request
-    const result = await axios(config);
+    console.log("📤 Sending request with config:", {
+      method: config.method,
+      url: config.url,
+      headers: config.headers,
+      hasData: !!config.data,
+    });
+
+    // Store headers for debugging
+    lastRequestHeaders.value = { ...config.headers };
+
+    // Send request using apiClient (which includes token automatically)
+    const result = await apiClient(config);
     const endTime = Date.now();
 
     response.value = {
@@ -484,7 +590,7 @@ const sendRequest = async () => {
         statusText: err.response.statusText,
         headers: err.response.headers,
         data: err.response.data,
-        duration: endTime - Date.now(),
+        duration: endTime - startTime,
       };
     } else {
       error.value = err.message;
@@ -497,6 +603,15 @@ const sendRequest = async () => {
 const clearResponse = () => {
   response.value = null;
   error.value = "";
+};
+
+const refreshTokenStatus = () => {
+  // Force reactivity update by accessing sessionStorage directly
+  const token = sessionStorage.getItem("userToken");
+  console.log("🔄 Token refresh check:", {
+    hasToken: !!token,
+    length: token?.length,
+  });
 };
 
 const getMethodClass = (method) => {

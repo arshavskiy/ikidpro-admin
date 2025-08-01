@@ -1,9 +1,7 @@
-import axios from "axios";
-
-const API_BASE = "/api";
+import apiClient from "./apiClient";
 
 // Add axios interceptor to include token
-axios.interceptors.request.use((config) => {
+apiClient.interceptors.request.use((config) => {
   const token = sessionStorage.getItem("userToken");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -14,7 +12,7 @@ axios.interceptors.request.use((config) => {
 // Register parent user
 export const registerParent = async (parentData) => {
   try {
-    const response = await axios.post(`${API_BASE}/user/register`, parentData);
+    const response = await apiClient.post("user/register", parentData);
     return response.data;
   } catch (error) {
     throw error;
@@ -24,7 +22,7 @@ export const registerParent = async (parentData) => {
 // Register child user
 export const registerChild = async (childData) => {
   try {
-    const response = await axios.post(`${API_BASE}/child-users`, childData);
+    const response = await apiClient.post("child-users", childData);
     return response.data;
   } catch (error) {
     throw error;
@@ -75,8 +73,8 @@ export const registerParentWithChildren = async ({ parent, children }) => {
 // Get all children for a parent
 export const getChildrenByParent = async (parentId) => {
   try {
-    const response = await axios.get(
-      `${API_BASE}/child-users/parent/${parentId}/children`
+    const response = await apiClient.get(
+      "child-users/parent/${parentId}/children"
     );
     return response.data;
   } catch (error) {
@@ -87,10 +85,7 @@ export const getChildrenByParent = async (parentId) => {
 // Update child information
 export const updateChild = async (childId, childData) => {
   try {
-    const response = await axios.put(
-      `${API_BASE}/child-users/${childId}`,
-      childData
-    );
+    const response = await apiClient.put("child-users/${childId}", childData);
     return response.data;
   } catch (error) {
     throw error;
@@ -100,7 +95,7 @@ export const updateChild = async (childId, childData) => {
 // Delete child
 export const deleteChild = async (childId) => {
   try {
-    const response = await axios.delete(`${API_BASE}/child-users/${childId}`);
+    const response = await apiClient.delete("child-users/${childId}");
     return response.data;
   } catch (error) {
     throw error;

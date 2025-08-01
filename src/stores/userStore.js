@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import axios from "axios";
+import apiClient from "../services/apiClient";
 
 export const useUserStore = defineStore("user", {
   state: () => ({
@@ -18,7 +19,7 @@ export const useUserStore = defineStore("user", {
       this.loading = true;
       this.error = null;
       try {
-        const response = await axios.post("/api/admin/login", credentials);
+        const response = await apiClient.post("/admin/login", credentials);
         this.token = response.data.data.token;
         sessionStorage.setItem("userToken", this.token);
         this.user = response.data.data.admin;
@@ -34,7 +35,7 @@ export const useUserStore = defineStore("user", {
       this.loading = true;
       this.error = null;
       try {
-        const response = await axios.post("/api/auth/register", userData);
+        const response = await apiClient.post("/auth/register", userData);
         this.token = response.data.token;
         if (this.token) {
           sessionStorage.setItem("userToken", this.token);
@@ -53,7 +54,7 @@ export const useUserStore = defineStore("user", {
       if (!this.token) return;
 
       try {
-        const response = await axios.get("/api/auth/me", {
+        const response = await apiClient.get("/auth/me", {
           headers: { Authorization: `Bearer ${this.token}` },
         });
         this.user = response.data.user;
