@@ -1,6 +1,7 @@
 import axios from "axios";
 
 const API_BASE = "/api/event"; // Use relative path for proxy
+const API_STATS = "/api/admin/database-stats"; // Use relative path for proxy
 
 // Set your API token here
 // const API_TOKEN = `$2b$10$6i8D.ydndOqoiiO1hXUTweIEzJycyNnDF/pMCvlck./eByU5QVNOm`;
@@ -20,6 +21,7 @@ axios.interceptors.request.use((config) => {
 export const getAll = () => axios.get(`${API_BASE}/`);
 export const getCount = () => axios.get(`${API_BASE}/count`);
 export const getCollections = () => axios.get(`${API_BASE}/dbs`);
+export const getDBStats = () => axios.get(`${API_STATS}`);
 export const getByChildId = (childId, filter = "") =>
   axios.get(`${API_BASE}/child/${childId}${filter ? `?filter=${filter}` : ""}`);
 export const getById = (id) => axios.get(`${API_BASE}/${id}`);

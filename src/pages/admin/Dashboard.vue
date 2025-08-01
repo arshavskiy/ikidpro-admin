@@ -80,7 +80,7 @@
     <!-- Quick Actions -->
     <div class="bg-white p-6 rounded-lg shadow-sm border">
       <h3 class="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
-      <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+      <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
         <router-link
           to="/admin/users/create"
           class="flex flex-col items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
@@ -105,13 +105,13 @@
           <span class="text-sm font-medium text-green-700">Add Event</span>
         </router-link>
 
-        <router-link
+        <!-- <router-link
           to="/admin/system/database"
           class="flex flex-col items-center p-4 bg-yellow-50 rounded-lg hover:bg-yellow-100 transition-colors"
         >
           <i class="fas fa-database text-yellow-600 text-2xl mb-2"></i>
           <span class="text-sm font-medium text-yellow-700">Database</span>
-        </router-link>
+        </router-link> -->
 
         <router-link
           to="/admin/analytics/events"

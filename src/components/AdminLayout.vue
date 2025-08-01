@@ -244,12 +244,12 @@ const eventRoutes = [
 ];
 
 const systemRoutes = [
-  // {
-  //   name: "DatabaseInfo",
-  //   path: "/admin/system/database",
-  //   label: "Database Info",
-  //   icon: "fas fa-database",
-  // },
+  {
+    name: "DatabaseInfo",
+    path: "/admin/system/database",
+    label: "Database Info",
+    icon: "fas fa-database",
+  },
   {
     name: "ApiTesting",
     path: "/admin/system/api-test",
