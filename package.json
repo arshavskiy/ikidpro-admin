@@ -8,7 +8,8 @@
     "build": "vite build",
     "build:prod": "vite build --mode production",
     "preview": "vite preview",
-    "deploy": "cd ./dist | scp -i ~/.ssh/id_rsa -r . root@watchforme.com:/var/www/ikidpro-admin"
+    "deploy": "scp -i ~/.ssh/id_rsa -r ./dist root@watchforme.com:/var/www/ikidpro-admin",
+    "deploy:page": "scp -i ~/.ssh/id_rsa -r ./ikidpro-land root@watchforme.com:/var/www/"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.11",
