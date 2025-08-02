@@ -189,7 +189,7 @@
           <div
             class="text-cyan-300 text-sm font-medium tracking-wider uppercase"
           >
-            Child Analytics Platform
+            Body metrics Analytics Platform
           </div>
         </div>
 

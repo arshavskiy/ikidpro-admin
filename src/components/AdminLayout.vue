@@ -1,157 +1,174 @@
 <template>
-  <div class="flex h-screen bg-gray-100">
-    <!-- Sidebar -->
-    <div class="w-64 bg-white shadow-lg">
-      <div class="p-4 border-b border-gray-200">
-        <h1 class="text-xl font-bold text-gray-800">IKidPro Admin</h1>
+  <div
+    class="main_screen flex bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900"
+  >
+    <div class="flex flex-1 main_layout">
+      <!-- Sidebar -->
+      <div class="w-64 bg-white shadow-lg">
+        <div class="p-5">
+          <h1 class="text-xl font-bold text-gray-800">IKidPro Admin</h1>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="mt-4">
+          <div class="px-4 py-2">
+            <h2
+              class="text-sm font-semibold text-gray-600 uppercase tracking-wide"
+            >
+              API Management
+            </h2>
+          </div>
+
+          <!-- Analytics & Reports -->
+          <div class="mt-4">
+            <div class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50">
+              <i class="fas fa-analytics mr-2"></i>Analytics
+            </div>
+            <router-link
+              v-for="route in analyticsRoutes"
+              :key="route.name"
+              :to="route.path"
+              class="block px-6 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+              :class="{
+                'bg-blue-100 text-blue-700': $route.path === route.path,
+              }"
+            >
+              <i :class="route.icon + ' mr-2'"></i>{{ route.label }}
+            </router-link>
+          </div>
+
+          <!-- User Management -->
+          <div class="mt-2">
+            <div class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50">
+              <i class="fas fa-users mr-2"></i>User Management
+            </div>
+            <router-link
+              v-for="route in userRoutes"
+              :key="route.name"
+              :to="route.path"
+              class="block px-6 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+              :class="{
+                'bg-blue-100 text-blue-700': $route.path === route.path,
+              }"
+            >
+              <i :class="route.icon + ' mr-2'"></i>{{ route.label }}
+            </router-link>
+          </div>
+
+          <!-- Child User Management -->
+          <div class="mt-4">
+            <div class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50">
+              <i class="fas fa-child mr-2"></i>Child Management
+            </div>
+            <router-link
+              v-for="route in childRoutes"
+              :key="route.name"
+              :to="route.path"
+              class="block px-6 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+              :class="{
+                'bg-blue-100 text-blue-700': $route.path === route.path,
+              }"
+            >
+              <i :class="route.icon + ' mr-2'"></i>{{ route.label }}
+            </router-link>
+          </div>
+
+          <!-- Event Management -->
+          <div class="mt-4">
+            <div class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50">
+              <i class="fas fa-chart-line mr-2"></i>Event Management
+            </div>
+            <router-link
+              v-for="route in eventRoutes"
+              :key="route.name"
+              :to="route.path"
+              class="block px-6 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+              :class="{
+                'bg-blue-100 text-blue-700': $route.path === route.path,
+              }"
+            >
+              <i :class="route.icon + ' mr-2'"></i>{{ route.label }}
+            </router-link>
+          </div>
+
+          <!-- Data Management -->
+          <div class="mt-4">
+            <div class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50">
+              <i class="fas fa-database mr-2"></i>Data Management
+            </div>
+            <router-link
+              v-for="route in dataRoutes"
+              :key="route.name"
+              :to="route.path"
+              class="block px-6 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+              :class="{
+                'bg-blue-100 text-blue-700': $route.path === route.path,
+              }"
+            >
+              <i :class="route.icon + ' mr-2'"></i>{{ route.label }}
+            </router-link>
+          </div>
+
+          <!-- System -->
+          <div class="mt-4">
+            <div class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50">
+              <i class="fas fa-cog mr-2"></i>System
+            </div>
+            <router-link
+              v-for="route in systemRoutes"
+              :key="route.name"
+              :to="route.path"
+              class="block px-6 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+              :class="{
+                'bg-blue-100 text-blue-700': $route.path === route.path,
+              }"
+            >
+              <i :class="route.icon + ' mr-2 '"></i>
+              {{ route.label }}
+            </router-link>
+          </div>
+        </nav>
+
+        <!-- Logout Button -->
+        <div class="top-10 relative left-20">
+          <button
+            @click="logout"
+            class="px-4 py-2 text-sm text-white bg-red-600 rounded hover:bg-red-700 transition-colors"
+          >
+            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+          </button>
+        </div>
       </div>
 
-      <!-- Navigation Menu -->
-      <nav class="mt-4">
-        <div class="px-4 py-2">
-          <h2
-            class="text-sm font-semibold text-gray-600 uppercase tracking-wide"
-          >
-            API Management
-          </h2>
-        </div>
-
-        <!-- Analytics & Reports -->
-        <div class="mt-4">
-          <div class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50">
-            <i class="fas fa-analytics mr-2"></i>Analytics
-          </div>
-          <router-link
-            v-for="route in analyticsRoutes"
-            :key="route.name"
-            :to="route.path"
-            class="block px-6 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-colors"
-            :class="{ 'bg-blue-100 text-blue-700': $route.path === route.path }"
-          >
-            <i :class="route.icon + ' mr-2'"></i>{{ route.label }}
-          </router-link>
-        </div>
-
-        <!-- User Management -->
-        <div class="mt-2">
-          <div class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50">
-            <i class="fas fa-users mr-2"></i>User Management
-          </div>
-          <router-link
-            v-for="route in userRoutes"
-            :key="route.name"
-            :to="route.path"
-            class="block px-6 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-colors"
-            :class="{ 'bg-blue-100 text-blue-700': $route.path === route.path }"
-          >
-            <i :class="route.icon + ' mr-2'"></i>{{ route.label }}
-          </router-link>
-        </div>
-
-        <!-- Child User Management -->
-        <div class="mt-4">
-          <div class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50">
-            <i class="fas fa-child mr-2"></i>Child Management
-          </div>
-          <router-link
-            v-for="route in childRoutes"
-            :key="route.name"
-            :to="route.path"
-            class="block px-6 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-colors"
-            :class="{ 'bg-blue-100 text-blue-700': $route.path === route.path }"
-          >
-            <i :class="route.icon + ' mr-2'"></i>{{ route.label }}
-          </router-link>
-        </div>
-
-        <!-- Event Management -->
-        <div class="mt-4">
-          <div class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50">
-            <i class="fas fa-chart-line mr-2"></i>Event Management
-          </div>
-          <router-link
-            v-for="route in eventRoutes"
-            :key="route.name"
-            :to="route.path"
-            class="block px-6 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-colors"
-            :class="{ 'bg-blue-100 text-blue-700': $route.path === route.path }"
-          >
-            <i :class="route.icon + ' mr-2'"></i>{{ route.label }}
-          </router-link>
-        </div>
-
-        <!-- Data Management -->
-        <div class="mt-4">
-          <div class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50">
-            <i class="fas fa-database mr-2"></i>Data Management
-          </div>
-          <router-link
-            v-for="route in dataRoutes"
-            :key="route.name"
-            :to="route.path"
-            class="block px-6 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-colors"
-            :class="{ 'bg-blue-100 text-blue-700': $route.path === route.path }"
-          >
-            <i :class="route.icon + ' mr-2'"></i>{{ route.label }}
-          </router-link>
-        </div>
-
-        <!-- System -->
-        <div class="mt-4">
-          <div class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50">
-            <i class="fas fa-cog mr-2"></i>System
-          </div>
-          <router-link
-            v-for="route in systemRoutes"
-            :key="route.name"
-            :to="route.path"
-            class="block px-6 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-colors"
-            :class="{ 'bg-blue-100 text-blue-700': $route.path === route.path }"
-          >
-            <i :class="route.icon + ' mr-2'"></i>{{ route.label }}
-          </router-link>
-        </div>
-      </nav>
-
-      <!-- Logout Button -->
-      <div class="top-10 left-20 relative">
-        <button
-          @click="logout"
-          class="px-4 py-2 text-sm text-white bg-red-600 rounded hover:bg-red-700 transition-colors"
-        >
-          <i class="fas fa-sign-out-alt mr-2"></i>Logout
-        </button>
-      </div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="flex-1 flex flex-col overflow-hidden">
-      <!-- Header -->
-      <header class="bg-white shadow-sm border-b border-gray-200">
-        <div class="flex items-center justify-between px-6 py-4">
-          <div>
-            <!-- <h1 class="text-2xl font-semibold text-gray-800">
+      <!-- Main Content -->
+      <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b border-gray-200">
+          <div class="flex items-center justify-between px-6 py-4">
+            <div>
+              <!-- <h1 class="text-2xl font-semibold text-gray-800">
               {{ pageTitle }}
             </h1>
             <p class="text-sm text-gray-600">{{ pageDescription }}</p> -->
-          </div>
-          <div class="flex items-center space-x-4">
-            <span class="text-sm text-gray-600"
-              >Welcome, {{ user?.firstName || "Admin" }}</span
-            >
-            <div
-              class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center"
-            >
-              <i class="fas fa-user text-white text-xs"></i>
+            </div>
+            <div class="flex items-center space-x-4">
+              <span class="text-sm text-gray-600"
+                >Welcome, {{ user?.firstName || "Admin" }}</span
+              >
+              <div
+                class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center"
+              >
+                <i class="fas fa-user text-white text-xs"></i>
+              </div>
             </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      <!-- Page Content -->
-      <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
-        <router-view />
-      </main>
+        <!-- Page Content -->
+        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
+          <router-view />
+        </main>
+      </div>
     </div>
   </div>
 </template>

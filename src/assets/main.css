@@ -9,3 +9,19 @@
   --color-secondary: #9333ea; /* purple-600 */
   --color-accent: #d946ef; /* fuchsia-500 */
 }
+
+.main_layout {
+  max-width: 80vw;
+  margin: 0 auto;
+}
+
+.main_screen {
+  height: 100vh;
+  padding: 60px;
+}
+
+@media screen and (min-width: 1920px) {
+  .main_layout {
+    max-width: 1800px;
+  }
+}
