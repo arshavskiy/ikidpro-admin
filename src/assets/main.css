@@ -11,13 +11,14 @@
 }
 
 .main_layout {
-  max-width: 80vw;
+  max-width: calc(100vw - 20px);
   margin: 0 auto;
 }
 
 .main_screen {
-  height: 100vh;
+  /* height: 100vh; */
   padding: 60px;
+  padding-bottom: 0;
 }
 
 @media screen and (min-width: 1920px) {

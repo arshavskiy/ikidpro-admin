@@ -377,7 +377,7 @@ const fieldDefinitions = {
     { key: "Timestamp", label: "Timestamp", value: "Timestamp" },
     { key: "HeartRate", label: "Heart Rate", value: "HeartRate" },
     { key: "HRV", label: "HRV", value: "HRV" },
-    { key: "TemperatureC", label: "Temperature (°C)", value: "TemperatureC" },
+    { key: "Temperature", label: "Temperature (°C)", value: "Temperature" },
     { key: "SoundLevel", label: "Sound Level (dB)", value: "SoundLevel" },
     { key: "AccelX", label: "Accel X", value: "AccelX" },
     { key: "AccelY", label: "Accel Y", value: "AccelY" },

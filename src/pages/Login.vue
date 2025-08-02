@@ -243,16 +243,6 @@
             ></div>
           </div>
         </div>
-
-        <!-- Access Control Header -->
-        <div class="text-center mb-6">
-          <h2 class="text-2xl font-bold text-white mb-2">
-            Secure Access Portal
-          </h2>
-          <p class="text-slate-400 text-sm">
-            Enter your credentials to access the analytics dashboard
-          </p>
-        </div>
       </div>
       <!-- Futuristic Login Form -->
       <form class="space-y-6" @submit.prevent="handleLogin">
@@ -260,6 +250,9 @@
         <div
           class="bg-slate-800/40 backdrop-blur-xl rounded-2xl p-8 border border-slate-700/50 shadow-2xl"
         >
+          <p class="text-slate-400 text mb-4 text-center">
+            Enter your credentials to access
+          </p>
           <!-- Input Fields -->
           <div class="space-y-6">
             <!-- Email Field -->
