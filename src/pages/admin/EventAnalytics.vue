@@ -415,8 +415,30 @@ const eventTypeOptions = [
   { value: "all", label: "All Events" },
   { value: "HeartRate", label: "Heart Rate" },
   { value: "HRV", label: "Heart Rate Variability" },
+  { value: "AccelX", label: "Accelerometer X" },
+  { value: "AccelY", label: "Accelerometer Y" },
+  { value: "AccelZ", label: "Accelerometer Z" },
+  { value: "GyroX", label: "Gyroscope X" },
+  { value: "GyroY", label: "Gyroscope Y" },
+  { value: "GyroZ", label: "Gyroscope Z" },
+  { value: "EDA", label: "Electrodermal Activity" },
   { value: "Temperature", label: "Temperature" },
   { value: "SoundLevel", label: "Sound Level" },
+  { value: "latitude", label: "GPS Latitude" },
+  { value: "longitude", label: "GPS Longitude" },
+  { value: "altitude", label: "GPS Altitude" },
+  { value: "speed_mps", label: "Speed (m/s)" },
+  { value: "bearing_deg", label: "Bearing (degrees)" },
+  { value: "accuracy_m", label: "GPS Accuracy" },
+  { value: "satellites", label: "Satellites" },
+  { value: "steps", label: "Steps" },
+  { value: "calories", label: "Calories" },
+  { value: "speed", label: "Speed" },
+  { value: "magneticX", label: "Magnetometer X" },
+  { value: "magneticY", label: "Magnetometer Y" },
+  { value: "magneticZ", label: "Magnetometer Z" },
+  { value: "pressure", label: "Pressure" },
+  { value: "light", label: "Light Level" },
   { value: "gps", label: "GPS Location" },
   { value: "motion", label: "Motion/Acceleration" },
 ];
@@ -503,12 +525,58 @@ const loadAnalytics = async () => {
             return event.HeartRate !== null && event.HeartRate !== undefined;
           case "HRV":
             return event.HRV !== null && event.HRV !== undefined;
-          case "Temperature":
+          case "AccelX":
+            return event.AccelX !== null && event.AccelX !== undefined;
+          case "AccelY":
+            return event.AccelY !== null && event.AccelY !== undefined;
+          case "AccelZ":
+            return event.AccelZ !== null && event.AccelZ !== undefined;
+          case "GyroX":
+            return event.GyroX !== null && event.GyroX !== undefined;
+          case "GyroY":
+            return event.GyroY !== null && event.GyroY !== undefined;
+          case "GyroZ":
+            return event.GyroZ !== null && event.GyroZ !== undefined;
+          case "EDA":
+            return event.EDA !== null && event.EDA !== undefined;
+          case "TemperatureC":
             return (
-              event.Temperature !== null && event.Temperature !== undefined
+              event.TemperatureC !== null && event.TemperatureC !== undefined
             );
           case "SoundLevel":
             return event.SoundLevel !== null && event.SoundLevel !== undefined;
+          case "latitude":
+            return event.latitude !== null && event.latitude !== undefined;
+          case "longitude":
+            return event.longitude !== null && event.longitude !== undefined;
+          case "altitude":
+            return event.altitude !== null && event.altitude !== undefined;
+          case "speed_mps":
+            return event.speed_mps !== null && event.speed_mps !== undefined;
+          case "bearing_deg":
+            return (
+              event.bearing_deg !== null && event.bearing_deg !== undefined
+            );
+          case "accuracy_m":
+            return event.accuracy_m !== null && event.accuracy_m !== undefined;
+          case "satellites":
+            return event.satellites !== null && event.satellites !== undefined;
+          case "steps":
+            return event.steps !== null && event.steps !== undefined;
+          case "calories":
+            return event.calories !== null && event.calories !== undefined;
+          case "speed":
+            return event.speed !== null && event.speed !== undefined;
+          case "magneticX":
+            return event.magneticX !== null && event.magneticX !== undefined;
+          case "magneticY":
+            return event.magneticY !== null && event.magneticY !== undefined;
+          case "magneticZ":
+            return event.magneticZ !== null && event.magneticZ !== undefined;
+          case "pressure":
+            return event.pressure !== null && event.pressure !== undefined;
+          case "light":
+            return event.light !== null && event.light !== undefined;
           case "gps":
             return event.latitude && event.longitude;
           case "motion":
@@ -809,13 +877,34 @@ const calculateSensorValues = (events, days) => {
       timestamp: timestamp.toISOString(),
       heartRate: event.HeartRate || null,
       hrv: event.HRV || null,
-      temperature: event.Temperature || null,
-      soundLevel: event.SoundLevel || null,
-      gpsLat: event.latitude || null,
-      gpsLng: event.longitude || null,
       accelX: event.AccelX || null,
       accelY: event.AccelY || null,
       accelZ: event.AccelZ || null,
+      gyroX: event.GyroX || null,
+      gyroY: event.GyroY || null,
+      gyroZ: event.GyroZ || null,
+      eda: event.EDA || null,
+      temperatureC: event.TemperatureC || null,
+      soundLevel: event.SoundLevel || null,
+      latitude: event.latitude || null,
+      longitude: event.longitude || null,
+      altitude: event.altitude || null,
+      speed_mps: event.speed_mps || null,
+      bearing_deg: event.bearing_deg || null,
+      accuracy_m: event.accuracy_m || null,
+      satellites: event.satellites || null,
+      steps: event.steps || null,
+      calories: event.calories || null,
+      speed: event.speed || null,
+      magneticX: event.magneticX || null,
+      magneticY: event.magneticY || null,
+      magneticZ: event.magneticZ || null,
+      pressure: event.pressure || null,
+      light: event.light || null,
+      // Legacy fields for backwards compatibility
+      gpsLat: event.latitude || null,
+      gpsLng: event.longitude || null,
+      temperature: event.TemperatureC || event.Temperature || null,
       // Additional event data
       eventId: event._id || event.id,
       childId: event.aid,
