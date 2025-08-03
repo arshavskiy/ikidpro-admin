@@ -15,7 +15,7 @@
     </div>
 
     <!-- Event Creation Form -->
-    <div class="bg-white p-6 rounded-lg shadow-sm border">
+    <div class="bg-white p-4 rounded-lg shadow-sm border">
       <form @submit.prevent="createEvent" class="space-y-6">
         <!-- Basic Information -->
         <div>

@@ -45,7 +45,7 @@
     <!-- API Categories -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- User APIs -->
-      <div class="bg-white p-6 rounded-lg shadow-sm border">
+      <div class="bg-white p-4 rounded-lg shadow-sm border">
         <div class="flex items-center mb-4">
           <i class="fas fa-users text-blue-600 text-xl mr-3"></i>
           <h3 class="text-lg font-medium text-gray-900">User APIs</h3>
@@ -65,7 +65,7 @@
       </div>
 
       <!-- Child User APIs -->
-      <div class="bg-white p-6 rounded-lg shadow-sm border">
+      <div class="bg-white p-4 rounded-lg shadow-sm border">
         <div class="flex items-center mb-4">
           <i class="fas fa-child text-purple-600 text-xl mr-3"></i>
           <h3 class="text-lg font-medium text-gray-900">Child User APIs</h3>
@@ -85,7 +85,7 @@
       </div>
 
       <!-- Event APIs -->
-      <div class="bg-white p-6 rounded-lg shadow-sm border">
+      <div class="bg-white p-4 rounded-lg shadow-sm border">
         <div class="flex items-center mb-4">
           <i class="fas fa-chart-line text-green-600 text-xl mr-3"></i>
           <h3 class="text-lg font-medium text-gray-900">Event APIs</h3>
@@ -108,7 +108,7 @@
     <!-- API Testing Interface -->
     <div
       v-if="selectedEndpoint"
-      class="bg-white p-6 rounded-lg shadow-sm border"
+      class="bg-white p-4 rounded-lg shadow-sm border"
     >
       <div class="flex justify-between items-center mb-4">
         <h3 class="text-lg font-medium text-gray-900">Test API Endpoint</h3>
@@ -255,7 +255,7 @@
     </div>
 
     <!-- Sample Request Bodies -->
-    <div class="bg-white p-6 rounded-lg shadow-sm border">
+    <div class="bg-white p-4 rounded-lg shadow-sm border">
       <h3 class="text-lg font-medium text-gray-900 mb-4">
         Sample Request Bodies
       </h3>

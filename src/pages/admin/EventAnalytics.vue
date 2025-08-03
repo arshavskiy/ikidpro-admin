@@ -101,7 +101,7 @@
       />
 
       <!-- Sensor Data Distribution -->
-      <div class="bg-white p-6 rounded-lg shadow-sm border">
+      <div class="bg-white p-4 rounded-lg shadow-sm border">
         <h3 class="text-lg font-medium text-gray-900 mb-4">
           Sensor Data Distribution
         </h3>
@@ -167,7 +167,7 @@
       </div>
 
       <!-- Top Active Children -->
-      <div class="bg-white p-6 rounded-lg shadow-sm border">
+      <div class="bg-white p-4 rounded-lg shadow-sm border">
         <div class="flex justify-between items-center mb-4">
           <h3 class="text-lg font-medium text-gray-900">
             Most Active Children
@@ -272,7 +272,7 @@
 
       <!-- Health Alerts & Insights -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="bg-white p-6 rounded-lg shadow-sm border">
+        <div class="bg-white p-4 rounded-lg shadow-sm border">
           <h3 class="text-lg font-medium text-gray-900 mb-4">
             Health Insights
           </h3>
@@ -309,7 +309,7 @@
           </div>
         </div>
 
-        <div class="bg-white p-6 rounded-lg shadow-sm border">
+        <div class="bg-white p-4 rounded-lg shadow-sm border">
           <h3 class="text-lg font-medium text-gray-900 mb-4">
             Recent Activity Patterns
           </h3>

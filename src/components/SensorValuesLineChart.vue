@@ -1,6 +1,6 @@
 <template>
   <!-- Sensor Values Line Chart -->
-  <div class="bg-white p-6 rounded-lg shadow-sm border">
+  <div class="bg-white p-4 rounded-lg shadow-sm border">
     <div class="flex justify-between items-center mb-4">
       <h3 class="text-lg font-medium text-gray-900">Sensor Values Over Time</h3>
       <div class="text-sm text-gray-500">Real-time sensor measurements</div>

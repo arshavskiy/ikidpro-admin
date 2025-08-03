@@ -57,7 +57,7 @@
 
     <!-- Statistics Cards -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-      <div class="bg-white p-6 rounded-lg shadow-sm border">
+      <div class="bg-white p-4 rounded-lg shadow-sm border">
         <div class="flex items-center">
           <div class="p-3 bg-blue-100 rounded-full">
             <i class="fas fa-child text-blue-600"></i>
@@ -69,7 +69,7 @@
         </div>
       </div>
 
-      <div class="bg-white p-6 rounded-lg shadow-sm border">
+      <div class="bg-white p-4 rounded-lg shadow-sm border">
         <div class="flex items-center">
           <div class="p-3 bg-green-100 rounded-full">
             <i class="fas fa-venus-mars text-green-600"></i>
@@ -83,7 +83,7 @@
         </div>
       </div>
 
-      <div class="bg-white p-6 rounded-lg shadow-sm border">
+      <div class="bg-white p-4 rounded-lg shadow-sm border">
         <div class="flex items-center">
           <div class="p-3 bg-yellow-100 rounded-full">
             <i class="fas fa-birthday-cake text-yellow-600"></i>
@@ -97,7 +97,7 @@
         </div>
       </div>
 
-      <div class="bg-white p-6 rounded-lg shadow-sm border">
+      <div class="bg-white p-4 rounded-lg shadow-sm border">
         <div class="flex items-center">
           <div class="p-3 bg-red-100 rounded-full">
             <i class="fas fa-heart text-red-600"></i>

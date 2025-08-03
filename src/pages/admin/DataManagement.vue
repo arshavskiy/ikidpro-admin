@@ -24,7 +24,7 @@
 
     <!-- Quick Stats -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div class="bg-white p-6 rounded-lg shadow-sm border">
+      <div class="bg-white p-4 rounded-lg shadow-sm border">
         <div class="flex items-center">
           <div class="p-3 bg-blue-100 rounded-full">
             <i class="fas fa-users text-blue-600"></i>
@@ -36,7 +36,7 @@
         </div>
       </div>
 
-      <div class="bg-white p-6 rounded-lg shadow-sm border">
+      <div class="bg-white p-4 rounded-lg shadow-sm border">
         <div class="flex items-center">
           <div class="p-3 bg-green-100 rounded-full">
             <i class="fas fa-child text-green-600"></i>
@@ -48,7 +48,7 @@
         </div>
       </div>
 
-      <div class="bg-white p-6 rounded-lg shadow-sm border">
+      <div class="bg-white p-4 rounded-lg shadow-sm border">
         <div class="flex items-center">
           <div class="p-3 bg-purple-100 rounded-full">
             <i class="fas fa-chart-line text-purple-600"></i>
@@ -62,7 +62,7 @@
     </div>
 
     <!-- CSV Import Section -->
-    <div class="bg-white p-6 rounded-lg shadow-sm border">
+    <div class="bg-white p-4 rounded-lg shadow-sm border">
       <h3 class="text-lg font-medium text-gray-900 mb-4">
         <i class="fas fa-upload mr-2 text-blue-600"></i>CSV Import
       </h3>
@@ -74,7 +74,7 @@
     </div>
 
     <!-- Recent Import History -->
-    <div class="bg-white p-6 rounded-lg shadow-sm border">
+    <div class="bg-white p-4 rounded-lg shadow-sm border">
       <h3 class="text-lg font-medium text-gray-900 mb-4">
         <i class="fas fa-history mr-2 text-gray-600"></i>Recent Import History
       </h3>

@@ -17,7 +17,7 @@
     <template v-else>
       <!-- Database Status Cards -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-white p-6 rounded-lg shadow-sm border">
+        <div class="bg-white p-4 rounded-lg shadow-sm border">
           <div class="flex items-center">
             <div class="p-3 bg-green-100 rounded-full">
               <i class="fas fa-database text-green-600"></i>
@@ -38,7 +38,7 @@
           </div>
         </div>
 
-        <!-- <div class="bg-white p-6 rounded-lg shadow-sm border">
+        <!-- <div class="bg-white p-4 rounded-lg shadow-sm border">
           <div class="flex items-center">
             <div class="p-3 bg-blue-100 rounded-full">
               <i class="fas fa-server text-blue-600"></i>
@@ -55,7 +55,7 @@
           </div>
         </div> -->
 
-        <div class="bg-white p-6 rounded-lg shadow-sm border">
+        <div class="bg-white p-4 rounded-lg shadow-sm border">
           <div class="flex items-center">
             <div class="p-3 bg-purple-100 rounded-full">
               <i class="fas fa-hdd text-purple-600"></i>
@@ -69,7 +69,7 @@
           </div>
         </div>
 
-        <div class="bg-white p-6 rounded-lg shadow-sm border">
+        <div class="bg-white p-4 rounded-lg shadow-sm border">
           <div class="flex items-center">
             <div class="p-3 bg-yellow-100 rounded-full">
               <i class="fas fa-clock text-yellow-600"></i>
@@ -87,7 +87,7 @@
       <!-- Summary Statistics -->
       <div
         v-if="dbData?.summary"
-        class="bg-white p-6 rounded-lg shadow-sm border"
+        class="bg-white p-4 rounded-lg shadow-sm border"
       >
         <h3 class="text-lg font-medium text-gray-900 mb-4">Database Summary</h3>
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -241,7 +241,7 @@
       <!-- Performance Metrics -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Database Operations -->
-        <div class="bg-white p-6 rounded-lg shadow-sm border">
+        <div class="bg-white p-4 rounded-lg shadow-sm border">
           <h3 class="text-lg font-medium text-gray-900 mb-4">
             Database Performance
           </h3>
@@ -284,7 +284,7 @@
         </div>
 
         <!-- System Information -->
-        <div class="bg-white p-6 rounded-lg shadow-sm border">
+        <div class="bg-white p-4 rounded-lg shadow-sm border">
           <h3 class="text-lg font-medium text-gray-900 mb-4">
             System Information
           </h3>
@@ -344,7 +344,7 @@
       </div>
 
       <!-- Database Backup Options -->
-      <!-- <div class="bg-white p-6 rounded-lg shadow-sm border">
+      <!-- <div class="bg-white p-4 rounded-lg shadow-sm border">
         <h3 class="text-lg font-medium text-gray-900 mb-4">
           Database Backup & Maintenance
         </h3>

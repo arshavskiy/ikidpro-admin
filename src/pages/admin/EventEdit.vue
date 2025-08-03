@@ -21,7 +21,7 @@
     </div>
 
     <!-- Event Edit Form -->
-    <div v-else-if="form" class="bg-white p-6 rounded-lg shadow-sm border">
+    <div v-else-if="form" class="bg-white p-4 rounded-lg shadow-sm border">
       <form @submit.prevent="updateEvent" class="space-y-6">
         <!-- Basic Information -->
         <div>

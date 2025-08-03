@@ -21,7 +21,7 @@
     </div>
 
     <!-- User Edit Form -->
-    <div v-else-if="user" class="bg-white p-6 rounded-lg shadow-sm border">
+    <div v-else-if="user" class="bg-white p-4 rounded-lg shadow-sm border">
       <form @submit.prevent="updateUser" class="space-y-6">
         <!-- Basic Information -->
         <div>

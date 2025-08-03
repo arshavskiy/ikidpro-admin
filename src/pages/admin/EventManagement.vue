@@ -61,7 +61,7 @@
 
     <!-- Statistics Cards -->
     <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
-      <div class="bg-white p-6 rounded-lg shadow-sm border">
+      <div class="bg-white p-4 rounded-lg shadow-sm border">
         <div class="flex items-center">
           <div class="p-3 bg-blue-100 rounded-full">
             <i class="fas fa-chart-line text-blue-600"></i>
@@ -73,7 +73,7 @@
         </div>
       </div>
 
-      <div class="bg-white p-6 rounded-lg shadow-sm border">
+      <div class="bg-white p-4 rounded-lg shadow-sm border">
         <div class="flex items-center">
           <div class="p-3 bg-red-100 rounded-full">
             <i class="fas fa-heartbeat text-red-600"></i>
@@ -87,7 +87,7 @@
         </div>
       </div>
 
-      <div class="bg-white p-6 rounded-lg shadow-sm border">
+      <div class="bg-white p-4 rounded-lg shadow-sm border">
         <div class="flex items-center">
           <div class="p-3 bg-green-100 rounded-full">
             <i class="fas fa-map-marker-alt text-green-600"></i>
@@ -99,7 +99,7 @@
         </div>
       </div>
 
-      <div class="bg-white p-6 rounded-lg shadow-sm border">
+      <div class="bg-white p-4 rounded-lg shadow-sm border">
         <div class="flex items-center">
           <div class="p-3 bg-yellow-100 rounded-full">
             <i class="fas fa-thermometer-half text-yellow-600"></i>
@@ -113,7 +113,7 @@
         </div>
       </div>
 
-      <div class="bg-white p-6 rounded-lg shadow-sm border">
+      <div class="bg-white p-4 rounded-lg shadow-sm border">
         <div class="flex items-center">
           <div class="p-3 bg-purple-100 rounded-full">
             <i class="fas fa-calendar text-purple-600"></i>

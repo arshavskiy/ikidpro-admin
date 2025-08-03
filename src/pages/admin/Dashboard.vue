@@ -10,7 +10,7 @@
 
     <!-- Key Metrics Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <div class="bg-white p-6 rounded-lg shadow-sm border">
+      <div class="bg-white p-4 rounded-lg shadow-sm border">
         <div class="flex items-center">
           <div class="p-3 bg-blue-100 rounded-full">
             <i class="fas fa-users text-blue-600 text-xl"></i>
@@ -27,7 +27,7 @@
         </div>
       </div>
 
-      <div class="bg-white p-6 rounded-lg shadow-sm border">
+      <div class="bg-white p-4 rounded-lg shadow-sm border">
         <div class="flex items-center">
           <div class="p-3 bg-purple-100 rounded-full">
             <i class="fas fa-child text-purple-600 text-xl"></i>
@@ -44,7 +44,7 @@
         </div>
       </div>
 
-      <div class="bg-white p-6 rounded-lg shadow-sm border">
+      <div class="bg-white p-4 rounded-lg shadow-sm border">
         <div class="flex items-center">
           <div class="p-3 bg-green-100 rounded-full">
             <i class="fas fa-chart-line text-green-600 text-xl"></i>
@@ -61,7 +61,7 @@
         </div>
       </div>
 
-      <div class="bg-white p-6 rounded-lg shadow-sm border">
+      <div class="bg-white p-4 rounded-lg shadow-sm border">
         <div class="flex items-center">
           <div class="p-3 bg-red-100 rounded-full">
             <i class="fas fa-heartbeat text-red-600 text-xl"></i>
@@ -78,7 +78,7 @@
     </div>
 
     <!-- Quick Actions -->
-    <div class="bg-white p-6 rounded-lg shadow-sm border">
+    <div class="bg-white p-4 rounded-lg shadow-sm border">
       <h3 class="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
       <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
         <router-link
@@ -134,7 +134,7 @@
     <!-- Recent Activity and Charts -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <!-- Recent Events -->
-      <div class="bg-white p-6 rounded-lg shadow-sm border">
+      <div class="bg-white p-4 rounded-lg shadow-sm border">
         <div class="flex justify-between items-center mb-4">
           <h3 class="text-lg font-medium text-gray-900">Recent Events</h3>
           <router-link
@@ -176,7 +176,7 @@
       </div>
 
       <!-- System Health -->
-      <div class="bg-white p-6 rounded-lg shadow-sm border">
+      <div class="bg-white p-4 rounded-lg shadow-sm border">
         <h3 class="text-lg font-medium text-gray-900 mb-4">System Health</h3>
         <div class="space-y-4">
           <div class="flex items-center justify-between">
@@ -211,7 +211,7 @@
     </div>
 
     <!-- Activity Timeline -->
-    <div class="bg-white p-6 rounded-lg shadow-sm border">
+    <div class="bg-white p-4 rounded-lg shadow-sm border">
       <h3 class="text-lg font-medium text-gray-900 mb-4">
         Recent Activity Timeline
       </h3>
