@@ -209,7 +209,7 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="text-sm text-gray-900">
-                  {{ getParentName(child.parentId) }}
+                  {{ getParentName(child.parent) }}
                 </div>
                 <div class="text-sm text-gray-500">{{ child.parentId }}</div>
               </td>
@@ -647,7 +647,7 @@ const closeDeleteModal = () => {
 
 const getParentName = (parentId) => {
   // In a real implementation, you would look up the parent's name
-  return "Parent Name";
+  return "Parent";
 };
 
 const formatDate = (dateString) => {
