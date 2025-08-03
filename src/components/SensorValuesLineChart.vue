@@ -7,7 +7,7 @@
     </div>
 
     <!-- Multi-Checkbox Sensor Selection -->
-    <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+    <!-- <div class="mb-6 p-4 bg-gray-50 rounded-lg">
       <h4 class="text-sm font-medium text-gray-700 mb-3">
         Select Sensors to Display:
       </h4>
@@ -47,10 +47,10 @@
           </button>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <!-- ECharts Line Chart for Values -->
-    <div v-if="sensorValues && sensorValues.length > 0" class="h-96">
+    <div v-if="sensorValues && sensorValues.length > 0" class="h-106">
       <v-chart
         :option="sensorValuesChartOption"
         :autoresize="true"
@@ -144,9 +144,16 @@ const selectedSensors = ref([
   "HeartRate",
   "Temperature",
   "SoundLevel",
+  "EDA",
+  "Speed_spm",
+  "HRV",
+  "Accuracy",
   "Steps",
   "Altitude",
   "Light",
+  "Pressure",
+  "Calories",
+  "Bearing",
 ]);
 
 // Methods for sensor selection
