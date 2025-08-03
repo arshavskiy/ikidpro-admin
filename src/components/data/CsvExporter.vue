@@ -238,7 +238,7 @@ const fieldDefinitions = {
     { key: "Timestamp", label: "Timestamp" },
     { key: "HeartRate", label: "Heart Rate" },
     { key: "HRV", label: "HRV" },
-    { key: "TemperatureC", label: "Temperature (°C)" },
+    { key: "Temperature", label: "Temperature (°C)" },
     { key: "SoundLevel", label: "Sound Level (dB)" },
     { key: "AccelX", label: "Accel X" },
     { key: "AccelY", label: "Accel Y" },
@@ -408,7 +408,7 @@ watch(selectedDataType, (newType) => {
     // Select common fields by default
     const commonFields = ["_id", "firstName", "lastName"];
     if (newType === "events") {
-      selectedFields.value = ["aid", "Timestamp", "HeartRate", "TemperatureC"];
+      selectedFields.value = ["aid", "Timestamp", "HeartRate", "Temperature"];
     } else {
       selectedFields.value = availableFields.value
         .filter((field) => commonFields.includes(field.key))

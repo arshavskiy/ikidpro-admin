@@ -255,8 +255,8 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="text-sm text-gray-900">
-                  {{ event.TemperatureC || "N/A" }}
-                  <span v-if="event.TemperatureC" class="text-xs text-gray-500"
+                  {{ event.Temperature || "N/A" }}
+                  <span v-if="event.Temperature" class="text-xs text-gray-500"
                     >°C</span
                   >
                 </div>
@@ -414,7 +414,7 @@
                   >Temperature</label
                 >
                 <p class="mt-1 text-sm text-gray-900">
-                  {{ selectedEvent.TemperatureC || "N/A" }}°C
+                  {{ selectedEvent.Temperature || "N/A" }}°C
                 </p>
               </div>
               <div>
@@ -540,11 +540,11 @@
                 <span>{{ eventToDelete.HeartRate }} bpm</span>
               </div>
               <div
-                v-if="eventToDelete.TemperatureC"
+                v-if="eventToDelete.Temperature"
                 class="flex justify-between"
               >
                 <span class="font-medium">Temperature:</span>
-                <span>{{ eventToDelete.TemperatureC }}°C</span>
+                <span>{{ eventToDelete.Temperature }}°C</span>
               </div>
               <div
                 v-if="eventToDelete.latitude && eventToDelete.longitude"
@@ -677,7 +677,7 @@ const filteredEvents = computed(() => {
       case "temperature":
         filtered = filtered.filter(
           (event) =>
-            event.TemperatureC !== null && event.TemperatureC !== undefined
+            event.Temperature !== null && event.Temperature !== undefined
         );
         break;
       case "sound":
@@ -702,7 +702,7 @@ const gpsEvents = computed(
   () => events.value.filter((event) => event.latitude && event.longitude).length
 );
 const temperatureEvents = computed(
-  () => events.value.filter((event) => event.TemperatureC).length
+  () => events.value.filter((event) => event.Temperature).length
 );
 const todayEvents = computed(() => {
   const today = new Date().toDateString();

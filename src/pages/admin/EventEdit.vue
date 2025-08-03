@@ -120,7 +120,7 @@
                 Temperature (°C)
               </label>
               <input
-                v-model.number="form.TemperatureC"
+                v-model.number="form.Temperature"
                 type="number"
                 min="30"
                 max="45"

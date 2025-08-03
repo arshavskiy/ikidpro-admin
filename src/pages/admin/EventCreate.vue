@@ -39,7 +39,7 @@
                   :key="child._id"
                   :value="child._id"
                 >
-                  {{ child.firstName }} {{ child.lastName }} ({{ child._id }})
+                  {{ child.firstName }} {{ child.lastName }} ({{ child.aid }})
                 </option>
               </select>
             </div>
@@ -75,6 +75,7 @@
                 type="number"
                 min="40"
                 max="220"
+                step="any"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Enter heart rate"
               />
@@ -88,9 +89,7 @@
               <input
                 v-model.number="form.HRV"
                 type="number"
-                min="0"
-                max="200"
-                step="0.1"
+                step="any"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Enter HRV value"
               />
@@ -99,14 +98,12 @@
             <!-- Temperature -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">
-                Temperature (°C)
+                Temperature
               </label>
               <input
-                v-model.number="form.TemperatureC"
+                v-model.number="form.Temperature"
                 type="number"
-                min="30"
-                max="45"
-                step="0.1"
+                step="any"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Enter temperature"
               />
@@ -120,8 +117,7 @@
               <input
                 v-model.number="form.EDA"
                 type="number"
-                min="0"
-                step="0.01"
+                step="any"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Enter EDA value"
               />
@@ -135,8 +131,7 @@
               <input
                 v-model.number="form.SoundLevel"
                 type="number"
-                min="0"
-                max="150"
+                step="any"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Enter sound level"
               />
@@ -159,7 +154,7 @@
                   <input
                     v-model.number="form.AccelX"
                     type="number"
-                    step="0.001"
+                    step="any"
                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="0.000"
                   />
@@ -169,7 +164,7 @@
                   <input
                     v-model.number="form.AccelY"
                     type="number"
-                    step="0.001"
+                    step="any"
                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="0.000"
                   />
@@ -179,7 +174,7 @@
                   <input
                     v-model.number="form.AccelZ"
                     type="number"
-                    step="0.001"
+                    step="any"
                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="0.000"
                   />
@@ -198,7 +193,7 @@
                   <input
                     v-model.number="form.GyroX"
                     type="number"
-                    step="0.001"
+                    step="any"
                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="0.000"
                   />
@@ -208,7 +203,7 @@
                   <input
                     v-model.number="form.GyroY"
                     type="number"
-                    step="0.001"
+                    step="any"
                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="0.000"
                   />
@@ -218,7 +213,7 @@
                   <input
                     v-model.number="form.GyroZ"
                     type="number"
-                    step="0.001"
+                    step="any"
                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="0.000"
                   />
@@ -240,9 +235,7 @@
               <input
                 v-model.number="form.latitude"
                 type="number"
-                step="0.000001"
-                min="-90"
-                max="90"
+                step="any"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="e.g., 40.712776"
               />
@@ -256,9 +249,7 @@
               <input
                 v-model.number="form.longitude"
                 type="number"
-                step="0.000001"
-                min="-180"
-                max="180"
+                step="any"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="e.g., -74.005974"
               />
@@ -272,7 +263,7 @@
               <input
                 v-model.number="form.altitude"
                 type="number"
-                step="0.1"
+                step="any"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Enter altitude"
               />
@@ -286,8 +277,7 @@
               <input
                 v-model.number="form.speed_mps"
                 type="number"
-                step="0.1"
-                min="0"
+                step="any"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Enter speed"
               />
@@ -301,9 +291,7 @@
               <input
                 v-model.number="form.bearing_deg"
                 type="number"
-                step="0.1"
-                min="0"
-                max="360"
+                step="any"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Enter bearing"
               />
@@ -316,8 +304,7 @@
               <input
                 v-model.number="form.accuracy_m"
                 type="number"
-                step="0.1"
-                min="0"
+                step="any"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Enter accuracy"
               />
@@ -330,8 +317,6 @@
               <input
                 v-model.number="form.satellites"
                 type="number"
-                min="0"
-                max="50"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Number of satellites"
               />
@@ -445,7 +430,7 @@ const form = ref({
   GyroY: null,
   GyroZ: null,
   EDA: null,
-  TemperatureC: null,
+  Temperature: null,
   SoundLevel: null,
   latitude: null,
   longitude: null,
@@ -491,7 +476,7 @@ const fillSampleData = (type) => {
     case "resting":
       form.value.HeartRate = Math.floor(Math.random() * 20) + 60; // 60-80 BPM
       form.value.HRV = Math.random() * 20 + 30; // 30-50
-      form.value.TemperatureC = Math.random() * 2 + 36.5; // 36.5-38.5°C
+      form.value.Temperature = Math.random() * 2 + 36.5; // 36.5-38.5°C
       form.value.SoundLevel = Math.random() * 20 + 30; // 30-50 dB
       form.value.AccelX = (Math.random() - 0.5) * 0.2; // Small movements
       form.value.AccelY = (Math.random() - 0.5) * 0.2;
@@ -501,7 +486,7 @@ const fillSampleData = (type) => {
     case "active":
       form.value.HeartRate = Math.floor(Math.random() * 40) + 120; // 120-160 BPM
       form.value.HRV = Math.random() * 15 + 15; // 15-30
-      form.value.TemperatureC = Math.random() * 1.5 + 37; // 37-38.5°C
+      form.value.Temperature = Math.random() * 1.5 + 37; // 37-38.5°C
       form.value.SoundLevel = Math.random() * 30 + 50; // 50-80 dB
       form.value.AccelX = (Math.random() - 0.5) * 2; // Larger movements
       form.value.AccelY = (Math.random() - 0.5) * 2;
@@ -510,6 +495,11 @@ const fillSampleData = (type) => {
       form.value.GyroY = (Math.random() - 0.5) * 200;
       form.value.GyroZ = (Math.random() - 0.5) * 200;
       form.value.speed_mps = Math.random() * 3 + 1; // 1-4 m/s
+      form.value.EDA = (() => {
+        const raw = 2 + Math.random() * 2;
+        const decimalPlaces = Math.floor(Math.random() * 3) + 2; // 2 to 4
+        return parseFloat(raw.toFixed(decimalPlaces));
+      })();
       break;
 
     case "gps":
@@ -528,7 +518,6 @@ const fillSampleData = (type) => {
 const createEvent = async () => {
   error.value = "";
   success.value = "";
-
   loading.value = true;
 
   try {
@@ -548,6 +537,8 @@ const createEvent = async () => {
     if (eventData.Timestamp) {
       eventData.Timestamp = new Date(eventData.Timestamp).toISOString();
     }
+
+    // eventData.parentId = form.value.parentId._id || null;
 
     await eventApi.create(eventData);
     success.value = "Event created successfully!";
@@ -577,7 +568,7 @@ const resetForm = () => {
     GyroY: null,
     GyroZ: null,
     EDA: null,
-    TemperatureC: null,
+    Temperature: null,
     SoundLevel: null,
     latitude: null,
     longitude: null,

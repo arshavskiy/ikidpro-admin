@@ -127,17 +127,18 @@
               {{ route.label }}
             </router-link>
           </div>
+
+          <div class="logout-button">
+            <button
+              @click="logout"
+              class="px-4 py-2 text-sm text-white bg-red-600 rounded hover:bg-red-700 transition-colors"
+            >
+              <i class="fas fa-sign-out-alt mr-2"></i>Logout
+            </button>
+          </div>
         </nav>
 
         <!-- Logout Button -->
-        <div class="top-10 relative left-20">
-          <button
-            @click="logout"
-            class="px-4 py-2 text-sm text-white bg-red-600 rounded hover:bg-red-700 transition-colors"
-          >
-            <i class="fas fa-sign-out-alt mr-2"></i>Logout
-          </button>
-        </div>
       </div>
 
       <!-- Main Content -->
@@ -366,6 +367,11 @@ const logout = async () => {
 </script>
 
 <style scoped>
+.logout-button {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
 /* Custom scrollbar for sidebar */
 nav::-webkit-scrollbar {
   width: 4px;

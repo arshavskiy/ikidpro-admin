@@ -163,7 +163,7 @@
             </div>
             <div class="text-right">
               <p class="text-sm text-gray-900">{{ event.HeartRate }} bpm</p>
-              <p class="text-xs text-gray-500">{{ event.TemperatureC }}°C</p>
+              <p class="text-xs text-gray-500">{{ event.Temperature }}°C</p>
             </div>
           </div>
           <div

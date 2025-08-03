@@ -175,7 +175,7 @@ const getYAxisLabel = () => {
       return "BPM";
     case "HRV":
       return "ms";
-    case "TemperatureC":
+    case "Temperature":
       return "°C";
     case "SoundLevel":
       return "dB";
@@ -244,7 +244,7 @@ const getTimelineSeries = () => {
               return item.heartRate || 0;
             case "HRV":
               return item.hrv || 0;
-            case "TemperatureC":
+            case "Temperature":
               return item.temperature || 0;
             case "SoundLevel":
               return item.soundLevel || 0;

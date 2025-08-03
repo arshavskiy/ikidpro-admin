@@ -283,7 +283,7 @@ const getSensorValuesSeries = () => {
               return item.heartRate || null;
             case "HRV":
               return item.hrv || null;
-            case "TemperatureC":
+            case "Temperature":
               return item.temperature || null;
             case "SoundLevel":
               return item.soundLevel || null;

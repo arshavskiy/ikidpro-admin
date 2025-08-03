@@ -471,7 +471,7 @@ const samples = ref({
       GyroY: 0.0,
       GyroZ: 0.05,
       EDA: 2.5,
-      TemperatureC: 36.7,
+      Temperature: 36.7,
       SoundLevel: 45,
       latitude: 40.7128,
       longitude: -74.006,

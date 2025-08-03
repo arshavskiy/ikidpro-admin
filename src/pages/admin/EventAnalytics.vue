@@ -415,7 +415,7 @@ const eventTypeOptions = [
   { value: "all", label: "All Events" },
   { value: "HeartRate", label: "Heart Rate" },
   { value: "HRV", label: "Heart Rate Variability" },
-  { value: "TemperatureC", label: "Temperature" },
+  { value: "Temperature", label: "Temperature" },
   { value: "SoundLevel", label: "Sound Level" },
   { value: "gps", label: "GPS Location" },
   { value: "motion", label: "Motion/Acceleration" },
@@ -503,9 +503,9 @@ const loadAnalytics = async () => {
             return event.HeartRate !== null && event.HeartRate !== undefined;
           case "HRV":
             return event.HRV !== null && event.HRV !== undefined;
-          case "TemperatureC":
+          case "Temperature":
             return (
-              event.TemperatureC !== null && event.TemperatureC !== undefined
+              event.Temperature !== null && event.Temperature !== undefined
             );
           case "SoundLevel":
             return event.SoundLevel !== null && event.SoundLevel !== undefined;
@@ -581,8 +581,8 @@ const calculateAnalytics = (events) => {
   const heartRates = heartRateEvents.map((e) => e.HeartRate);
 
   // Calculate temperature stats
-  const temperatureEvents = events.filter((e) => e.TemperatureC);
-  const temperatures = temperatureEvents.map((e) => e.TemperatureC);
+  const temperatureEvents = events.filter((e) => e.Temperature);
+  const temperatures = temperatureEvents.map((e) => e.Temperature);
 
   // Calculate daily trend
   const dailyTrend = calculateDailyTrend(events, selectedTimeRange.value);
@@ -753,7 +753,7 @@ const calculateEventTimeline = (events, days) => {
 
     // Calculate aggregated data for this time period
     const heartRateEvents = periodEvents.filter((e) => e.HeartRate);
-    const temperatureEvents = periodEvents.filter((e) => e.TemperatureC);
+    const temperatureEvents = periodEvents.filter((e) => e.Temperature);
     const soundEvents = periodEvents.filter((e) => e.SoundLevel);
     const gpsEvents = periodEvents.filter((e) => e.latitude && e.longitude);
     const motionEvents = periodEvents.filter(
@@ -773,7 +773,7 @@ const calculateEventTimeline = (events, days) => {
       temperature:
         temperatureEvents.length > 0
           ? Math.round(
-              (temperatureEvents.reduce((sum, e) => sum + e.TemperatureC, 0) /
+              (temperatureEvents.reduce((sum, e) => sum + e.Temperature, 0) /
                 temperatureEvents.length) *
                 10
             ) / 10
@@ -809,7 +809,7 @@ const calculateSensorValues = (events, days) => {
       timestamp: timestamp.toISOString(),
       heartRate: event.HeartRate || null,
       hrv: event.HRV || null,
-      temperature: event.TemperatureC || null,
+      temperature: event.Temperature || null,
       soundLevel: event.SoundLevel || null,
       gpsLat: event.latitude || null,
       gpsLng: event.longitude || null,

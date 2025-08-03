@@ -361,14 +361,7 @@ const downloadTemplate = (type) => {
       ["Bob", "Smith", "2020-08-22", "male", "parent_user_id", "true"],
     ],
     events: [
-      [
-        "aid",
-        "Timestamp",
-        "HeartRate",
-        "TemperatureC",
-        "latitude",
-        "longitude",
-      ],
+      ["aid", "Timestamp", "HeartRate", "Temperature", "latitude", "longitude"],
       ["child_id", "2024-01-15T10:30:00Z", "85", "36.8", "40.7128", "-74.0060"],
       ["child_id", "2024-01-15T10:35:00Z", "92", "37.0", "40.7130", "-74.0062"],
     ],

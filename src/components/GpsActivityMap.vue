@@ -422,8 +422,8 @@ const updateMapData = () => {
               : ""
           }
           ${
-            startEvent.TemperatureC
-              ? `<p class="text-xs text-gray-600">Temperature: ${startEvent.TemperatureC}°C</p>`
+            startEvent.Temperature
+              ? `<p class="text-xs text-gray-600">Temperature: ${startEvent.Temperature}°C</p>`
               : ""
           }
         </div>
@@ -458,8 +458,8 @@ const updateMapData = () => {
               : ""
           }
           ${
-            endEvent.TemperatureC
-              ? `<p class="text-xs text-gray-600">Temperature: ${endEvent.TemperatureC}°C</p>`
+            endEvent.Temperature
+              ? `<p class="text-xs text-gray-600">Temperature: ${endEvent.Temperature}°C</p>`
               : ""
           }
         </div>
@@ -494,8 +494,8 @@ const updateMapData = () => {
                 : ""
             }
             ${
-              event.TemperatureC
-                ? `<p class="text-xs text-gray-600">Temperature: ${event.TemperatureC}°C</p>`
+              event.Temperature
+                ? `<p class="text-xs text-gray-600">Temperature: ${event.Temperature}°C</p>`
                 : ""
             }
             ${
