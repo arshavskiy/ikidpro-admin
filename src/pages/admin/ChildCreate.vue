@@ -502,7 +502,7 @@ const createChild = async () => {
     await childUserApi.createChildUser(childData);
     success.value = "Child profile created successfully!";
 
-    router.push("/admin/children");
+    // router.push("/admin/children");
 
     // Reset form
     // form.value = {

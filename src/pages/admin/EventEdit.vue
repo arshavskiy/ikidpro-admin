@@ -488,9 +488,9 @@ const updateEvent = async () => {
     success.value = "Event updated successfully!";
 
     // Redirect after success
-    setTimeout(() => {
-      router.push("/admin/events");
-    }, 2000);
+    // setTimeout(() => {
+    //   router.push("/admin/events");
+    // }, 2000);
   } catch (err) {
     console.error("❌ Error updating event:", err);
     error.value = err.response?.data?.error || "Error updating event";

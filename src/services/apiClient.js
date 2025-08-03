@@ -5,6 +5,9 @@ const apiClient = axios.create({
   timeout: 10000,
 });
 
+import { toast } from "vue3-toastify";
+import "vue3-toastify/dist/index.css";
+
 // console.log(import.meta.env.VITE_API_BASE_URL);
 
 // Flag to track if we're currently refreshing the token
@@ -103,6 +106,37 @@ apiClient.interceptors.response.use(
         data: response.data,
       }
     );
+
+    // Show success toast for successful responses
+    const method = response.config.method?.toUpperCase();
+    const url = response.config.url;
+
+    // Only show toast for certain operations to avoid spam
+    if (method === "POST" || method === "PUT" || method === "DELETE") {
+      let successMessage = `${method} request successful`;
+
+      // Customize message based on endpoint
+      if (url.includes("/auth/login")) {
+        successMessage = "✅ Login successful! Welcome back!";
+      } else if (url.includes("/auth/register")) {
+        successMessage = "✅ Registration successful! Account created!";
+      } else if (url.includes("/auth/refresh")) {
+        successMessage = "🔄 Token refreshed successfully!";
+      } else if (method === "POST") {
+        successMessage = "✅ Data created successfully!";
+      } else if (method === "PUT") {
+        successMessage = "✅ Data updated successfully!";
+      } else if (method === "DELETE") {
+        successMessage = "✅ Data deleted successfully!";
+      }
+
+      toast(successMessage, {
+        theme: "auto",
+        type: "success",
+        dangerouslyHTMLString: true,
+      });
+    }
+
     return response;
   },
   async (error) => {
@@ -117,6 +151,37 @@ apiClient.interceptors.response.use(
         message: error.response?.data?.message || error.message,
       }
     );
+
+    // Show error toast for all errors
+    const errorMessage =
+      error.response?.data?.message || error.message || "An error occurred";
+    const status = error.response?.status;
+
+    let toastMessage = `❌ Error: ${errorMessage}`;
+
+    // Customize error message based on status code
+    if (status === 401) {
+      toastMessage = "🔒 Authentication required. Please login again.";
+    } else if (status === 403) {
+      toastMessage = "⛔ Access denied. Insufficient permissions.";
+    } else if (status === 404) {
+      toastMessage = "🔍 Resource not found.";
+    } else if (status === 500) {
+      toastMessage = "🚨 Server error. Please try again later.";
+    } else if (status >= 400 && status < 500) {
+      toastMessage = `⚠️ ${errorMessage}`;
+    } else if (status >= 500) {
+      toastMessage = "🚨 Server error. Please contact support.";
+    }
+
+    // Don't show toast for token refresh errors to avoid spam
+    if (!error.config?.url?.includes("/auth/refresh")) {
+      toast(toastMessage, {
+        theme: "auto",
+        type: "error",
+        dangerouslyHTMLString: true,
+      });
+    }
 
     // Handle token refresh for 401/403 errors
     if (
@@ -152,11 +217,25 @@ apiClient.interceptors.response.use(
           const newToken = await refreshToken();
           processQueue(null, newToken);
 
+          // Show success toast for token refresh
+          toast("🔄 Session renewed successfully!", {
+            theme: "auto",
+            type: "info",
+            dangerouslyHTMLString: true,
+          });
+
           // Retry the original request with new token
           originalRequest.headers.Authorization = `Bearer ${newToken}`;
           return apiClient(originalRequest);
         } catch (refreshError) {
           processQueue(refreshError, null);
+
+          // Show error toast for failed token refresh
+          toast("🔒 Session expired. Please login again.", {
+            theme: "auto",
+            type: "warning",
+            dangerouslyHTMLString: true,
+          });
 
           // If refresh fails, clear tokens and redirect
           sessionStorage.removeItem("userToken");

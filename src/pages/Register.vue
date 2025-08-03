@@ -632,7 +632,7 @@ export default {
         });
 
         // Redirect to kids page
-        router.push("/kids");
+        // router.push("/kids");
       } catch (error) {
         submitError.value =
           error.response?.data?.message ||

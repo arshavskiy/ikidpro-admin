@@ -481,9 +481,9 @@ const updateChild = async () => {
     success.value = "Child profile updated successfully!";
 
     // Redirect after success
-    setTimeout(() => {
-      router.push("/admin/children");
-    }, 2000);
+    // setTimeout(() => {
+    //   router.push("/admin/children");
+    // }, 2000);
   } catch (err) {
     console.error("❌ Error updating child profile:", err);
     error.value = err.response?.data?.error || "Error updating child profile";

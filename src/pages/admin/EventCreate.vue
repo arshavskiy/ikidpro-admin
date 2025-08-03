@@ -544,9 +544,9 @@ const createEvent = async () => {
     success.value = "Event created successfully!";
 
     // Reset form after success
-    setTimeout(() => {
-      router.push("/admin/events");
-    }, 2000);
+    // setTimeout(() => {
+    //   router.push("/admin/events");
+    // }, 2000);
   } catch (err) {
     console.error("❌ Error creating event:", err);
     error.value = err.response?.data?.error || "Error creating event";

@@ -178,7 +178,7 @@ const createUser = async () => {
 
     await userApi.register(userData);
     success.value = "User created successfully!";
-    router.push("/admin/users");
+    // router.push("/admin/users");
 
     // Reset form
     // form.value = {
