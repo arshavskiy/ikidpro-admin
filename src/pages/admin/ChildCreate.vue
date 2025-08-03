@@ -497,33 +497,32 @@ const createChild = async () => {
       delete childData.emergencyContact;
     }
 
+    childData.aid = "CHILD-" + Date.now(); // Assuming parentId is the parent's MongoDB ObjectId
+
     await childUserApi.createChildUser(childData);
     success.value = "Child profile created successfully!";
 
-    // Reset form
-    form.value = {
-      firstName: "",
-      lastName: "",
-      gender: "",
-      dateOfBirth: "",
-      age: null,
-      height: null,
-      weight: null,
-      medicalCondition: [],
-      limitations: [],
-      parentId: "",
-      emergencyContact: {
-        name: "",
-        phone: "",
-        relationship: "",
-      },
-      notes: "",
-    };
+    router.push("/admin/children");
 
-    // Redirect after success
-    setTimeout(() => {
-      router.push("/admin/children");
-    }, 2000);
+    // Reset form
+    // form.value = {
+    //   firstName: "",
+    //   lastName: "",
+    //   gender: "",
+    //   dateOfBirth: "",
+    //   age: null,
+    //   height: null,
+    //   weight: null,
+    //   medicalCondition: [],
+    //   limitations: [],
+    //   parentId: "",
+    //   emergencyContact: {
+    //     name: "",
+    //     phone: "",
+    //     relationship: "",
+    //   },
+    //   notes: "",
+    // };
   } catch (err) {
     error.value = err.response?.data?.error || "Error creating child profile";
   } finally {

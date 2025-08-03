@@ -174,26 +174,23 @@ const createUser = async () => {
       lastName: form.value.lastName,
       email: form.value.email,
       password: form.value.password,
-      mobile: form.value.mobile ? parseInt(form.value.mobile) : undefined,
     };
 
     await userApi.register(userData);
     success.value = "User created successfully!";
+    router.push("/admin/users");
 
     // Reset form
-    form.value = {
-      firstName: "",
-      lastName: "",
-      email: "",
-      mobile: "",
-      password: "",
-      confirmPassword: "",
-    };
+    // form.value = {
+    //   firstName: "",
+    //   lastName: "",
+    //   email: "",
+    //   mobile: "",
+    //   password: "",
+    //   confirmPassword: "",
+    // };
 
     // Redirect after success
-    setTimeout(() => {
-      router.push("/admin/users");
-    }, 2000);
   } catch (err) {
     error.value = err.response?.data?.error || "Error creating user";
   } finally {
