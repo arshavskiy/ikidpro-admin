@@ -9,7 +9,7 @@
         </p>
       </div>
       <div class="flex items-center space-x-2">
-        <select
+        <!-- <select
           v-model="selectedEventType"
           @change="loadAnalytics"
           class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -21,7 +21,7 @@
           >
             {{ option.label }}
           </option>
-        </select>
+        </select> -->
         <select
           v-model="selectedChildId"
           @change="loadAnalytics"
@@ -70,12 +70,6 @@
       <!-- Overview Statistics -->
       <OverviewStatistics :analytics="analytics" />
 
-      <!-- GPS Activity Map -->
-      <GpsActivityMap
-        :gps-events="gpsEventsForMap"
-        :selected-child-id="selectedChildId"
-      />
-
       <!-- Sensor Values Line Chart -->
       <SensorValuesLineChart
         :sensor-values="analytics.sensorValues"
@@ -90,6 +84,12 @@
         :selected-event-type="selectedEventType"
         :selected-time-range="selectedTimeRange"
         :event-type-options="eventTypeOptions"
+      />
+
+      <!-- GPS Activity Map -->
+      <GpsActivityMap
+        :gps-events="gpsEventsForMap"
+        :selected-child-id="selectedChildId"
       />
 
       <!-- Event Data Line Chart -->
@@ -415,8 +415,30 @@ const eventTypeOptions = [
   { value: "all", label: "All Events" },
   { value: "HeartRate", label: "Heart Rate" },
   { value: "HRV", label: "Heart Rate Variability" },
+  { value: "AccelX", label: "Accelerometer X" },
+  { value: "AccelY", label: "Accelerometer Y" },
+  { value: "AccelZ", label: "Accelerometer Z" },
+  { value: "GyroX", label: "Gyroscope X" },
+  { value: "GyroY", label: "Gyroscope Y" },
+  { value: "GyroZ", label: "Gyroscope Z" },
+  { value: "EDA", label: "Electrodermal Activity" },
   { value: "Temperature", label: "Temperature" },
   { value: "SoundLevel", label: "Sound Level" },
+  { value: "latitude", label: "GPS Latitude" },
+  { value: "longitude", label: "GPS Longitude" },
+  { value: "altitude", label: "GPS Altitude" },
+  { value: "speed_mps", label: "Speed (m/s)" },
+  { value: "bearing_deg", label: "Bearing (degrees)" },
+  { value: "accuracy_m", label: "GPS Accuracy" },
+  { value: "satellites", label: "Satellites" },
+  { value: "steps", label: "Steps" },
+  { value: "calories", label: "Calories" },
+  { value: "speed", label: "Speed" },
+  { value: "magneticX", label: "Magnetometer X" },
+  { value: "magneticY", label: "Magnetometer Y" },
+  { value: "magneticZ", label: "Magnetometer Z" },
+  { value: "pressure", label: "Pressure" },
+  { value: "light", label: "Light Level" },
   { value: "gps", label: "GPS Location" },
   { value: "motion", label: "Motion/Acceleration" },
 ];
@@ -452,6 +474,20 @@ const analytics = ref({
     temperature: 0,
     gps: 0,
     sound: 0,
+    motion: 0,
+    eda: 0,
+    hrv: 0,
+    gyro: 0,
+    magnetic: 0,
+    pressure: 0,
+    light: 0,
+    steps: 0,
+    calories: 0,
+    altitude: 0,
+    speed: 0,
+    bearing: 0,
+    accuracy: 0,
+    satellites: 0,
   },
   topActiveChildren: [],
   healthInsights: [],
@@ -503,12 +539,58 @@ const loadAnalytics = async () => {
             return event.HeartRate !== null && event.HeartRate !== undefined;
           case "HRV":
             return event.HRV !== null && event.HRV !== undefined;
-          case "Temperature":
+          case "AccelX":
+            return event.AccelX !== null && event.AccelX !== undefined;
+          case "AccelY":
+            return event.AccelY !== null && event.AccelY !== undefined;
+          case "AccelZ":
+            return event.AccelZ !== null && event.AccelZ !== undefined;
+          case "GyroX":
+            return event.GyroX !== null && event.GyroX !== undefined;
+          case "GyroY":
+            return event.GyroY !== null && event.GyroY !== undefined;
+          case "GyroZ":
+            return event.GyroZ !== null && event.GyroZ !== undefined;
+          case "EDA":
+            return event.EDA !== null && event.EDA !== undefined;
+          case "TemperatureC":
             return (
-              event.Temperature !== null && event.Temperature !== undefined
+              event.TemperatureC !== null && event.TemperatureC !== undefined
             );
           case "SoundLevel":
             return event.SoundLevel !== null && event.SoundLevel !== undefined;
+          case "latitude":
+            return event.latitude !== null && event.latitude !== undefined;
+          case "longitude":
+            return event.longitude !== null && event.longitude !== undefined;
+          case "altitude":
+            return event.altitude !== null && event.altitude !== undefined;
+          case "speed_mps":
+            return event.speed_mps !== null && event.speed_mps !== undefined;
+          case "bearing_deg":
+            return (
+              event.bearing_deg !== null && event.bearing_deg !== undefined
+            );
+          case "accuracy_m":
+            return event.accuracy_m !== null && event.accuracy_m !== undefined;
+          case "satellites":
+            return event.satellites !== null && event.satellites !== undefined;
+          case "steps":
+            return event.steps !== null && event.steps !== undefined;
+          case "calories":
+            return event.calories !== null && event.calories !== undefined;
+          case "speed":
+            return event.speed !== null && event.speed !== undefined;
+          case "magneticX":
+            return event.magneticX !== null && event.magneticX !== undefined;
+          case "magneticY":
+            return event.magneticY !== null && event.magneticY !== undefined;
+          case "magneticZ":
+            return event.magneticZ !== null && event.magneticZ !== undefined;
+          case "pressure":
+            return event.pressure !== null && event.pressure !== undefined;
+          case "light":
+            return event.light !== null && event.light !== undefined;
           case "gps":
             return event.latitude && event.longitude;
           case "motion":
@@ -610,6 +692,21 @@ const calculateAnalytics = (events) => {
   const motionEvents = events.filter(
     (e) => e.AccelX || e.AccelY || e.AccelZ
   ).length;
+  const edaEvents = events.filter((e) => e.EDA).length;
+  const hRVEvents = events.filter((e) => e.HRV).length;
+  const gyroEvents = events.filter((e) => e.GyroX || e.GyroY || e.GyroZ).length;
+  const magneticEvents = events.filter(
+    (e) => e.magneticX || e.magneticY || e.magneticZ
+  ).length;
+  const pressureEvents = events.filter((e) => e.pressure).length;
+  const lightEvents = events.filter((e) => e.light).length;
+  const stepsEvents = events.filter((e) => e.steps).length;
+  const caloriesEvents = events.filter((e) => e.calories).length;
+  const altitudeEvents = events.filter((e) => e.altitude).length;
+  const speedEvents = events.filter((e) => e.speed_mps || e.speed).length;
+  const bearingEvents = events.filter((e) => e.bearing_deg).length;
+  const accuracyEvents = events.filter((e) => e.accuracy_m).length;
+  const satellitesEvents = events.filter((e) => e.satellites).length;
 
   // Calculate top active children
   const childrenActivity = uniqueChildren
@@ -709,6 +806,33 @@ const calculateAnalytics = (events) => {
       gps: totalEvents > 0 ? Math.round((gpsEvents / totalEvents) * 100) : 0,
       sound:
         totalEvents > 0 ? Math.round((soundEvents / totalEvents) * 100) : 0,
+      motion:
+        totalEvents > 0 ? Math.round((motionEvents / totalEvents) * 100) : 0,
+      eda: totalEvents > 0 ? Math.round((edaEvents / totalEvents) * 100) : 0,
+      hrv: totalEvents > 0 ? Math.round((hRVEvents / totalEvents) * 100) : 0,
+      gyro: totalEvents > 0 ? Math.round((gyroEvents / totalEvents) * 100) : 0,
+      magnetic:
+        totalEvents > 0 ? Math.round((magneticEvents / totalEvents) * 100) : 0,
+      pressure:
+        totalEvents > 0 ? Math.round((pressureEvents / totalEvents) * 100) : 0,
+      light:
+        totalEvents > 0 ? Math.round((lightEvents / totalEvents) * 100) : 0,
+      steps:
+        totalEvents > 0 ? Math.round((stepsEvents / totalEvents) * 100) : 0,
+      calories:
+        totalEvents > 0 ? Math.round((caloriesEvents / totalEvents) * 100) : 0,
+      altitude:
+        totalEvents > 0 ? Math.round((altitudeEvents / totalEvents) * 100) : 0,
+      speed:
+        totalEvents > 0 ? Math.round((speedEvents / totalEvents) * 100) : 0,
+      bearing:
+        totalEvents > 0 ? Math.round((bearingEvents / totalEvents) * 100) : 0,
+      accuracy:
+        totalEvents > 0 ? Math.round((accuracyEvents / totalEvents) * 100) : 0,
+      satellites:
+        totalEvents > 0
+          ? Math.round((satellitesEvents / totalEvents) * 100)
+          : 0,
     },
     topActiveChildren: childrenActivity,
     healthInsights,
@@ -809,13 +933,34 @@ const calculateSensorValues = (events, days) => {
       timestamp: timestamp.toISOString(),
       heartRate: event.HeartRate || null,
       hrv: event.HRV || null,
-      temperature: event.Temperature || null,
-      soundLevel: event.SoundLevel || null,
-      gpsLat: event.latitude || null,
-      gpsLng: event.longitude || null,
       accelX: event.AccelX || null,
       accelY: event.AccelY || null,
       accelZ: event.AccelZ || null,
+      gyroX: event.GyroX || null,
+      gyroY: event.GyroY || null,
+      gyroZ: event.GyroZ || null,
+      eda: event.EDA || null,
+      temperatureC: event.TemperatureC || null,
+      soundLevel: event.SoundLevel || null,
+      latitude: event.latitude || null,
+      longitude: event.longitude || null,
+      altitude: event.altitude || null,
+      speed_mps: event.speed_mps || null,
+      bearing_deg: event.bearing_deg || null,
+      accuracy_m: event.accuracy_m || null,
+      satellites: event.satellites || null,
+      steps: event.steps || null,
+      calories: event.calories || null,
+      speed: event.speed || null,
+      magneticX: event.magneticX || null,
+      magneticY: event.magneticY || null,
+      magneticZ: event.magneticZ || null,
+      pressure: event.pressure || null,
+      light: event.light || null,
+      // Legacy fields for backwards compatibility
+      gpsLat: event.latitude || null,
+      gpsLng: event.longitude || null,
+      temperature: event.TemperatureC || event.Temperature || null,
       // Additional event data
       eventId: event._id || event.id,
       childId: event.aid,
@@ -925,7 +1070,26 @@ const getDefaultAnalytics = () => ({
   hourlyDistribution: [],
   eventTimeline: [],
   sensorValues: [],
-  sensorDistribution: { heartRate: 0, temperature: 0, gps: 0, sound: 0 },
+  sensorDistribution: {
+    heartRate: 0,
+    temperature: 0,
+    gps: 0,
+    sound: 0,
+    motion: 0,
+    eda: 0,
+    hrv: 0,
+    gyro: 0,
+    magnetic: 0,
+    pressure: 0,
+    light: 0,
+    steps: 0,
+    calories: 0,
+    altitude: 0,
+    speed: 0,
+    bearing: 0,
+    accuracy: 0,
+    satellites: 0,
+  },
   topActiveChildren: [],
   healthInsights: [],
   trends: { increasedActivity: 0, stableHeartRate: 0, normalTemperature: 0 },

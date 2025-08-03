@@ -407,7 +407,7 @@
 
 <script setup>
 import { ref } from "vue";
-import { useUserStore } from "../stores/userStore";
+import { useUserStore } from "../../stores/userStore";
 import { useRouter, useRoute } from "vue-router";
 
 const userStore = useUserStore();
