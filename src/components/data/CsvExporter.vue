@@ -182,12 +182,16 @@
 </template>
 
 <script setup>
-import { ref, computed, reactive, watch } from "vue";
+import { ref, computed, reactive, watch, onMounted } from "vue";
+import { useRoute } from "vue-router";
 import * as userApi from "../../services/userApi";
 import * as childUserApi from "../../services/childUserApi";
 import * as eventApi from "../../services/eventApi";
 
 const emit = defineEmits(["export-success", "export-error"]);
+
+// Get route instance for query parameters
+const route = useRoute();
 
 // Reactive data
 const selectedDataType = ref("");
@@ -226,8 +230,15 @@ const fieldDefinitions = {
     { key: "firstName", label: "First Name" },
     { key: "lastName", label: "Last Name" },
     { key: "dateOfBirth", label: "Date of Birth" },
+    { key: "age", label: "Age" },
     { key: "gender", label: "Gender" },
+    { key: "height", label: "Height (cm)" },
+    { key: "weight", label: "Weight (kg)" },
     { key: "parentId", label: "Parent ID" },
+    { key: "medicalCondition", label: "Medical Conditions" },
+    { key: "limitations", label: "Physical Limitations" },
+    { key: "emergencyContact", label: "Emergency Contact" },
+    { key: "notes", label: "Additional Notes" },
     { key: "isActive", label: "Active" },
     { key: "createdAt", label: "Created Date" },
     { key: "updatedAt", label: "Updated Date" },
@@ -236,20 +247,41 @@ const fieldDefinitions = {
     { key: "_id", label: "ID" },
     { key: "aid", label: "Child ID" },
     { key: "Timestamp", label: "Timestamp" },
-    { key: "HeartRate", label: "Heart Rate" },
-    { key: "HRV", label: "HRV" },
-    { key: "Temperature", label: "Temperature (°C)" },
-    { key: "SoundLevel", label: "Sound Level (dB)" },
-    { key: "AccelX", label: "Accel X" },
-    { key: "AccelY", label: "Accel Y" },
-    { key: "AccelZ", label: "Accel Z" },
-    { key: "GyroX", label: "Gyro X" },
-    { key: "GyroY", label: "Gyro Y" },
-    { key: "GyroZ", label: "Gyro Z" },
-    { key: "latitude", label: "Latitude" },
-    { key: "longitude", label: "Longitude" },
-    { key: "altitude", label: "Altitude" },
+    // Vital Signs
+    { key: "HeartRate", label: "Heart Rate (BPM)" },
+    { key: "HRV", label: "Heart Rate Variability" },
+    { key: "Temperature", label: "Temperature" },
+    // Motion & Orientation
+    { key: "AccelX", label: "Accelerometer X" },
+    { key: "AccelY", label: "Accelerometer Y" },
+    { key: "AccelZ", label: "Accelerometer Z" },
+    { key: "GyroX", label: "Gyroscope X" },
+    { key: "GyroY", label: "Gyroscope Y" },
+    { key: "GyroZ", label: "Gyroscope Z" },
+    { key: "magneticX", label: "Magnetometer X" },
+    { key: "magneticY", label: "Magnetometer Y" },
+    { key: "magneticZ", label: "Magnetometer Z" },
+    // GPS & Location
+    { key: "latitude", label: "GPS Latitude" },
+    { key: "longitude", label: "GPS Longitude" },
+    { key: "altitude", label: "GPS Altitude" },
     { key: "speed_mps", label: "Speed (m/s)" },
+    { key: "speed", label: "Speed" },
+    { key: "bearing_deg", label: "Bearing (degrees)" },
+    { key: "accuracy_m", label: "GPS Accuracy (m)" },
+    { key: "satellites", label: "GPS Satellites" },
+    // Environmental
+    { key: "SoundLevel", label: "Sound Level (dB)" },
+    { key: "pressure", label: "Atmospheric Pressure" },
+    { key: "light", label: "Light Level" },
+    // Health & Activity
+    { key: "EDA", label: "Electrodermal Activity" },
+    { key: "steps", label: "Step Count" },
+    { key: "calories", label: "Calories Burned" },
+    // Device Information
+    { key: "BatteryLevel", label: "Battery Level (%)" },
+    { key: "SignalStrength", label: "Signal Strength" },
+    { key: "DeviceId", label: "Device ID" },
   ],
 };
 
@@ -276,6 +308,16 @@ const formatFieldValue = (value) => {
   if (value === null || value === undefined) return "";
   if (typeof value === "boolean") return value ? "Yes" : "No";
   if (value instanceof Date) return value.toISOString();
+  if (Array.isArray(value)) return value.join("; ");
+  if (typeof value === "object") {
+    // Handle emergency contact object
+    if (value.name || value.phone || value.relationship) {
+      return `${value.name || ""} - ${value.phone || ""} (${
+        value.relationship || ""
+      })`;
+    }
+    return JSON.stringify(value);
+  }
   return String(value);
 };
 
@@ -406,18 +448,55 @@ const exportData = async () => {
 watch(selectedDataType, (newType) => {
   if (newType) {
     // Select common fields by default
-    const commonFields = ["_id", "firstName", "lastName"];
     if (newType === "events") {
-      selectedFields.value = ["aid", "Timestamp", "HeartRate", "Temperature"];
-    } else {
-      selectedFields.value = availableFields.value
-        .filter((field) => commonFields.includes(field.key))
-        .map((field) => field.key);
+      selectedFields.value = [
+        "aid",
+        "Timestamp",
+        "HeartRate",
+        "Temperature",
+        "latitude",
+        "longitude",
+        "AccelX",
+        "AccelY",
+        "AccelZ",
+        "SoundLevel",
+      ];
+    } else if (newType === "children") {
+      selectedFields.value = [
+        "_id",
+        "firstName",
+        "lastName",
+        "dateOfBirth",
+        "age",
+        "gender",
+        "parentId",
+        "isActive",
+      ];
+    } else if (newType === "users") {
+      selectedFields.value = [
+        "_id",
+        "firstName",
+        "lastName",
+        "email",
+        "role",
+        "isActive",
+      ];
     }
 
     // Clear preview
     previewData.value = [];
     totalRecords.value = 0;
+  }
+});
+
+// Initialize selectedDataType from query parameter
+onMounted(() => {
+  const typeFromQuery = route.query.type;
+  if (
+    typeFromQuery &&
+    ["users", "children", "events"].includes(typeFromQuery)
+  ) {
+    selectedDataType.value = typeFromQuery;
   }
 });
 </script>

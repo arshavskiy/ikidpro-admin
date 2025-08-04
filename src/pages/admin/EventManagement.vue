@@ -800,6 +800,7 @@ const bulkDeleteSelected = async () => {
 const exportEvents = () => {
   // Implement CSV export
   console.log("Export events");
+  router.push("/admin/data/export?type=events");
 };
 
 const previousPage = () => {

@@ -8,7 +8,7 @@ const apiClient = axios.create({
 import { toast } from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
 
-// console.log(import.meta.env.VITE_API_BASE_URL);
+console.log("VITE_API_BASE_URL", import.meta.env.VITE_API_BASE_URL);
 
 // Flag to track if we're currently refreshing the token
 let isRefreshing = false;
