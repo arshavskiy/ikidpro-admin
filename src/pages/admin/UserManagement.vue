@@ -15,14 +15,14 @@
     </div>
 
     <!-- Search and Filters -->
-    <div class="bg-white p-4 rounded-lg shadow-sm border">
+    <Card>
       <div class="flex flex-wrap gap-4 items-center">
         <div class="flex-1 min-w-64">
           <input
             v-model="searchQuery"
             type="text"
             placeholder="Search users by name, email, or mobile..."
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full px-3 py-2border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
         <button
@@ -32,63 +32,41 @@
           <i class="fas fa-refresh mr-2"></i>Refresh
         </button>
       </div>
-    </div>
+    </Card>
 
     <!-- Statistics Cards -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-      <div class="bg-white p-4 rounded-lg shadow-sm border">
-        <div class="flex items-center">
-          <div class="p-3 bg-blue-100 rounded-full">
-            <i class="fas fa-users text-blue-600"></i>
-          </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-500">Total Users</p>
-            <p class="text-2xl font-bold text-gray-900">{{ totalUsers }}</p>
-          </div>
-        </div>
-      </div>
+      <StatisticsCard
+        label="Total Users"
+        :value="totalUsers"
+        icon="fas fa-users"
+        variant="blue"
+      />
 
-      <div class="bg-white p-4 rounded-lg shadow-sm border">
-        <div class="flex items-center">
-          <div class="p-3 bg-green-100 rounded-full">
-            <i class="fas fa-user-check text-green-600"></i>
-          </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-500">Active Users</p>
-            <p class="text-2xl font-bold text-gray-900">{{ activeUsers }}</p>
-          </div>
-        </div>
-      </div>
+      <StatisticsCard
+        label="Active Users"
+        :value="activeUsers"
+        icon="fas fa-user-check"
+        variant="green"
+      />
 
-      <div class="bg-white p-4 rounded-lg shadow-sm border">
-        <div class="flex items-center">
-          <div class="p-3 bg-yellow-100 rounded-full">
-            <i class="fas fa-child text-yellow-600"></i>
-          </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-500">Parents</p>
-            <p class="text-2xl font-bold text-gray-900">{{ parentsCount }}</p>
-          </div>
-        </div>
-      </div>
+      <StatisticsCard
+        label="Parents"
+        :value="parentsCount"
+        icon="fas fa-child"
+        variant="yellow"
+      />
 
-      <div class="bg-white p-4 rounded-lg shadow-sm border">
-        <div class="flex items-center">
-          <div class="p-3 bg-purple-100 rounded-full">
-            <i class="fas fa-calendar text-purple-600"></i>
-          </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-500">New This Month</p>
-            <p class="text-2xl font-bold text-gray-900">
-              {{ newUsersThisMonth }}
-            </p>
-          </div>
-        </div>
-      </div>
+      <StatisticsCard
+        label="New This Month"
+        :value="newUsersThisMonth"
+        icon="fas fa-calendar"
+        variant="purple"
+      />
     </div>
 
     <!-- Users Table -->
-    <div class="bg-white rounded-lg shadow-sm border overflow-hidden max-h-150">
+    <div class="bg-white rounded-lg shadow-smoverflow-hidden max-h-150">
       <div class="px-6 py-4 border-b border-gray-200">
         <h3 class="text-lg font-medium text-gray-900">All Users</h3>
       </div>
@@ -306,7 +284,7 @@
             associated data.
           </p>
 
-          <div class="bg-gray-50 border border-gray-200 rounded-md p-4 mb-6">
+          <div class="bg-gray-50border-gray-200 rounded-md p-4 mb-6">
             <h4 class="text-sm font-medium text-gray-900 mb-3">User Details</h4>
             <div class="space-y-2 text-sm text-gray-600">
               <div class="flex justify-between">
@@ -339,9 +317,7 @@
             </div>
           </div>
 
-          <div
-            class="bg-yellow-50 border border-yellow-200 rounded-md p-4 mb-6"
-          >
+          <div class="bg-yellow-50border-yellow-200 rounded-md p-4 mb-6">
             <div class="flex">
               <i
                 class="fas fa-exclamation-triangle text-yellow-400 mr-3 mt-0.5"
@@ -365,14 +341,14 @@
           <div class="flex space-x-3">
             <button
               @click="closeDeleteModal"
-              class="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              class="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-whiteborder-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               Cancel
             </button>
             <button
               @click="confirmDelete"
               :disabled="deleting"
-              class="flex-1 px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
+              class="flex-1 px-4 py-2 text-sm font-medium text-white bg-red-600border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
             >
               <i v-if="deleting" class="fas fa-spinner animate-spin mr-2"></i>
               <i v-else class="fas fa-trash mr-2"></i>
@@ -390,6 +366,8 @@ import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "../../stores/userStore";
 import * as userApi from "../../services/userApi";
+import Card from "../../components/Card.vue";
+import StatisticsCard from "../../components/StatisticsCard.vue";
 
 const router = useRouter();
 const userStore = useUserStore();

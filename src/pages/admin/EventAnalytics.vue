@@ -372,16 +372,6 @@
 
 <script setup>
 import { ref, onMounted, computed } from "vue";
-import { use } from "echarts/core";
-import { CanvasRenderer } from "echarts/renderers";
-import { BarChart, LineChart } from "echarts/charts";
-import {
-  TitleComponent,
-  TooltipComponent,
-  LegendComponent,
-  GridComponent,
-  DataZoomComponent,
-} from "echarts/components";
 import VChart from "vue-echarts";
 import * as echarts from "echarts";
 import * as eventApi from "../../services/eventApi";
@@ -390,18 +380,6 @@ import EventDataTimeline from "../../components/EventDataTimeline.vue";
 import OverviewStatistics from "../../components/OverviewStatistics.vue";
 import ChartsRow from "../../components/ChartsRow.vue";
 import GpsActivityMap from "../../components/GpsActivityMap.vue";
-
-// Register ECharts components
-use([
-  CanvasRenderer,
-  BarChart,
-  LineChart,
-  TitleComponent,
-  TooltipComponent,
-  LegendComponent,
-  GridComponent,
-  DataZoomComponent,
-]);
 
 // Reactive data
 const loading = ref(false);

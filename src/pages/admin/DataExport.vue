@@ -26,41 +26,26 @@
 
     <!-- Quick Stats -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div class="bg-white p-4 rounded-lg shadow-sm border">
-        <div class="flex items-center">
-          <div class="p-3 bg-blue-100 rounded-full">
-            <i class="fas fa-users text-blue-600"></i>
-          </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-500">Total Users</p>
-            <p class="text-2xl font-bold text-gray-900">{{ stats.users }}</p>
-          </div>
-        </div>
-      </div>
+      <StatisticsCard
+        label="Total Users"
+        :value="stats.users"
+        icon="fas fa-users"
+        variant="blue"
+      />
 
-      <div class="bg-white p-4 rounded-lg shadow-sm border">
-        <div class="flex items-center">
-          <div class="p-3 bg-green-100 rounded-full">
-            <i class="fas fa-child text-green-600"></i>
-          </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-500">Total Children</p>
-            <p class="text-2xl font-bold text-gray-900">{{ stats.children }}</p>
-          </div>
-        </div>
-      </div>
+      <StatisticsCard
+        label="Total Children"
+        :value="stats.children"
+        icon="fas fa-child"
+        variant="green"
+      />
 
-      <div class="bg-white p-4 rounded-lg shadow-sm border">
-        <div class="flex items-center">
-          <div class="p-3 bg-purple-100 rounded-full">
-            <i class="fas fa-chart-line text-purple-600"></i>
-          </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-500">Total Events</p>
-            <p class="text-2xl font-bold text-gray-900">{{ stats.events }}</p>
-          </div>
-        </div>
-      </div>
+      <StatisticsCard
+        label="Total Events"
+        :value="stats.events"
+        icon="fas fa-chart-line"
+        variant="purple"
+      />
     </div>
 
     <!-- CSV Export Section -->
@@ -163,17 +148,11 @@
     </div>
 
     <!-- Success/Error Messages -->
-    <div
-      v-if="successMessage"
-      class="p-3 bg-green-50 border border-green-200 rounded"
-    >
+    <div v-if="successMessage" class="p-3 bg-green-50border-green-200 rounded">
       <p class="text-sm text-green-600">{{ successMessage }}</p>
     </div>
 
-    <div
-      v-if="errorMessage"
-      class="p-3 bg-red-50 border border-red-200 rounded"
-    >
+    <div v-if="errorMessage" class="p-3 bg-red-50border-red-200 rounded">
       <p class="text-sm text-red-600">{{ errorMessage }}</p>
     </div>
   </div>
@@ -182,6 +161,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import CsvExporter from "../../components/data/CsvExporter.vue";
+import StatisticsCard from "../../components/StatisticsCard.vue";
 import * as userApi from "../../services/userApi";
 import * as childUserApi from "../../services/childUserApi";
 import * as eventApi from "../../services/eventApi";

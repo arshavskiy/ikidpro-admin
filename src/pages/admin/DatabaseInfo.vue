@@ -38,50 +38,26 @@
           </div>
         </div>
 
-        <!-- <div class="bg-white p-4 rounded-lg shadow-sm border">
-          <div class="flex items-center">
-            <div class="p-3 bg-blue-100 rounded-full">
-              <i class="fas fa-server text-blue-600"></i>
-            </div>
-            <div class="ml-4">
-              <p class="text-sm font-medium text-gray-500">Database Host</p>
-              <p
-                class="text-lg font-bold text-gray-900 truncate"
-                :title="dbStatus.version"
-              >
-                {{ dbStatus.version }}
-              </p>
-            </div>
-          </div>
-        </div> -->
+        <!-- <StatisticsCard 
+          label="Database Host" 
+          :value="dbStatus.version" 
+          icon="fas fa-server" 
+          variant="blue" 
+        /> -->
 
-        <div class="bg-white p-4 rounded-lg shadow-sm border">
-          <div class="flex items-center">
-            <div class="p-3 bg-purple-100 rounded-full">
-              <i class="fas fa-hdd text-purple-600"></i>
-            </div>
-            <div class="ml-4">
-              <p class="text-sm font-medium text-gray-500">Total Storage</p>
-              <p class="text-xl font-bold text-gray-900">
-                {{ dbStatus.storageUsed }}
-              </p>
-            </div>
-          </div>
-        </div>
+        <StatisticsCard
+          label="Total Storage"
+          :value="dbStatus.storageUsed"
+          icon="fas fa-hdd"
+          variant="purple"
+        />
 
-        <div class="bg-white p-4 rounded-lg shadow-sm border">
-          <div class="flex items-center">
-            <div class="p-3 bg-yellow-100 rounded-full">
-              <i class="fas fa-clock text-yellow-600"></i>
-            </div>
-            <div class="ml-4">
-              <p class="text-sm font-medium text-gray-500">Uptime</p>
-              <p class="text-xl font-bold text-gray-900">
-                {{ dbStatus.uptime }}
-              </p>
-            </div>
-          </div>
-        </div>
+        <StatisticsCard
+          label="Uptime"
+          :value="dbStatus.uptime"
+          icon="fas fa-clock"
+          variant="yellow"
+        />
       </div>
 
       <!-- Summary Statistics -->
@@ -91,37 +67,35 @@
       >
         <h3 class="text-lg font-medium text-gray-900 mb-4">Database Summary</h3>
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div class="text-center">
-            <div class="text-2xl font-bold text-blue-600">
-              {{ dbData.summary.totalDocuments }}
-            </div>
-            <div class="text-sm text-gray-500">Total Documents</div>
-          </div>
-          <div class="text-center">
-            <div class="text-2xl font-bold text-green-600">
-              {{ dbData.database.collections }}
-            </div>
-            <div class="text-sm text-gray-500">Collections</div>
-          </div>
-          <div class="text-center">
-            <div class="text-2xl font-bold text-purple-600">
-              {{ dbData.database.avgObjSize }}
-            </div>
-            <div class="text-sm text-gray-500">Avg Object Size</div>
-          </div>
-          <div class="text-center">
-            <div class="text-2xl font-bold text-orange-600">
-              {{ dbData.database.indexSize }}
-            </div>
-            <div class="text-sm text-gray-500">Index Size</div>
-          </div>
+          <StatisticsCard
+            :value="dbData.summary.totalDocuments"
+            label="Total Documents"
+            icon="fa-file-alt"
+            variant="blue"
+          />
+          <StatisticsCard
+            :value="dbData.database.collections"
+            label="Collections"
+            icon="fa-layer-group"
+            variant="green"
+          />
+          <StatisticsCard
+            :value="dbData.database.avgObjSize"
+            label="Avg Object Size"
+            icon="fa-cube"
+            variant="purple"
+          />
+          <StatisticsCard
+            :value="dbData.database.indexSize"
+            label="Index Size"
+            icon="fa-sitemap"
+            variant="yellow"
+          />
         </div>
       </div>
 
       <!-- Collections Overview -->
-      <div
-        class="bg-white rounded-lg shadow-sm border overflow-hidden max-h-150"
-      >
+      <div class="bg-white rounded-lg shadow-smoverflow-hidden max-h-150">
         <div class="px-6 py-4 border-b border-gray-200">
           <div class="flex justify-between items-center">
             <h3 class="text-lg font-medium text-gray-900">
@@ -554,6 +528,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
+import StatisticsCard from "../../components/StatisticsCard.vue";
 import * as eventApi from "../../services/eventApi";
 
 // Reactive data

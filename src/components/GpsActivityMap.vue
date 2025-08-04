@@ -5,7 +5,7 @@
       <div class="flex items-center space-x-2">
         <select
           v-model="mapViewMode"
-          class="px-3 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          class="px-3 py-1 text-smborder-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="all">All Children</option>
           <option value="individual">Individual Child</option>
@@ -13,7 +13,7 @@
         <select
           v-if="mapViewMode === 'individual'"
           v-model="selectedMapChild"
-          class="px-3 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          class="px-3 py-1 text-smborder-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="">Select Child</option>
           <option
@@ -26,7 +26,7 @@
         </select>
         <button
           @click="toggleHeatmap"
-          class="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
+          class="px-3 py-1 text-smborder-gray-300 rounded-md hover:bg-gray-50"
           :class="{ 'bg-blue-50 border-blue-300 text-blue-700': showHeatmap }"
         >
           <i class="fas fa-fire mr-1"></i>
@@ -88,7 +88,7 @@
       <div
         v-if="mapStats.totalGpsPoints > 0"
         ref="mapContainer"
-        class="w-full h-96 rounded-lg border border-gray-200"
+        class="w-full h-96 rounded-lgborder-gray-200"
         style="min-height: 400px"
       ></div>
 

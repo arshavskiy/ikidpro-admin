@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
   initAnalyticsDemo();
   initIntelligenceDemo();
   initSmoothScrolling();
+  handleWaitlistForm();
 });
 
 // Navigation functionality
@@ -112,22 +113,22 @@ function initAnalyticsDemo() {
   }, 3000);
 
   // Update stats periodically
-  const statsElements = document.querySelectorAll(".text-2xl.font-bold");
-  const statsData = [
-    ["98.2°F", "98.1°F", "98.3°F", "98.0°F"],
-    ["7.5h", "7.8h", "7.2h", "7.6h"],
-  ];
+  // const statsElements = document.querySelectorAll(".text-2xl.font-bold");
+  // const statsData = [
+  //   ["98.2°F", "98.1°F", "98.3°F", "98.0°F"],
+  //   ["7.5h", "7.8h", "7.2h", "7.6h"],
+  // ];
 
-  let statIndex = 0;
-  setInterval(() => {
-    statsElements.forEach((element, index) => {
-      if (statsData[index]) {
-        element.textContent =
-          statsData[index][statIndex % statsData[index].length];
-      }
-    });
-    statIndex++;
-  }, 2000);
+  // let statIndex = 0;
+  // setInterval(() => {
+  //   statsElements.forEach((element, index) => {
+  //     if (statsData[index]) {
+  //       element.textContent =
+  //         statsData[index][statIndex % statsData[index].length];
+  //     }
+  //   });
+  //   statIndex++;
+  // }, 2000);
 }
 
 // Intelligence engine demo
@@ -346,6 +347,117 @@ function handleNewsletterSignup() {
   }
 }
 
+// Waitlist form handling
+function handleWaitlistForm() {
+  const waitlistForm = document.getElementById("waitlist-form");
+  const submitButton = document.getElementById("waitlist-submit");
+  const successMessage = document.getElementById("waitlist-success");
+  const errorMessage = document.getElementById("waitlist-error");
+  const nameInput = document.getElementById("waitlist-name");
+  const emailInput = document.getElementById("waitlist-email");
+
+  if (waitlistForm) {
+    waitlistForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      // Hide previous messages
+      successMessage.classList.add("hidden");
+      errorMessage.classList.add("hidden");
+
+      // Disable submit button and show loading state
+      submitButton.disabled = true;
+      submitButton.innerHTML =
+        '<i class="fas fa-spinner animate-spin mr-2"></i>Joining...';
+
+      try {
+        // Get form data
+        const formData = {
+          name: nameInput.value.trim(),
+          email: emailInput.value.trim(),
+          updates: document.getElementById("updates-checkbox").checked,
+          timestamp: new Date().toISOString(),
+          source: "landing-page",
+        };
+
+        // Validate inputs
+        if (!formData.name || !formData.email) {
+          throw new Error("Please fill in all required fields");
+        }
+
+        // Email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(formData.email)) {
+          throw new Error("Please enter a valid email address");
+        }
+
+        // Simulate API call (replace with actual endpoint)
+        await simulateWaitlistSignup(formData);
+
+        // Show success message
+        successMessage.classList.remove("hidden");
+
+        // Reset form
+        waitlistForm.reset();
+
+        // Track signup (if analytics is implemented)
+        if (typeof gtag !== "undefined") {
+          gtag("event", "waitlist_signup", {
+            event_category: "engagement",
+            event_label: "landing_page",
+          });
+        }
+
+        console.log("Waitlist signup successful:", formData);
+      } catch (error) {
+        console.error("Waitlist signup error:", error);
+        errorMessage.textContent =
+          error.message || "Something went wrong. Please try again.";
+        errorMessage.classList.remove("hidden");
+      } finally {
+        // Re-enable submit button
+        submitButton.disabled = false;
+        submitButton.innerHTML =
+          '<i class="fas fa-paper-plane mr-2"></i>Join Waitlist';
+      }
+    });
+
+    // Real-time validation
+    emailInput.addEventListener("blur", () => {
+      const email = emailInput.value.trim();
+      if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        emailInput.classList.add("border-red-500");
+      } else {
+        emailInput.classList.remove("border-red-500");
+      }
+    });
+
+    nameInput.addEventListener("blur", () => {
+      const name = nameInput.value.trim();
+      if (name && name.length < 2) {
+        nameInput.classList.add("border-red-500");
+      } else {
+        nameInput.classList.remove("border-red-500");
+      }
+    });
+  }
+}
+
+// Simulate waitlist signup (replace with actual API call)
+async function simulateWaitlistSignup(formData) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      // Simulate success/failure
+      if (Math.random() > 0.1) {
+        // 90% success rate
+        resolve({ success: true, id: Date.now() });
+      } else {
+        reject(new Error("Network error. Please try again."));
+      }
+    }, 1500); // Simulate network delay
+  });
+}
+
 // Initialize additional features
 handleContactForm();
 handleNewsletterSignup();
+handleWaitlistForm();

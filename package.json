@@ -20,6 +20,7 @@
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
     "leaflet": "^1.9.4",
+    "naive-ui": "^2.42.0",
     "pinia": "^3.0.3",
     "tailwind": "^2.3.1",
     "tailwindcss": "^4.1.11",
@@ -32,6 +33,7 @@
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.0",
     "cross-env": "^10.0.0",
+    "vfonts": "^0.0.3",
     "vite": "^7.0.4"
   }
 }

@@ -10,71 +10,38 @@
 
     <!-- Key Metrics Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <div class="bg-white p-4 rounded-lg shadow-sm border">
-        <div class="flex items-center">
-          <div class="p-3 bg-blue-100 rounded-full">
-            <i class="fas fa-users text-blue-600 text-xl"></i>
-          </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-500">Total Users</p>
-            <p class="text-3xl font-bold text-gray-900">
-              {{ stats.totalUsers }}
-            </p>
-            <p class="text-sm text-green-600">
-              +{{ stats.newUsersToday }} today
-            </p>
-          </div>
-        </div>
-      </div>
+      <StatisticsCard
+        label="Total Users"
+        :value="stats.totalUsers"
+        icon="fas fa-users"
+        variant="blue"
+        :subtitle="`+${stats.newUsersToday} today`"
+      />
 
-      <div class="bg-white p-4 rounded-lg shadow-sm border">
-        <div class="flex items-center">
-          <div class="p-3 bg-purple-100 rounded-full">
-            <i class="fas fa-child text-purple-600 text-xl"></i>
-          </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-500">Total Children</p>
-            <p class="text-3xl font-bold text-gray-900">
-              {{ stats.totalChildren }}
-            </p>
-            <p class="text-sm text-green-600">
-              +{{ stats.newChildrenToday }} today
-            </p>
-          </div>
-        </div>
-      </div>
+      <StatisticsCard
+        label="Total Children"
+        :value="stats.totalChildren"
+        icon="fas fa-child"
+        variant="purple"
+        :subtitle="`+${stats.newChildrenToday} today`"
+      />
 
-      <div class="bg-white p-4 rounded-lg shadow-sm border">
-        <div class="flex items-center">
-          <div class="p-3 bg-green-100 rounded-full">
-            <i class="fas fa-chart-line text-green-600 text-xl"></i>
-          </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-500">Total Events</p>
-            <p class="text-3xl font-bold text-gray-900">
-              {{ stats.totalEvents.toLocaleString() }}
-            </p>
-            <p class="text-sm text-green-600">
-              +{{ stats.newEventsToday }} today
-            </p>
-          </div>
-        </div>
-      </div>
+      <StatisticsCard
+        label="Total Events"
+        :value="stats.totalEvents.toLocaleString()"
+        icon="fas fa-chart-line"
+        variant="green"
+        :subtitle="`+${stats.newEventsToday} today`"
+      />
 
-      <div class="bg-white p-4 rounded-lg shadow-sm border">
-        <div class="flex items-center">
-          <div class="p-3 bg-red-100 rounded-full">
-            <i class="fas fa-heartbeat text-red-600 text-xl"></i>
-          </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-500">Active Devices</p>
-            <p class="text-3xl font-bold text-gray-900">
-              {{ stats.activeDevices }}
-            </p>
-            <p class="text-sm text-gray-500">Last 24h</p>
-          </div>
-        </div>
-      </div>
+      <StatisticsCard
+        label="Active Devices"
+        :value="stats.activeDevices"
+        icon="fas fa-heartbeat"
+        variant="red"
+        subtitle="Last 24h"
+        subtitle-class="text-sm text-gray-500"
+      />
     </div>
 
     <!-- Quick Actions -->
@@ -251,6 +218,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
+import StatisticsCard from "../../components/StatisticsCard.vue";
 import * as eventApi from "../../services/eventApi";
 import * as userApi from "../../services/userApi";
 import * as childUserApi from "../../services/childUserApi";

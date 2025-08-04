@@ -3,70 +3,46 @@
   <div class="space-y-6">
     <!-- Overview Statistics -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-      <div class="bg-white p-4 rounded-lg shadow-sm border">
-        <div class="flex items-center">
-          <div class="p-3 bg-blue-100 rounded-full">
-            <i class="fas fa-chart-line text-blue-600"></i>
-          </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-500">Total Events</p>
-            <p class="text-2xl font-bold text-gray-900">
-              {{ analytics.totalEvents }}
-            </p>
-            <p class="text-xs text-gray-500">in selected period</p>
-          </div>
-        </div>
-      </div>
+      <StatisticsCard
+        :value="analytics.totalEvents"
+        label="Total Events"
+        icon="fa-chart-line"
+        variant="blue"
+        subtitle="in selected period"
+        subtitle-class="text-xs text-gray-500"
+      />
 
-      <div class="bg-white p-4 rounded-lg shadow-sm border">
-        <div class="flex items-center">
-          <div class="p-3 bg-green-100 rounded-full">
-            <i class="fas fa-users text-green-600"></i>
-          </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-500">Active Children</p>
-            <p class="text-2xl font-bold text-gray-900">
-              {{ analytics.activeChildren }}
-            </p>
-            <p class="text-xs text-gray-500">with recorded data</p>
-          </div>
-        </div>
-      </div>
+      <StatisticsCard
+        :value="analytics.activeChildren"
+        label="Active Children"
+        icon="fa-users"
+        variant="green"
+        subtitle="with recorded data"
+        subtitle-class="text-xs text-gray-500"
+      />
 
-      <div class="bg-white p-4 rounded-lg shadow-sm border">
-        <div class="flex items-center">
-          <div class="p-3 bg-yellow-100 rounded-full">
-            <i class="fas fa-calendar-day text-yellow-600"></i>
-          </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-500">Avg Daily Events</p>
-            <p class="text-2xl font-bold text-gray-900">
-              {{ analytics.avgDailyEvents }}
-            </p>
-            <p class="text-xs text-gray-500">per day</p>
-          </div>
-        </div>
-      </div>
+      <StatisticsCard
+        :value="analytics.avgDailyEvents"
+        label="Avg Daily Events"
+        icon="fa-calendar-day"
+        variant="yellow"
+        subtitle="per day"
+        subtitle-class="text-xs text-gray-500"
+      />
 
-      <div class="bg-white p-4 rounded-lg shadow-sm border">
-        <div class="flex items-center">
-          <div class="p-3 bg-purple-100 rounded-full">
-            <i class="fas fa-clock text-purple-600"></i>
-          </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-500">Peak Hour</p>
-            <p class="text-2xl font-bold text-gray-900">
-              {{ analytics.peakHour }}:00
-            </p>
-            <p class="text-xs text-gray-500">most active time</p>
-          </div>
-        </div>
-      </div>
+      <StatisticsCard
+        :value="`${analytics.peakHour}:00`"
+        label="Peak Hour"
+        icon="fa-clock"
+        variant="purple"
+        subtitle="most active time"
+        subtitle-class="text-xs text-gray-500"
+      />
     </div>
 
     <!-- Health Metrics Overview -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div class="bg-white p-4 rounded-lg shadow-sm border">
+      <Card>
         <h3 class="text-lg font-medium text-gray-900 mb-4">Heart Rate Stats</h3>
         <div class="space-y-3">
           <div class="flex justify-between">
@@ -94,9 +70,9 @@
             }}</span>
           </div>
         </div>
-      </div>
+      </Card>
 
-      <div class="bg-white p-4 rounded-lg shadow-sm border">
+      <Card>
         <h3 class="text-lg font-medium text-gray-900 mb-4">
           Temperature Stats
         </h3>
@@ -126,9 +102,9 @@
             }}</span>
           </div>
         </div>
-      </div>
+      </Card>
 
-      <div class="bg-white p-4 rounded-lg shadow-sm border">
+      <Card>
         <h3 class="text-lg font-medium text-gray-900 mb-4">
           Activity Overview
         </h3>
@@ -158,12 +134,15 @@
             >
           </div>
         </div>
-      </div>
+      </Card>
     </div>
   </div>
 </template>
 
 <script setup>
+import StatisticsCard from "./StatisticsCard.vue";
+import Card from "./Card.vue";
+
 // Props
 const props = defineProps({
   analytics: {

@@ -1,9 +1,23 @@
 <template>
-  <router-view></router-view>
+  <n-config-provider :theme-overrides="themeOverrides">
+    <n-message-provider>
+      <n-dialog-provider>
+        <n-notification-provider>
+          <router-view></router-view>
+        </n-notification-provider>
+      </n-dialog-provider>
+    </n-message-provider>
+  </n-config-provider>
 </template>
 
 <script setup>
-// App level setup
+// App level setup with vfonts configuration
+const themeOverrides = {
+  common: {
+    fontFamily: "Lato, sans-serif",
+    fontFamilyMono: "FiraCode, Monaco, consolas, Courier New, monospace",
+  },
+};
 </script>
 
 <style>
