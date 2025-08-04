@@ -15,7 +15,7 @@
     </div>
 
     <!-- Search and Filters -->
-    <div class="bg-white p-4 rounded-lg shadow-sm border">
+    <n-card>
       <div class="flex flex-wrap gap-4 items-center">
         <div class="flex-1 min-w-64">
           <input
@@ -53,391 +53,309 @@
           <i class="fas fa-refresh mr-2"></i>Refresh
         </button>
       </div>
-    </div>
+    </n-card>
 
     <!-- Statistics Cards -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-      <div class="bg-white p-4 rounded-lg shadow-sm border">
-        <div class="flex items-center">
-          <div class="p-3 bg-blue-100 rounded-full">
-            <i class="fas fa-child text-blue-600"></i>
-          </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-500">Total Children</p>
-            <p class="text-2xl font-bold text-gray-900">{{ totalChildren }}</p>
-          </div>
-        </div>
-      </div>
+      <StatisticsCard
+        label="Total Children"
+        :value="totalChildren"
+        icon="fas fa-child"
+        variant="blue"
+      />
 
-      <div class="bg-white p-4 rounded-lg shadow-sm border">
-        <div class="flex items-center">
-          <div class="p-3 bg-green-100 rounded-full">
-            <i class="fas fa-venus-mars text-green-600"></i>
-          </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-500">Male/Female</p>
-            <p class="text-2xl font-bold text-gray-900">
-              {{ maleCount }}/{{ femaleCount }}
-            </p>
-          </div>
-        </div>
-      </div>
+      <StatisticsCard
+        label="Male/Female"
+        :value="`${maleCount}/${femaleCount}`"
+        icon="fas fa-venus-mars"
+        variant="green"
+      />
 
-      <div class="bg-white p-4 rounded-lg shadow-sm border">
-        <div class="flex items-center">
-          <div class="p-3 bg-yellow-100 rounded-full">
-            <i class="fas fa-birthday-cake text-yellow-600"></i>
-          </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-500">Avg Age</p>
-            <p class="text-2xl font-bold text-gray-900">
-              {{ averageAge }} years
-            </p>
-          </div>
-        </div>
-      </div>
+      <StatisticsCard
+        label="Avg Age"
+        :value="`${averageAge} years`"
+        icon="fas fa-birthday-cake"
+        variant="yellow"
+      />
 
-      <div class="bg-white p-4 rounded-lg shadow-sm border">
-        <div class="flex items-center">
-          <div class="p-3 bg-red-100 rounded-full">
-            <i class="fas fa-heart text-red-600"></i>
-          </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-500">With Conditions</p>
-            <p class="text-2xl font-bold text-gray-900">
-              {{ childrenWithConditions }}
-            </p>
-          </div>
-        </div>
-      </div>
+      <StatisticsCard
+        label="With Conditions"
+        :value="childrenWithConditions"
+        icon="fas fa-heart"
+        variant="red"
+      />
     </div>
 
     <!-- Children Table -->
-    <div
-      v-if="!loading && filteredChildren.length > 0"
-      class="bg-white rounded-lg shadow-sm border overflow-hidden max-h-150"
-    >
-      <div class="px-6 py-4 border-b border-gray-200">
-        <h3 class="text-lg font-medium text-gray-900">All Children</h3>
-      </div>
+    <n-card>
+      <template #header>
+        <div class="flex justify-between items-center">
+          <div class="flex items-center space-x-4">
+            <h3 class="text-lg font-medium text-gray-900">All Children</h3>
+            <div class="flex items-center space-x-2 text-sm text-gray-500">
+              <span>{{ filteredChildren.length }} total</span>
+              <span
+                v-if="checkedRowKeys.length > 0"
+                class="text-blue-600 font-medium"
+              >
+                | {{ checkedRowKeys.length }} selected
+              </span>
+            </div>
+          </div>
+          <div class="flex items-center space-x-2">
+            <!-- Column Visibility Selector -->
+            <n-dropdown :options="columnOptions" @select="handleColumnSelect">
+              <n-button type="default" size="small">
+                <template #icon>
+                  <i class="fas fa-columns"></i>
+                </template>
+                Show Columns ({{ visibleColumns.length }}/{{
+                  availableColumns.length
+                }})
+              </n-button>
+            </n-dropdown>
 
-      <div class="overflow-y-auto max-h-150">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Child Info
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                AID
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Age & Gender
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Physical Info
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Parent
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Medical Info
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr
-              v-for="child in filteredChildren"
-              :key="child._id"
-              class="hover:bg-gray-50"
+            <n-button
+              v-if="checkedRowKeys.length > 0"
+              type="error"
+              size="small"
+              @click="handleBulkDelete"
             >
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex items-center">
-                  <div
-                    class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center"
-                  >
-                    <span class="text-purple-600 font-medium">
-                      {{
-                        (child.firstName?.[0] || "") +
-                        (child.lastName?.[0] || "")
-                      }}
-                    </span>
-                  </div>
-                  <div class="ml-4">
-                    <div class="text-sm font-medium text-gray-900">
-                      {{ child.firstName }} {{ child.lastName }}
-                    </div>
-                    <div class="text-sm text-gray-500">ID: {{ child._id }}</div>
-                  </div>
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">
-                  {{ child.aid || "N/A" }}
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">
-                  {{ child.age || "N/A" }} years old
-                </div>
-                <div class="text-sm text-gray-500">{{ child.gender }}</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">
-                  {{ child.height || "N/A" }}cm / {{ child.weight || "N/A" }}kg
-                </div>
-                <div class="text-sm text-gray-500">
-                  DOB: {{ formatDate(child.dateOfBirth) }}
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">
-                  {{ getParentName(child.parent) }}
-                </div>
-                <div class="text-sm text-gray-500">{{ child.parentId }}</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div
-                  v-if="child.medicalCondition?.length > 0"
-                  class="space-y-1"
-                >
-                  <span
-                    v-for="condition in child.medicalCondition.slice(0, 2)"
-                    :key="condition"
-                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 mr-1"
-                  >
-                    {{ condition }}
-                  </span>
-                  <div
-                    v-if="child.medicalCondition.length > 2"
-                    class="text-xs text-gray-500"
-                  >
-                    +{{ child.medicalCondition.length - 2 }} more
-                  </div>
-                </div>
-                <div v-else class="text-sm text-gray-500">No conditions</div>
-              </td>
-              <td
-                class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2"
-              >
-                <button
-                  @click="viewChild(child)"
-                  class="text-blue-600 hover:text-blue-900 cursor-pointer"
-                >
-                  <i class="fas fa-eye"></i>
-                </button>
-                <button
-                  @click="editChild(child)"
-                  class="text-indigo-600 hover:text-indigo-900 cursor-pointer"
-                >
-                  <i class="fas fa-edit"></i>
-                </button>
-                <button
-                  @click="deleteChild(child)"
-                  class="text-red-600 hover:text-red-900 cursor-pointer"
-                >
-                  <i class="fas fa-trash"></i>
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+              <template #icon>
+                <i class="fas fa-trash"></i>
+              </template>
+              Delete Selected ({{ checkedRowKeys.length }})
+            </n-button>
+            <n-button
+              @click="router.push('/admin/children/create')"
+              type="primary"
+              size="small"
+            >
+              <template #icon>
+                <i class="fas fa-plus"></i>
+              </template>
+              Add Child
+            </n-button>
+          </div>
+        </div>
+      </template>
 
-      <!-- Empty State -->
-      <div
-        v-if="!loading && filteredChildren.length === 0"
-        class="text-center py-12"
-      >
-        <i class="fas fa-child text-gray-400 text-4xl mb-4"></i>
-        <h3 class="text-lg font-medium text-gray-900 mb-2">
-          No children found
-        </h3>
-        <p class="text-gray-500" v-if="children.length === 0">
-          No children are registered in the system yet.
-        </p>
-        <p class="text-gray-500" v-else>
-          No children match your search criteria.
-        </p>
-        <router-link
-          to="/admin/children/create"
-          class="mt-4 inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-        >
-          Add First Child
-        </router-link>
-      </div>
-
-      <!-- Loading State -->
-      <div v-if="loading" class="text-center py-12">
-        <div
-          class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"
-        ></div>
-        <p class="mt-4 text-gray-500">Loading children...</p>
-      </div>
-    </div>
+      <!-- Naive UI Data Table -->
+      <n-data-table
+        :columns="columns"
+        :data="filteredChildren"
+        :loading="loading"
+        :row-key="rowKey"
+        :checked-row-keys="checkedRowKeys"
+        @update:checked-row-keys="handleCheck"
+        :pagination="pagination"
+        @update:page="handlePageChange"
+        @update:page-size="handlePageSizeChange"
+        :bordered="false"
+        striped
+        size="medium"
+        flex-height
+        style="min-height: 600px"
+        :scroll-x="1200"
+      />
+    </n-card>
 
     <!-- Child Detail Modal -->
-    <div
-      v-if="selectedChild"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+    <n-modal
+      v-model:show="showChildModal"
+      preset="card"
+      :style="{ width: '90vw', maxWidth: '1200px' }"
+      title="Child Details"
+      size="huge"
+      :bordered="false"
+      segmented
     >
-      <div
-        class="bg-white rounded-lg max-w-4xl w-full mx-4 max-h-96 overflow-y-auto"
-      >
-        <div class="p-6 border-b border-gray-200">
-          <div class="flex justify-between items-center">
-            <h3 class="text-lg font-medium text-gray-900">Child Details</h3>
-            <button
-              @click="selectedChild = null"
-              class="text-gray-400 hover:text-gray-600"
+      <template #header-extra>
+        <n-button
+          @click="selectedChild = null"
+          quaternary
+          circle
+          type="default"
+        >
+          <template #icon>
+            <i class="fas fa-times"></i>
+          </template>
+        </n-button>
+      </template>
+
+      <div v-if="selectedChild" class="space-y-6">
+        <!-- Child Profile Header -->
+        <n-card title="Profile Overview" :bordered="false">
+          <div class="flex items-center space-x-4">
+            <n-avatar
+              :size="80"
+              round
+              color="#8b5cf6"
+              :style="{ backgroundColor: '#f3e8ff', color: '#8b5cf6' }"
             >
-              <i class="fas fa-times"></i>
-            </button>
-          </div>
-        </div>
-        <div class="p-6">
-          <div class="grid grid-cols-3 gap-6">
-            <!-- Basic Info -->
-            <div class="space-y-4">
-              <h4 class="font-medium text-gray-900">Basic Information</h4>
-              <div>
-                <label class="block text-sm font-medium text-gray-700"
-                  >Full Name</label
-                >
-                <p class="mt-1 text-sm text-gray-900">
-                  {{ selectedChild.firstName }} {{ selectedChild.lastName }}
-                </p>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700"
-                  >Gender</label
-                >
-                <p class="mt-1 text-sm text-gray-900">
-                  {{ selectedChild.gender }}
-                </p>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700"
-                  >Date of Birth</label
-                >
-                <p class="mt-1 text-sm text-gray-900">
-                  {{ formatDate(selectedChild.dateOfBirth) }}
-                </p>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700"
-                  >Age</label
-                >
-                <p class="mt-1 text-sm text-gray-900">
-                  {{ selectedChild.age }} years
-                </p>
+              {{
+                (selectedChild.firstName?.[0] || "") +
+                (selectedChild.lastName?.[0] || "")
+              }}
+            </n-avatar>
+            <div>
+              <h3 class="text-2xl font-bold text-gray-900">
+                {{ selectedChild.firstName }} {{ selectedChild.lastName }}
+              </h3>
+              <div class="flex items-center space-x-4 mt-2">
+                <n-tag type="success" size="medium">
+                  ID: {{ selectedChild._id?.slice(-8) || "N/A" }}
+                </n-tag>
+                <n-tag type="info" size="medium">
+                  AID: {{ selectedChild.aid || "N/A" }}
+                </n-tag>
+                <span class="text-lg text-gray-600">
+                  {{ selectedChild.age || "N/A" }} years old
+                </span>
               </div>
             </div>
+          </div>
+        </n-card>
 
-            <!-- Physical Info -->
-            <div class="space-y-4">
-              <h4 class="font-medium text-gray-900">Physical Information</h4>
-              <div>
-                <label class="block text-sm font-medium text-gray-700"
-                  >Height</label
+        <!-- Information Cards Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Basic Information Card -->
+          <n-card title="Basic Information" :bordered="false">
+            <template #header-extra>
+              <i class="fas fa-user text-blue-600"></i>
+            </template>
+            <n-descriptions :column="1" size="small">
+              <n-descriptions-item label="Full Name">
+                {{ selectedChild.firstName }} {{ selectedChild.lastName }}
+              </n-descriptions-item>
+              <n-descriptions-item label="Gender">
+                <n-tag
+                  :type="
+                    selectedChild.gender === 'Male'
+                      ? 'info'
+                      : selectedChild.gender === 'Female'
+                      ? 'warning'
+                      : 'default'
+                  "
+                  size="small"
                 >
-                <p class="mt-1 text-sm text-gray-900">
-                  {{ selectedChild.height || "Not provided" }} cm
-                </p>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700"
-                  >Weight</label
-                >
-                <p class="mt-1 text-sm text-gray-900">
-                  {{ selectedChild.weight || "Not provided" }} kg
-                </p>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700"
-                  >Emergency Contact</label
-                >
+                  {{ selectedChild.gender || "Unknown" }}
+                </n-tag>
+              </n-descriptions-item>
+              <n-descriptions-item label="Date of Birth">
+                {{ formatDate(selectedChild.dateOfBirth) }}
+              </n-descriptions-item>
+              <n-descriptions-item label="Age">
+                {{ selectedChild.age || "N/A" }} years
+              </n-descriptions-item>
+            </n-descriptions>
+          </n-card>
+
+          <!-- Physical Information Card -->
+          <n-card title="Physical Information" :bordered="false">
+            <template #header-extra>
+              <i class="fas fa-weight text-green-600"></i>
+            </template>
+            <n-descriptions :column="1" size="small">
+              <n-descriptions-item label="Height">
+                {{
+                  selectedChild.height
+                    ? `${selectedChild.height} cm`
+                    : "Not provided"
+                }}
+              </n-descriptions-item>
+              <n-descriptions-item label="Weight">
+                {{
+                  selectedChild.weight
+                    ? `${selectedChild.weight} kg`
+                    : "Not provided"
+                }}
+              </n-descriptions-item>
+              <n-descriptions-item label="Emergency Contact">
                 <div
                   v-if="selectedChild.emergencyContact?.name"
-                  class="mt-1 text-sm text-gray-900"
+                  class="space-y-1"
                 >
-                  <p>{{ selectedChild.emergencyContact.name }}</p>
-                  <p>{{ selectedChild.emergencyContact.phone }}</p>
-                  <p>{{ selectedChild.emergencyContact.relationship }}</p>
+                  <div class="font-medium">
+                    {{ selectedChild.emergencyContact.name }}
+                  </div>
+                  <div class="text-sm text-gray-500">
+                    {{ selectedChild.emergencyContact.phone }}
+                  </div>
+                  <div class="text-sm text-gray-500">
+                    {{ selectedChild.emergencyContact.relationship }}
+                  </div>
                 </div>
-                <p v-else class="mt-1 text-sm text-gray-500">Not provided</p>
-              </div>
-            </div>
+                <span v-else class="text-gray-500">Not provided</span>
+              </n-descriptions-item>
+            </n-descriptions>
+          </n-card>
 
-            <!-- Medical Info -->
-            <div class="space-y-4">
-              <h4 class="font-medium text-gray-900">Medical Information</h4>
-              <div>
-                <label class="block text-sm font-medium text-gray-700"
-                  >Medical Conditions</label
-                >
+          <!-- Medical Information Card -->
+          <n-card title="Medical Information" :bordered="false">
+            <template #header-extra>
+              <i class="fas fa-heartbeat text-red-600"></i>
+            </template>
+            <n-descriptions :column="1" size="small">
+              <n-descriptions-item label="Medical Conditions">
                 <div
                   v-if="selectedChild.medicalCondition?.length > 0"
-                  class="mt-1 space-y-1"
+                  class="space-y-2"
                 >
-                  <span
-                    v-for="condition in selectedChild.medicalCondition"
-                    :key="condition"
-                    class="inline-block px-2 py-1 text-xs bg-red-100 text-red-800 rounded mr-1 mb-1"
-                  >
-                    {{ condition }}
-                  </span>
+                  <n-space size="small">
+                    <n-tag
+                      v-for="condition in selectedChild.medicalCondition"
+                      :key="condition"
+                      type="error"
+                      size="small"
+                    >
+                      {{ condition }}
+                    </n-tag>
+                  </n-space>
                 </div>
-                <p v-else class="mt-1 text-sm text-gray-500">None</p>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700"
-                  >Limitations</label
-                >
+                <span v-else class="text-gray-500">None</span>
+              </n-descriptions-item>
+              <n-descriptions-item label="Limitations">
                 <div
                   v-if="selectedChild.limitations?.length > 0"
-                  class="mt-1 space-y-1"
+                  class="space-y-2"
                 >
-                  <span
-                    v-for="limitation in selectedChild.limitations"
-                    :key="limitation"
-                    class="inline-block px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded mr-1 mb-1"
-                  >
-                    {{ limitation }}
-                  </span>
+                  <n-space size="small">
+                    <n-tag
+                      v-for="limitation in selectedChild.limitations"
+                      :key="limitation"
+                      type="warning"
+                      size="small"
+                    >
+                      {{ limitation }}
+                    </n-tag>
+                  </n-space>
                 </div>
-                <p v-else class="mt-1 text-sm text-gray-500">None</p>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700"
-                  >Notes</label
-                >
-                <p class="mt-1 text-sm text-gray-900">
-                  {{ selectedChild.notes || "No notes" }}
-                </p>
-              </div>
-            </div>
-          </div>
+                <span v-else class="text-gray-500">None</span>
+              </n-descriptions-item>
+              <n-descriptions-item label="Notes">
+                <div class="text-sm">
+                  {{ selectedChild.notes || "No notes available" }}
+                </div>
+              </n-descriptions-item>
+            </n-descriptions>
+          </n-card>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex justify-end space-x-3 pt-4">
+          <n-button @click="editChild(selectedChild)" type="primary">
+            <template #icon>
+              <i class="fas fa-edit"></i>
+            </template>
+            Edit Child
+          </n-button>
+          <n-button @click="selectedChild = null" type="default">
+            Close
+          </n-button>
         </div>
       </div>
-    </div>
+    </n-modal>
 
     <!-- Event Delete Modal -->
     <div
@@ -508,11 +426,28 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, h, watch } from "vue";
 import { useRouter } from "vue-router";
+import { useMessage, useDialog } from "naive-ui";
+import {
+  NButton,
+  NTag,
+  NAvatar,
+  NSpace,
+  NPopconfirm,
+  NCard,
+  NCheckbox,
+  NDropdown,
+  NModal,
+  NDescriptions,
+  NDescriptionsItem,
+} from "naive-ui";
 import * as childUserApi from "../../services/childUserApi";
+import StatisticsCard from "../../components/StatisticsCard.vue";
 
 const router = useRouter();
+const message = useMessage();
+const dialog = useDialog();
 
 // Reactive data
 const children = ref([]);
@@ -523,6 +458,358 @@ const selectedAgeFilter = ref("");
 const selectedChild = ref(null);
 const childToDelete = ref(null);
 const showDeleteModal = ref(false);
+const checkedRowKeys = ref([]);
+
+// Modal visibility
+const showChildModal = computed({
+  get: () => !!selectedChild.value,
+  set: (value) => {
+    if (!value) selectedChild.value = null;
+  },
+});
+
+// Column visibility state
+const visibleColumns = ref([
+  "childInfo",
+  "aid",
+  "ageGender",
+  "physical",
+  "parent",
+  "medical",
+  "actions",
+]);
+
+const availableColumns = [
+  { key: "childInfo", title: "Child Info", default: true },
+  { key: "aid", title: "AID", default: true },
+  { key: "ageGender", title: "Age & Gender", default: true },
+  { key: "physical", title: "Physical Info", default: true },
+  { key: "parent", title: "Parent", default: true },
+  { key: "medical", title: "Medical Info", default: true },
+  { key: "actions", title: "Actions", default: true },
+];
+
+const fieldMappings = {
+  aid: { title: "AID", default: true },
+  age: { title: "Age", default: true, group: "basic" },
+  gender: { title: "Gender", default: true, group: "basic" },
+  dateOfBirth: { title: "Date of Birth", default: false, group: "basic" },
+  height: { title: "Height", default: false, group: "physical" },
+  weight: { title: "Weight", default: false, group: "physical" },
+  firstName: { title: "First Name", default: false, group: "basic" },
+  lastName: { title: "Last Name", default: false, group: "basic" },
+  parentId: { title: "Parent ID", default: true, group: "family" },
+  medicalCondition: {
+    title: "Medical Conditions",
+    default: true,
+    group: "medical",
+  },
+  limitations: { title: "Limitations", default: false, group: "medical" },
+  notes: { title: "Notes", default: false, group: "other" },
+  emergencyContact: {
+    title: "Emergency Contact",
+    default: false,
+    group: "contact",
+  },
+  _id: { title: "Database ID", default: false, group: "system" },
+  createdAt: { title: "Created Date", default: false, group: "system" },
+  updatedAt: { title: "Updated Date", default: false, group: "system" },
+};
+
+// Table configuration
+const rowKey = (row) => row._id;
+
+const pagination = ref({
+  page: 1,
+  pageSize: 20,
+  showSizePicker: true,
+  pageSizes: [10, 20, 50, 100],
+  showQuickJumper: true,
+  prefix: ({ itemCount }) => `Total: ${itemCount}`,
+});
+
+// Methods (defined early for use in render functions)
+const viewChild = (child) => {
+  selectedChild.value = child;
+};
+
+const editChild = (child) => {
+  // Navigate to edit page
+  router.push(`/admin/children/edit/${child._id}`);
+};
+
+const confirmDeleteSingle = async (child) => {
+  try {
+    await childUserApi.deleteChildUser(child._id);
+    children.value = children.value.filter((c) => c._id !== child._id);
+    message.success(
+      `Successfully deleted ${child.firstName} ${child.lastName}`
+    );
+  } catch (error) {
+    console.error("Error deleting child:", error);
+    message.error("Failed to delete child. Please try again.");
+  }
+};
+
+const formatDate = (dateString) => {
+  if (!dateString) return "N/A";
+  return new Date(dateString).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+};
+
+const getParentName = (parentId) => {
+  // In a real implementation, you would look up the parent's name
+  return "Parent";
+};
+
+// Table columns configuration
+const allColumns = [
+  {
+    type: "selection",
+    multiple: true,
+    width: 40,
+    fixed: "left",
+  },
+  {
+    key: "childInfo",
+    title: "Child Info",
+    width: 150,
+    render(row) {
+      return h("div", { class: "flex items-center" }, [
+        h(
+          NAvatar,
+          {
+            round: true,
+            size: 40,
+            color: "#8b5cf6",
+            style: { backgroundColor: "#f3e8ff", color: "#8b5cf6" },
+          },
+          {
+            default: () =>
+              (row.firstName?.[0] || "") + (row.lastName?.[0] || ""),
+          }
+        ),
+        h("div", { class: "ml-3" }, [
+          h(
+            "div",
+            { class: "font-medium text-gray-900" },
+            `${row.firstName || ""} ${row.lastName || ""}`
+          ),
+          h(
+            "div",
+            { class: "text-sm text-gray-500" },
+            `ID: ${row._id?.slice(-8) || "N/A"}`
+          ),
+        ]),
+      ]);
+    },
+  },
+  {
+    key: "aid",
+    title: "AID",
+    width: 130,
+    render(row) {
+      return h(
+        NTag,
+        {
+          type: "success",
+          size: "small",
+        },
+        { default: () => row.aid || "N/A" }
+      );
+    },
+  },
+  {
+    key: "ageGender",
+    title: "Age & Gender",
+    width: 120,
+    render(row) {
+      const genderIcon =
+        row.gender === "Male" ? "♂" : row.gender === "Female" ? "♀" : "?";
+      const genderColor =
+        row.gender === "Male"
+          ? "#3b82f6"
+          : row.gender === "Female"
+          ? "#ec4899"
+          : "#6b7280";
+
+      return h("div", {}, [
+        h("div", { class: "font-medium" }, `${row.age || "N/A"} years`),
+        h(
+          "div",
+          {
+            class: "text-sm",
+            style: { color: genderColor },
+          },
+          `${genderIcon} ${row.gender || "Unknown"}`
+        ),
+      ]);
+    },
+  },
+  {
+    key: "physical",
+    title: "Physical Info",
+    width: 150,
+    render(row) {
+      return h("div", {}, [
+        h(
+          "div",
+          { class: "text-sm" },
+          row.height || row.weight
+            ? `${row.height || "N/A"}cm / ${row.weight || "N/A"}kg`
+            : "Not provided"
+        ),
+        h(
+          "div",
+          { class: "text-xs text-gray-500" },
+          `DOB: ${formatDate(row.dateOfBirth)}`
+        ),
+      ]);
+    },
+  },
+  {
+    key: "parent",
+    title: "Parent",
+    width: 150,
+    render(row) {
+      return h("div", {}, [
+        h("div", { class: "text-sm font-medium" }, getParentName(row.parent)),
+        h("div", { class: "text-xs text-gray-500" }, row.parentId || "N/A"),
+      ]);
+    },
+  },
+  {
+    key: "medical",
+    title: "Medical Info",
+    width: 200,
+    render(row) {
+      if (row.medicalCondition?.length > 0) {
+        const visibleConditions = row.medicalCondition.slice(0, 2);
+        const remainingCount = row.medicalCondition.length - 2;
+        const { height, weight } = row;
+
+        return h("div", { class: "space-y-1" }, [
+          h(
+            NSpace,
+            { size: "small" },
+            {
+              default: () =>
+                visibleConditions.map((condition) =>
+                  h(
+                    NTag,
+                    {
+                      type: "error",
+                      size: "small",
+                      key: condition,
+                    },
+                    { default: () => condition }
+                  )
+                ),
+            }
+          ),
+          remainingCount > 0 &&
+            h(
+              "div",
+              { class: "text-xs text-gray-500" },
+              `+${remainingCount} more`
+            ),
+          h(
+            "div",
+            { class: "text-xs text-gray-500" },
+            height || weight
+              ? `Height: ${height || "N/A"}cm, Weight: ${weight || "N/A"}kg`
+              : "No physical info"
+          ),
+        ]);
+      }
+      return h("div", { class: "text-sm text-gray-500" }, "No conditions");
+    },
+  },
+  {
+    key: "actions",
+    title: "Actions",
+    width: 150,
+    render(row) {
+      const handleViewClick = () => {
+        viewChild(row);
+      };
+
+      const handleEditClick = () => {
+        editChild(row);
+      };
+
+      const handleDeleteClick = () => {
+        return confirmDeleteSingle(row);
+      };
+
+      return h(
+        NSpace,
+        { size: "small" },
+        {
+          default: () => [
+            h(
+              NButton,
+              {
+                size: "small",
+                type: "info",
+                secondary: true,
+                onClick: handleViewClick,
+              },
+              {
+                default: () => h("i", { class: "fas fa-eye" }),
+              }
+            ),
+            h(
+              NButton,
+              {
+                size: "small",
+                type: "primary",
+                secondary: true,
+                onClick: handleEditClick,
+              },
+              {
+                default: () => h("i", { class: "fas fa-edit" }),
+              }
+            ),
+            h(
+              NPopconfirm,
+              {
+                onPositiveClick: handleDeleteClick,
+              },
+              {
+                default: () => "Are you sure you want to delete this child?",
+                trigger: () =>
+                  h(
+                    NButton,
+                    {
+                      size: "small",
+                      type: "error",
+                      secondary: true,
+                    },
+                    {
+                      default: () => h("i", { class: "fas fa-trash" }),
+                    }
+                  ),
+              }
+            ),
+          ],
+        }
+      );
+    },
+  },
+];
+
+// Computed columns based on visibility
+const columns = computed(() => {
+  const selectionColumn = allColumns[0]; // Always include selection column
+  const filteredColumns = allColumns
+    .slice(1)
+    .filter((col) => visibleColumns.value.includes(col.key));
+  return [selectionColumn, ...filteredColumns];
+});
 
 // Computed properties
 const filteredChildren = computed(() => {
@@ -577,7 +864,130 @@ const childrenWithConditions = computed(
     children.value.filter((child) => child.medicalCondition?.length > 0).length
 );
 
+// Column options for dropdown
+const columnOptions = computed(() => [
+  {
+    key: "show-all",
+    label: "Show All Columns",
+    icon: () => h("i", { class: "fas fa-eye text-blue-600" }),
+  },
+  {
+    key: "reset-default",
+    label: "Reset to Default",
+    icon: () => h("i", { class: "fas fa-undo text-orange-600" }),
+  },
+  {
+    type: "divider",
+  },
+  ...availableColumns.map((col) => ({
+    key: col.key,
+    label: col.title,
+    disabled: false,
+    icon: () =>
+      h("i", {
+        class: visibleColumns.value.includes(col.key)
+          ? "fas fa-check-square text-green-600"
+          : "fas fa-square text-gray-400",
+      }),
+  })),
+]);
+
 // Methods
+const handleCheck = (rowKeys) => {
+  checkedRowKeys.value = rowKeys;
+};
+
+const handleColumnSelect = (key) => {
+  if (key === "show-all") {
+    showAllColumns();
+  } else if (key === "reset-default") {
+    showDefaultColumns();
+  } else if (visibleColumns.value.includes(key)) {
+    // Don't allow hiding all columns
+    if (visibleColumns.value.length > 1) {
+      visibleColumns.value = visibleColumns.value.filter((col) => col !== key);
+    }
+  } else {
+    visibleColumns.value.push(key);
+  }
+};
+
+const selectAll = () => {
+  checkedRowKeys.value = filteredChildren.value.map((child) => child._id);
+};
+
+const selectNone = () => {
+  checkedRowKeys.value = [];
+};
+
+const showAllColumns = () => {
+  visibleColumns.value = availableColumns.map((col) => col.key);
+};
+
+const showDefaultColumns = () => {
+  visibleColumns.value = availableColumns
+    .filter((col) => col.default)
+    .map((col) => col.key);
+};
+
+const handlePageChange = (page) => {
+  pagination.value.page = page;
+};
+
+const handlePageSizeChange = (pageSize) => {
+  pagination.value.pageSize = pageSize;
+  pagination.value.page = 1; // Reset to first page when changing page size
+};
+
+const handleBulkDelete = () => {
+  if (checkedRowKeys.value.length === 0) return;
+
+  dialog.warning({
+    title: "Confirm Bulk Delete",
+    content: `Are you sure you want to delete ${checkedRowKeys.value.length} selected children? This action cannot be undone.`,
+    positiveText: "Delete All",
+    negativeText: "Cancel",
+    onPositiveClick: confirmBulkDelete,
+  });
+};
+
+const confirmBulkDelete = async () => {
+  try {
+    loading.value = true;
+    const deletePromises = checkedRowKeys.value.map((id) =>
+      childUserApi.deleteChildUser(id)
+    );
+
+    await Promise.all(deletePromises);
+
+    // Remove deleted children from the list
+    children.value = children.value.filter(
+      (child) => !checkedRowKeys.value.includes(child._id)
+    );
+
+    checkedRowKeys.value = [];
+    message.success(`Successfully deleted ${deletePromises.length} children`);
+  } catch (error) {
+    console.error("Error deleting children:", error);
+    message.error("Failed to delete some children. Please try again.");
+  } finally {
+    loading.value = false;
+  }
+};
+
+// const confirmDeleteSingle = async (child) => {
+//   try {
+//     await childUserApi.deleteChildUser(child._id);
+//     children.value = children.value.filter((c) => c._id !== child._id);
+//     message.success(
+//       `Successfully deleted ${child.firstName} ${child.lastName}`
+//     );
+//   } catch (error) {
+//     console.error("Error deleting child:", error);
+//     message.error("Failed to delete child. Please try again.");
+//   }
+// };
+
 const loadChildren = async () => {
   try {
     loading.value = true;
@@ -610,16 +1020,6 @@ const refreshChildren = () => {
   loadChildren();
 };
 
-const viewChild = (child) => {
-  selectedChild.value = child;
-};
-
-const editChild = (child) => {
-  console.log("Edit child:", child);
-  // Navigate to edit page
-  router.push(`/admin/children/edit/${child._id}`);
-};
-
 const deleteChild = (child) => {
   childToDelete.value = child;
   showDeleteModal.value = true;
@@ -645,22 +1045,13 @@ const closeDeleteModal = () => {
   childToDelete.value = null;
 };
 
-const getParentName = (parentId) => {
-  // In a real implementation, you would look up the parent's name
-  return "Parent";
-};
-
-const formatDate = (dateString) => {
-  if (!dateString) return "N/A";
-  return new Date(dateString).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-};
-
 // Lifecycle
 onMounted(() => {
   loadChildren();
+});
+
+// Watch for filter changes and clear selection
+watch([searchQuery, selectedGenderFilter, selectedAgeFilter], () => {
+  checkedRowKeys.value = [];
 });
 </script>

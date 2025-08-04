@@ -6,7 +6,7 @@
     <title>IkidPro - Body Metrics Analytics Platform</title>
     <meta
       name="description"
-      content="Advanced body metrics analytics platform providing real-time intelligence for health monitoring and child development tracking."
+      content="Enhancing Child Safety Through Intelligent Technology"
     />
     <meta
       name="keywords"
@@ -84,20 +84,6 @@
               >Contact</a
             >
           </div>
-          <div class="flex space-x-4">
-            <a
-              href="../index.html#/login"
-              class="px-4 py-2 text-primary border border-primary rounded-lg hover:bg-primary hover:text-white transition-all"
-            >
-              Login
-            </a>
-            <a
-              href="#demo"
-              class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/80 transition-all"
-            >
-              Get Demo
-            </a>
-          </div>
         </div>
       </div>
     </nav>
@@ -122,32 +108,32 @@
             <span
               class="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent"
             >
-              Body Metrics
+              Enhancing Child Safety
             </span>
             <br />
-            <span class="text-white">Analytics Platform</span>
+            <span class="text-white">Through Intelligent Technology</span>
           </h1>
 
           <p class="text-xl md:text-2xl text-slate-300 mb-8 max-w-3xl mx-auto">
-            Advanced real-time body metric intelligence for comprehensive health
-            monitoring and child development tracking
+            Smart wearable that detects stress, emotional dysregulation, and
+            danger responding in real time to keep your child safe.
           </p>
 
           <div class="flex flex-col sm:flex-row gap-4 justify-center mb-12">
             <a
-              href="#demo"
+              href="#waitlist"
               class="px-8 py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-semibold hover:scale-105 transition-transform"
             >
               <i class="fas fa-play mr-2"></i>
-              Start Free Trial
+              Join Waitlist
             </a>
-            <a
+            <!-- <a
               href="#features"
               class="px-8 py-4 border border-primary text-primary rounded-xl font-semibold hover:bg-primary hover:text-white transition-all"
             >
               <i class="fas fa-chart-line mr-2"></i>
               Explore Features
-            </a>
+            </a> -->
           </div>
         </div>
 
@@ -691,13 +677,13 @@
         </p>
 
         <div class="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-          <a
+          <!-- <a
             href="../index.html#/register"
             class="px-8 py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-semibold hover:scale-105 transition-transform"
           >
             <i class="fas fa-rocket mr-2"></i>
             Start Free Trial
-          </a>
+          </a> -->
           <a
             href="#contact"
             class="px-8 py-4 border border-primary text-primary rounded-xl font-semibold hover:bg-primary hover:text-white transition-all"
@@ -720,6 +706,152 @@
             <div class="text-3xl font-bold text-accent mb-2">24/7</div>
             <div class="text-slate-300">Support Included</div>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Waitlist Section -->
+    <section id="waitlist" class="py-20 bg-dark-light/30">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+          <h2 class="text-4xl md:text-5xl font-bold mb-6">
+            <span class="text-white">Join the</span>
+            <br />
+            <span
+              class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"
+            >
+              IkidPro Waitlist
+            </span>
+          </h2>
+          <!-- <p class="text-xl text-slate-300 max-w-2xl mx-auto mb-8">
+            Be among the first to experience the future of child health
+            monitoring. Get early access, exclusive updates, and special launch
+            pricing.
+          </p> -->
+        </div>
+
+        <div class="max-w-xl mx-auto">
+          <div
+            class="bg-dark-light/50 backdrop-blur-xl rounded-2xl p-8 border border-slate-700/50"
+          >
+            <form id="waitlist-form" class="space-y-6">
+              <!-- Name Input -->
+              <div>
+                <label class="block text-sm font-medium text-slate-300 mb-2">
+                  Full Name <span class="text-red-400">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="waitlist-name"
+                  name="name"
+                  required
+                  class="w-full px-4 py-3 bg-dark/50 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                  placeholder="Enter your full name"
+                />
+              </div>
+
+              <!-- Email Input -->
+              <div>
+                <label class="block text-sm font-medium text-slate-300 mb-2">
+                  Email Address <span class="text-red-400">*</span>
+                </label>
+                <input
+                  type="email"
+                  id="waitlist-email"
+                  name="email"
+                  required
+                  class="w-full px-4 py-3 bg-dark/50 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                  placeholder="Enter your email address"
+                />
+              </div>
+
+              <!-- Checkbox for updates -->
+              <div class="flex items-start space-x-3">
+                <input
+                  type="checkbox"
+                  id="updates-checkbox"
+                  name="updates"
+                  checked
+                  class="mt-1 w-4 h-4 text-primary bg-dark border-slate-600 rounded focus:ring-primary focus:ring-2"
+                />
+                <label for="updates-checkbox" class="text-sm text-slate-300">
+                  I want to receive product updates, launch notifications, and
+                  exclusive offers from IkidPro.
+                </label>
+              </div>
+
+              <!-- Submit Button -->
+              <button
+                type="submit"
+                class="w-full px-8 py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-semibold hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+                id="waitlist-submit"
+              >
+                <i class="fas fa-paper-plane mr-2"></i>
+                Join Waitlist
+              </button>
+
+              <!-- Success Message -->
+              <div
+                id="waitlist-success"
+                class="hidden p-4 bg-green-500/20 border border-green-500/50 rounded-xl text-green-400 text-center"
+              >
+                <i class="fas fa-check-circle mr-2"></i>
+                Thank you! You've been successfully added to our waitlist.
+              </div>
+
+              <!-- Error Message -->
+              <div
+                id="waitlist-error"
+                class="hidden p-4 bg-red-500/20 border border-red-500/50 rounded-xl text-red-400 text-center"
+              >
+                <i class="fas fa-exclamation-circle mr-2"></i>
+                Something went wrong. Please try again.
+              </div>
+            </form>
+          </div>
+
+          <!-- Waitlist Benefits -->
+          <!-- <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="text-center">
+              <div
+                class="w-16 h-16 bg-primary/20 rounded-2xl flex items-center justify-center mx-auto mb-4"
+              >
+                <i class="fas fa-bolt text-primary text-2xl"></i>
+              </div>
+              <h3 class="text-lg font-semibold text-white mb-2">
+                Early Access
+              </h3>
+              <p class="text-slate-400 text-sm">
+                Be the first to try IkidPro when we launch
+              </p>
+            </div>
+
+            <div class="text-center">
+              <div
+                class="w-16 h-16 bg-secondary/20 rounded-2xl flex items-center justify-center mx-auto mb-4"
+              >
+                <i class="fas fa-tag text-secondary text-2xl"></i>
+              </div>
+              <h3 class="text-lg font-semibold text-white mb-2">
+                Special Pricing
+              </h3>
+              <p class="text-slate-400 text-sm">
+                Exclusive launch discounts for waitlist members
+              </p>
+            </div>
+
+            <div class="text-center">
+              <div
+                class="w-16 h-16 bg-accent/20 rounded-2xl flex items-center justify-center mx-auto mb-4"
+              >
+                <i class="fas fa-crown text-accent text-2xl"></i>
+              </div>
+              <h3 class="text-lg font-semibold text-white mb-2">VIP Updates</h3>
+              <p class="text-slate-400 text-sm">
+                Behind-the-scenes content and development updates
+              </p>
+            </div>
+          </div> -->
         </div>
       </div>
     </section>

@@ -17,7 +17,7 @@
     </div>
 
     <!-- Search and Filters -->
-    <div class="bg-white p-4 rounded-lg shadow-sm border">
+    <n-card>
       <div class="flex flex-wrap gap-4 items-center">
         <div class="flex-1 min-w-64">
           <input
@@ -57,444 +57,330 @@
           <i class="fas fa-refresh mr-2"></i>Refresh
         </button>
       </div>
-    </div>
+    </n-card>
 
     <!-- Statistics Cards -->
     <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
-      <div class="bg-white p-4 rounded-lg shadow-sm border">
-        <div class="flex items-center">
-          <div class="p-3 bg-blue-100 rounded-full">
-            <i class="fas fa-chart-line text-blue-600"></i>
-          </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-500">Total Events</p>
-            <p class="text-2xl font-bold text-gray-900">{{ totalEvents }}</p>
-          </div>
-        </div>
-      </div>
+      <StatisticsCard
+        label="Total Events"
+        :value="totalEvents"
+        icon="fas fa-chart-line"
+        variant="blue"
+      />
 
-      <div class="bg-white p-4 rounded-lg shadow-sm border">
-        <div class="flex items-center">
-          <div class="p-3 bg-red-100 rounded-full">
-            <i class="fas fa-heartbeat text-red-600"></i>
-          </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-500">Heart Rate Events</p>
-            <p class="text-2xl font-bold text-gray-900">
-              {{ heartRateEvents }}
-            </p>
-          </div>
-        </div>
-      </div>
+      <StatisticsCard
+        label="Heart Rate Events"
+        :value="heartRateEvents"
+        icon="fas fa-heartbeat"
+        variant="red"
+      />
 
-      <div class="bg-white p-4 rounded-lg shadow-sm border">
-        <div class="flex items-center">
-          <div class="p-3 bg-green-100 rounded-full">
-            <i class="fas fa-map-marker-alt text-green-600"></i>
-          </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-500">GPS Events</p>
-            <p class="text-2xl font-bold text-gray-900">{{ gpsEvents }}</p>
-          </div>
-        </div>
-      </div>
+      <StatisticsCard
+        label="GPS Events"
+        :value="gpsEvents"
+        icon="fas fa-map-marker-alt"
+        variant="green"
+      />
 
-      <div class="bg-white p-4 rounded-lg shadow-sm border">
-        <div class="flex items-center">
-          <div class="p-3 bg-yellow-100 rounded-full">
-            <i class="fas fa-thermometer-half text-yellow-600"></i>
-          </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-500">Temperature Events</p>
-            <p class="text-2xl font-bold text-gray-900">
-              {{ temperatureEvents }}
-            </p>
-          </div>
-        </div>
-      </div>
+      <StatisticsCard
+        label="Temperature Events"
+        :value="temperatureEvents"
+        icon="fas fa-thermometer-half"
+        variant="yellow"
+      />
 
-      <div class="bg-white p-4 rounded-lg shadow-sm border">
-        <div class="flex items-center">
-          <div class="p-3 bg-purple-100 rounded-full">
-            <i class="fas fa-calendar text-purple-600"></i>
-          </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-500">Today's Events</p>
-            <p class="text-2xl font-bold text-gray-900">{{ todayEvents }}</p>
-          </div>
-        </div>
-      </div>
+      <StatisticsCard
+        label="Today's Events"
+        :value="todayEvents"
+        icon="fas fa-calendar"
+        variant="purple"
+      />
     </div>
 
     <!-- Events Table -->
-    <div class="bg-white rounded-lg shadow-sm border overflow-hidden max-h-150">
-      <div class="px-6 py-4 border-b border-gray-200">
+    <n-card>
+      <template #header>
         <div class="flex justify-between items-center">
-          <h3 class="text-lg font-medium text-gray-900">All Events</h3>
+          <div class="flex items-center space-x-4">
+            <h3 class="text-lg font-medium text-gray-900">All Events</h3>
+            <div class="flex items-center space-x-2 text-sm text-gray-500">
+              <span>{{ filteredEvents.length }} total</span>
+              <span
+                v-if="checkedRowKeys.length > 0"
+                class="text-blue-600 font-medium"
+              >
+                | {{ checkedRowKeys.length }} selected
+              </span>
+            </div>
+          </div>
           <div class="flex items-center space-x-2">
-            <button
-              @click="exportEvents"
-              class="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700"
+            <!-- Column Visibility Selector -->
+            <n-dropdown :options="columnOptions" @select="handleColumnSelect">
+              <n-button type="default" size="small">
+                <template #icon>
+                  <i class="fas fa-columns"></i>
+                </template>
+                Show Columns ({{ visibleColumns.length }}/{{
+                  availableColumns.length
+                }})
+              </n-button>
+            </n-dropdown>
+
+            <n-button @click="exportEvents" type="success" size="small">
+              <template #icon>
+                <i class="fas fa-download"></i>
+              </template>
+              Export
+            </n-button>
+            <n-button
+              @click="handleBulkDelete"
+              v-if="checkedRowKeys.length > 0"
+              type="error"
+              size="small"
             >
-              <i class="fas fa-download mr-1"></i>Export
-            </button>
-            <button
-              @click="bulkDeleteSelected"
-              v-if="selectedEvents.length > 0"
-              class="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700"
-            >
-              <i class="fas fa-trash mr-1"></i>Delete Selected ({{
-                selectedEvents.length
-              }})
-            </button>
+              <template #icon>
+                <i class="fas fa-trash"></i>
+              </template>
+              Delete Selected ({{ checkedRowKeys.length }})
+            </n-button>
           </div>
         </div>
-      </div>
+      </template>
 
-      <div class="overflow-auto max-h-150">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                <input
-                  type="checkbox"
-                  @change="toggleSelectAll"
-                  :checked="allSelected"
-                  class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Timestamp
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Child ID
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Heart Rate
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Location
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Temperature
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Sound Level
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr
-              v-for="event in filteredEvents"
-              :key="event._id"
-              class="hover:bg-gray-50"
-            >
-              <td class="px-6 py-4 whitespace-nowrap">
-                <input
-                  type="checkbox"
-                  :value="event._id"
-                  v-model="selectedEvents"
-                  class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">
-                  {{ formatDateTime(event.Timestamp) }}
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900">
-                  {{ event.aid }}
-                </div>
-                <div class="text-sm text-gray-500">
-                  Parent: {{ event.parentId }}
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">
-                  {{ event.HeartRate || "N/A" }}
-                  <span v-if="event.HeartRate" class="text-xs text-gray-500"
-                    >bpm</span
-                  >
-                </div>
-                <div class="text-sm text-gray-500">
-                  HRV: {{ event.HRV || "N/A" }}
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div
-                  v-if="event.latitude && event.longitude"
-                  class="text-sm text-gray-900"
-                >
-                  {{ event.latitude.toFixed(4) }},
-                  {{ event.longitude.toFixed(4) }}
-                </div>
-                <div v-else class="text-sm text-gray-500">No GPS data</div>
-                <div v-if="event.altitude" class="text-sm text-gray-500">
-                  Alt: {{ event.altitude }}m
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">
-                  {{ event.Temperature || "N/A" }}
-                  <span v-if="event.Temperature" class="text-xs text-gray-500"
-                    >°C</span
-                  >
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">
-                  {{ event.SoundLevel || "N/A" }}
-                  <span v-if="event.SoundLevel" class="text-xs text-gray-500"
-                    >dB</span
-                  >
-                </div>
-              </td>
-              <td
-                class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2"
-              >
-                <button
-                  @click="viewEvent(event)"
-                  class="text-blue-600 hover:text-blue-900 cursor-pointer"
-                >
-                  <i class="fas fa-eye"></i>
-                </button>
-                <button
-                  @click="editEvent(event)"
-                  class="text-indigo-600 hover:text-indigo-900 cursor-pointer"
-                >
-                  <i class="fas fa-edit"></i>
-                </button>
-                <button
-                  @click="deleteEvent(event)"
-                  class="text-red-600 hover:text-red-900 cursor-pointer"
-                >
-                  <i class="fas fa-trash"></i>
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Pagination -->
-      <div
-        class="px-6 py-4 border-t border-gray-200 flex items-center justify-between"
-      >
-        <div class="text-sm text-gray-700">
-          Showing {{ (currentPage - 1) * pageSize + 1 }} to
-          {{ Math.min(currentPage * pageSize, totalEvents) }} of
-          {{ totalEvents }} events
-        </div>
-        <div class="flex items-center space-x-2">
-          <button
-            @click="previousPage"
-            :disabled="currentPage === 1"
-            class="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50"
-          >
-            Previous
-          </button>
-          <span class="px-3 py-1 text-sm">{{ currentPage }}</span>
-          <button
-            @click="nextPage"
-            :disabled="currentPage * pageSize >= totalEvents"
-            class="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50"
-          >
-            Next
-          </button>
-        </div>
-      </div>
-
-      <!-- Empty State -->
-      <div v-if="filteredEvents.length === 0" class="text-center py-12">
-        <i class="fas fa-chart-line text-gray-400 text-4xl mb-4"></i>
-        <h3 class="text-lg font-medium text-gray-900 mb-2">No events found</h3>
-        <p class="text-gray-500">No events match your search criteria.</p>
-      </div>
-    </div>
+      <!-- Naive UI Data Table -->
+      <n-data-table
+        :columns="columns"
+        :data="filteredEvents"
+        :loading="loading"
+        :row-key="rowKey"
+        :checked-row-keys="checkedRowKeys"
+        @update:checked-row-keys="handleCheck"
+        :pagination="paginationConfig"
+        @update:page="handlePageChange"
+        @update:page-size="handlePageSizeChange"
+        :bordered="false"
+        striped
+        size="medium"
+        flex-height
+        style="min-height: 600px"
+        :scroll-x="2000"
+      />
+    </n-card>
 
     <!-- Event Detail Modal -->
-    <div
-      v-if="selectedEvent"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+    <n-modal
+      v-model:show="showEventModal"
+      preset="card"
+      :style="{ width: '90vw', maxWidth: '1200px' }"
+      title="Event Details"
+      size="huge"
+      :bordered="false"
+      segmented
     >
-      <div
-        class="bg-white rounded-lg max-w-4xl w-full mx-4 max-h-96 overflow-y-auto"
-      >
-        <div class="p-6 border-b border-gray-200">
-          <div class="flex justify-between items-center">
-            <h3 class="text-lg font-medium text-gray-900">Event Details</h3>
-            <button
-              @click="selectedEvent = null"
-              class="text-gray-400 hover:text-gray-600"
+      <template #header-extra>
+        <n-button
+          @click="selectedEvent = null"
+          quaternary
+          circle
+          type="default"
+        >
+          <template #icon>
+            <i class="fas fa-times"></i>
+          </template>
+        </n-button>
+      </template>
+
+      <div v-if="selectedEvent" class="space-y-6">
+        <!-- Event Overview Header -->
+        <n-card title="Event Overview" :bordered="false">
+          <div class="flex items-center space-x-4">
+            <div
+              class="flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full"
             >
-              <i class="fas fa-times"></i>
-            </button>
-          </div>
-        </div>
-        <div class="p-6">
-          <div class="grid grid-cols-3 gap-6">
-            <!-- Basic Info -->
-            <div class="space-y-4">
-              <h4 class="font-medium text-gray-900">Basic Information</h4>
-              <div>
-                <label class="block text-sm font-medium text-gray-700"
-                  >Timestamp</label
-                >
-                <p class="mt-1 text-sm text-gray-900">
+              <i class="fas fa-chart-line text-2xl text-blue-600"></i>
+            </div>
+            <div>
+              <h3 class="text-2xl font-bold text-gray-900">
+                Event #{{ selectedEvent._id?.slice(-8) || "N/A" }}
+              </h3>
+              <div class="flex items-center space-x-4 mt-2">
+                <n-tag type="info" size="medium">
+                  Child: {{ selectedEvent.aid || "N/A" }}
+                </n-tag>
+                <n-tag type="success" size="medium">
                   {{ formatDateTime(selectedEvent.Timestamp) }}
-                </p>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700"
-                  >Child ID</label
-                >
-                <p class="mt-1 text-sm text-gray-900">
-                  {{ selectedEvent.aid }}
-                </p>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700"
-                  >Parent ID</label
-                >
-                <p class="mt-1 text-sm text-gray-900">
-                  {{ selectedEvent.parentId }}
-                </p>
-              </div>
-            </div>
-
-            <!-- Sensor Data -->
-            <div class="space-y-4">
-              <h4 class="font-medium text-gray-900">Sensor Data</h4>
-              <div>
-                <label class="block text-sm font-medium text-gray-700"
-                  >Heart Rate</label
-                >
-                <p class="mt-1 text-sm text-gray-900">
-                  {{ selectedEvent.HeartRate || "N/A" }} bpm
-                </p>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700"
-                  >HRV</label
-                >
-                <p class="mt-1 text-sm text-gray-900">
-                  {{ selectedEvent.HRV || "N/A" }}
-                </p>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700"
-                  >EDA</label
-                >
-                <p class="mt-1 text-sm text-gray-900">
-                  {{ selectedEvent.EDA || "N/A" }}
-                </p>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700"
-                  >Temperature</label
-                >
-                <p class="mt-1 text-sm text-gray-900">
-                  {{ selectedEvent.Temperature || "N/A" }}°C
-                </p>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700"
-                  >Sound Level</label
-                >
-                <p class="mt-1 text-sm text-gray-900">
-                  {{ selectedEvent.SoundLevel || "N/A" }} dB
-                </p>
-              </div>
-            </div>
-
-            <!-- Motion & Location -->
-            <div class="space-y-4">
-              <h4 class="font-medium text-gray-900">Motion & Location</h4>
-              <div>
-                <label class="block text-sm font-medium text-gray-700"
-                  >GPS Coordinates</label
-                >
-                <p class="mt-1 text-sm text-gray-900">
-                  {{
-                    selectedEvent.latitude && selectedEvent.longitude
-                      ? `${selectedEvent.latitude}, ${selectedEvent.longitude}`
-                      : "N/A"
-                  }}
-                </p>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700"
-                  >Altitude</label
-                >
-                <p class="mt-1 text-sm text-gray-900">
-                  {{ selectedEvent.altitude || "N/A" }} m
-                </p>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700"
-                  >Speed</label
-                >
-                <p class="mt-1 text-sm text-gray-900">
-                  {{ selectedEvent.speed_mps || "N/A" }} m/s
-                </p>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700"
-                  >Accelerometer (X,Y,Z)</label
-                >
-                <p class="mt-1 text-sm text-gray-900">
-                  {{
-                    [
-                      selectedEvent.AccelX,
-                      selectedEvent.AccelY,
-                      selectedEvent.AccelZ,
-                    ]
-                      .filter((v) => v !== null && v !== undefined)
-                      .join(", ") || "N/A"
-                  }}
-                </p>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700"
-                  >Gyroscope (X,Y,Z)</label
-                >
-                <p class="mt-1 text-sm text-gray-900">
-                  {{
-                    [
-                      selectedEvent.GyroX,
-                      selectedEvent.GyroY,
-                      selectedEvent.GyroZ,
-                    ]
-                      .filter((v) => v !== null && v !== undefined)
-                      .join(", ") || "N/A"
-                  }}
-                </p>
+                </n-tag>
               </div>
             </div>
           </div>
+        </n-card>
+
+        <!-- Information Cards Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Basic Information Card -->
+          <n-card title="Basic Information" :bordered="false">
+            <template #header-extra>
+              <i class="fas fa-info-circle text-blue-600"></i>
+            </template>
+            <n-descriptions :column="1" size="small">
+              <n-descriptions-item label="Timestamp">
+                {{ formatDateTime(selectedEvent.Timestamp) }}
+              </n-descriptions-item>
+              <n-descriptions-item label="Child ID">
+                <n-tag type="info" size="small">
+                  {{ selectedEvent.aid || "N/A" }}
+                </n-tag>
+              </n-descriptions-item>
+              <n-descriptions-item label="Parent ID">
+                {{ selectedEvent.parentId || "N/A" }}
+              </n-descriptions-item>
+              <n-descriptions-item label="Device ID">
+                {{ selectedEvent.deviceId || "N/A" }}
+              </n-descriptions-item>
+            </n-descriptions>
+          </n-card>
+
+          <!-- Sensor Data Card -->
+          <n-card title="Sensor Data" :bordered="false">
+            <template #header-extra>
+              <i class="fas fa-heartbeat text-red-600"></i>
+            </template>
+            <n-descriptions :column="1" size="small">
+              <n-descriptions-item label="Heart Rate">
+                <span
+                  v-if="selectedEvent.HeartRate"
+                  class="font-medium text-red-600"
+                >
+                  {{ selectedEvent.HeartRate }} bpm
+                </span>
+                <span v-else class="text-gray-500">N/A</span>
+              </n-descriptions-item>
+              <n-descriptions-item label="HRV">
+                {{ selectedEvent.HRV || "N/A" }}
+              </n-descriptions-item>
+              <n-descriptions-item label="EDA">
+                {{ selectedEvent.EDA || "N/A" }}
+              </n-descriptions-item>
+              <n-descriptions-item label="Temperature">
+                <span
+                  v-if="selectedEvent.Temperature"
+                  class="font-medium text-orange-600"
+                >
+                  {{ selectedEvent.Temperature }}°C
+                </span>
+                <span v-else class="text-gray-500">N/A</span>
+              </n-descriptions-item>
+              <n-descriptions-item label="Sound Level">
+                <span
+                  v-if="selectedEvent.SoundLevel"
+                  class="font-medium text-purple-600"
+                >
+                  {{ selectedEvent.SoundLevel }} dB
+                </span>
+                <span v-else class="text-gray-500">N/A</span>
+              </n-descriptions-item>
+            </n-descriptions>
+          </n-card>
+
+          <!-- Motion & Location Card -->
+          <n-card title="Motion & Location" :bordered="false">
+            <template #header-extra>
+              <i class="fas fa-map-marker-alt text-green-600"></i>
+            </template>
+            <n-descriptions :column="1" size="small">
+              <n-descriptions-item label="GPS Coordinates">
+                <div v-if="selectedEvent.latitude && selectedEvent.longitude">
+                  <div class="font-medium text-green-600">
+                    {{ selectedEvent.latitude.toFixed(6) }},
+                    {{ selectedEvent.longitude.toFixed(6) }}
+                  </div>
+                  <div class="text-xs text-gray-500 mt-1">
+                    <a
+                      :href="`https://maps.google.com/?q=${selectedEvent.latitude},${selectedEvent.longitude}`"
+                      target="_blank"
+                      class="text-blue-500 hover:underline"
+                    >
+                      View on Map
+                      <i class="fas fa-external-link-alt text-xs"></i>
+                    </a>
+                  </div>
+                </div>
+                <span v-else class="text-gray-500">No GPS data</span>
+              </n-descriptions-item>
+              <n-descriptions-item label="Altitude">
+                <span v-if="selectedEvent.altitude" class="font-medium">
+                  {{ selectedEvent.altitude }} m
+                </span>
+                <span v-else class="text-gray-500">N/A</span>
+              </n-descriptions-item>
+              <n-descriptions-item label="Speed">
+                <span v-if="selectedEvent.speed_mps" class="font-medium">
+                  {{ selectedEvent.speed_mps }} m/s
+                </span>
+                <span v-else class="text-gray-500">N/A</span>
+              </n-descriptions-item>
+              <n-descriptions-item label="Accelerometer (X,Y,Z)">
+                <div
+                  v-if="
+                    selectedEvent.AccelX ||
+                    selectedEvent.AccelY ||
+                    selectedEvent.AccelZ
+                  "
+                >
+                  <div class="font-mono text-sm">
+                    {{
+                      [
+                        selectedEvent.AccelX?.toFixed(3),
+                        selectedEvent.AccelY?.toFixed(3),
+                        selectedEvent.AccelZ?.toFixed(3),
+                      ]
+                        .filter((v) => v !== undefined)
+                        .join(", ")
+                    }}
+                  </div>
+                </div>
+                <span v-else class="text-gray-500">N/A</span>
+              </n-descriptions-item>
+              <n-descriptions-item label="Gyroscope (X,Y,Z)">
+                <div
+                  v-if="
+                    selectedEvent.GyroX ||
+                    selectedEvent.GyroY ||
+                    selectedEvent.GyroZ
+                  "
+                >
+                  <div class="font-mono text-sm">
+                    {{
+                      [
+                        selectedEvent.GyroX?.toFixed(3),
+                        selectedEvent.GyroY?.toFixed(3),
+                        selectedEvent.GyroZ?.toFixed(3),
+                      ]
+                        .filter((v) => v !== undefined)
+                        .join(", ")
+                    }}
+                  </div>
+                </div>
+                <span v-else class="text-gray-500">N/A</span>
+              </n-descriptions-item>
+            </n-descriptions>
+          </n-card>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex justify-end space-x-3 pt-4">
+          <n-button @click="editEvent(selectedEvent)" type="primary">
+            <template #icon>
+              <i class="fas fa-edit"></i>
+            </template>
+            Edit Event
+          </n-button>
+          <n-button @click="selectedEvent = null" type="default">
+            Close
+          </n-button>
         </div>
       </div>
-    </div>
+    </n-modal>
 
     <!-- Event Delete Modal -->
     <div
@@ -605,11 +491,28 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, h, watch } from "vue";
 import { useRouter } from "vue-router";
+import { useMessage, useDialog } from "naive-ui";
+import {
+  NButton,
+  NTag,
+  NAvatar,
+  NSpace,
+  NPopconfirm,
+  NCard,
+  NDataTable,
+  NDropdown,
+  NModal,
+  NDescriptions,
+  NDescriptionsItem,
+} from "naive-ui";
 import * as eventApi from "../../services/eventApi";
+import StatisticsCard from "../../components/StatisticsCard.vue";
 
 const router = useRouter();
+const message = useMessage();
+const dialog = useDialog();
 
 // Reactive data
 const events = ref([]);
@@ -622,8 +525,435 @@ const selectedSensorFilter = ref("");
 const selectedEvent = ref(null);
 const eventToDelete = ref(null);
 const selectedEvents = ref([]);
+const checkedRowKeys = ref([]);
 const currentPage = ref(1);
 const pageSize = ref(50);
+
+// Modal visibility
+const showEventModal = computed({
+  get: () => !!selectedEvent.value,
+  set: (value) => {
+    if (!value) selectedEvent.value = null;
+  },
+});
+
+// Column visibility state
+const visibleColumns = ref([
+  "timestamp",
+  "childId",
+  "heartRate",
+  "location",
+  "altitude",
+  "temperature",
+  "soundLevel",
+  "actions",
+]);
+
+const availableColumns = [
+  { key: "timestamp", title: "Timestamp", default: true },
+  { key: "childId", title: "Child ID", default: true },
+  { key: "heartRate", title: "Heart Rate", default: true },
+  { key: "location", title: "Location", default: true },
+  { key: "temperature", title: "Temperature", default: true },
+  { key: "soundLevel", title: "Sound Level", default: true },
+  { key: "hrv", title: "HRV", default: false },
+  { key: "eda", title: "EDA", default: false },
+  { key: "altitude", title: "Altitude", default: false },
+  { key: "speed", title: "Speed", default: false },
+  { key: "accelerometer", title: "Accelerometer", default: false },
+  { key: "gyroscope", title: "Gyroscope", default: false },
+  { key: "accelX", title: "Accel X", default: false },
+  { key: "accelY", title: "Accel Y", default: false },
+  { key: "accelZ", title: "Accel Z", default: false },
+  { key: "gyroX", title: "Gyro X", default: false },
+  { key: "gyroY", title: "Gyro Y", default: false },
+  { key: "gyroZ", title: "Gyro Z", default: false },
+  { key: "parentId", title: "Parent ID", default: false },
+  { key: "deviceId", title: "Device ID", default: false },
+  { key: "batteryLevel", title: "Battery Level", default: false },
+  { key: "signalStrength", title: "Signal Strength", default: false },
+  { key: "actions", title: "Actions", default: true },
+];
+
+// Table configuration
+const rowKey = (row) => row._id;
+
+const pagination = ref({
+  page: 1,
+  pageSize: 20,
+  showSizePicker: true,
+  pageSizes: [10, 20, 50, 100],
+  showQuickJumper: true,
+  prefix: ({ itemCount }) => `Total: ${itemCount}`,
+});
+
+// Table columns configuration
+const allColumns = [
+  {
+    type: "selection",
+  },
+  {
+    title: "Timestamp",
+    key: "timestamp",
+    width: 60,
+    render(row) {
+      return h("div", { class: "text-sm" }, formatDateTime(row.Timestamp));
+    },
+  },
+  {
+    title: "Child ID",
+    key: "childId",
+    width: 50,
+    render(row) {
+      return h("div", {}, [
+        h(
+          "div",
+          { class: "text-sm font-medium text-gray-900" },
+          row.aid || "N/A"
+        ),
+        h(
+          "div",
+          { class: "text-xs text-gray-500" },
+          `Parent: ${row.parentId || "N/A"}`
+        ),
+      ]);
+    },
+  },
+  {
+    title: "Heart Rate",
+    key: "heartRate",
+    width: 30,
+    render(row) {
+      return h("div", {}, [
+        h(
+          "div",
+          { class: "text-sm" },
+          row.HeartRate ? `${row.HeartRate} bpm` : "N/A"
+        ),
+        h(
+          "div",
+          { class: "text-xs text-gray-500" },
+          `HRV: ${row.HRV || "N/A"}`
+        ),
+      ]);
+    },
+  },
+  {
+    title: "Location",
+    key: "location",
+    width: 50,
+    render(row) {
+      if (row.latitude && row.longitude) {
+        return h("div", {}, [
+          h(
+            "div",
+            { class: "text-sm" },
+            `${row.latitude.toFixed(4)}, ${row.longitude.toFixed(4)}`
+          ),
+          row.altitude &&
+            h(
+              "div",
+              { class: "text-xs text-gray-500" },
+              `Alt: ${row.altitude}m`
+            ),
+        ]);
+      }
+      return h("div", { class: "text-sm text-gray-500" }, "No GPS data");
+    },
+  },
+  {
+    title: "Temperature",
+    key: "temperature",
+    width: 50,
+    render(row) {
+      return h(
+        "div",
+        { class: "text-sm" },
+        row.Temperature ? `${row.Temperature}°C` : "N/A"
+      );
+    },
+  },
+  {
+    title: "Sound Level",
+    key: "soundLevel",
+    width: 50,
+    render(row) {
+      return h(
+        "div",
+        { class: "text-sm" },
+        row.SoundLevel ? `${row.SoundLevel} dB` : "N/A"
+      );
+    },
+  },
+  {
+    title: "HRV",
+    key: "hrv",
+    width: 50,
+    render(row) {
+      return h("div", { class: "text-sm" }, row.HRV ? `${row.HRV}` : "N/A");
+    },
+  },
+  {
+    title: "EDA",
+    key: "eda",
+    width: 50,
+    render(row) {
+      return h("div", { class: "text-sm" }, row.EDA ? `${row.EDA}` : "N/A");
+    },
+  },
+  {
+    title: "Altitude",
+    key: "altitude",
+    width: 50,
+    render(row) {
+      return h(
+        "div",
+        { class: "text-sm" },
+        row.altitude ? `${row.altitude}m` : "N/A"
+      );
+    },
+  },
+  {
+    title: "Speed",
+    key: "speed",
+    width: 50,
+    render(row) {
+      return h(
+        "div",
+        { class: "text-sm" },
+        row.speed_mps ? `${row.speed_mps} m/s` : "N/A"
+      );
+    },
+  },
+  {
+    title: "Accelerometer",
+    key: "accelerometer",
+    width: 50,
+    render(row) {
+      const values = [row.AccelX, row.AccelY, row.AccelZ]
+        .filter((v) => v !== null && v !== undefined)
+        .map((v) => v?.toFixed(2))
+        .join(", ");
+      return h("div", { class: "text-sm" }, values || "N/A");
+    },
+  },
+  {
+    title: "Gyroscope",
+    key: "gyroscope",
+    width: 50,
+    render(row) {
+      const values = [row.GyroX, row.GyroY, row.GyroZ]
+        .filter((v) => v !== null && v !== undefined)
+        .map((v) => v?.toFixed(2))
+        .join(", ");
+      return h("div", { class: "text-sm" }, values || "N/A");
+    },
+  },
+  {
+    title: "Accel X",
+    key: "accelX",
+    width: 50,
+    render(row) {
+      return h(
+        "div",
+        { class: "text-sm" },
+        row.AccelX !== null && row.AccelX !== undefined
+          ? row.AccelX.toFixed(2)
+          : "N/A"
+      );
+    },
+  },
+  {
+    title: "Accel Y",
+    key: "accelY",
+    width: 50,
+    render(row) {
+      return h(
+        "div",
+        { class: "text-sm" },
+        row.AccelY !== null && row.AccelY !== undefined
+          ? row.AccelY.toFixed(2)
+          : "N/A"
+      );
+    },
+  },
+  {
+    title: "Accel Z",
+    key: "accelZ",
+    width: 50,
+    render(row) {
+      return h(
+        "div",
+        { class: "text-sm" },
+        row.AccelZ !== null && row.AccelZ !== undefined
+          ? row.AccelZ.toFixed(2)
+          : "N/A"
+      );
+    },
+  },
+  {
+    title: "Gyro X",
+    key: "gyroX",
+    width: 50,
+    render(row) {
+      return h(
+        "div",
+        { class: "text-sm" },
+        row.GyroX !== null && row.GyroX !== undefined
+          ? row.GyroX.toFixed(2)
+          : "N/A"
+      );
+    },
+  },
+  {
+    title: "Gyro Y",
+    key: "gyroY",
+    width: 50,
+    render(row) {
+      return h(
+        "div",
+        { class: "text-sm" },
+        row.GyroY !== null && row.GyroY !== undefined
+          ? row.GyroY.toFixed(2)
+          : "N/A"
+      );
+    },
+  },
+  {
+    title: "Gyro Z",
+    key: "gyroZ",
+    width: 50,
+    render(row) {
+      return h(
+        "div",
+        { class: "text-sm" },
+        row.GyroZ !== null && row.GyroZ !== undefined
+          ? row.GyroZ.toFixed(2)
+          : "N/A"
+      );
+    },
+  },
+  {
+    title: "Parent ID",
+    key: "parentId",
+    width: 50,
+    render(row) {
+      return h("div", { class: "text-sm" }, row.parentId || "N/A");
+    },
+  },
+  {
+    title: "Device ID",
+    key: "deviceId",
+    width: 50,
+    render(row) {
+      return h("div", { class: "text-sm" }, row.deviceId || "N/A");
+    },
+  },
+  {
+    title: "Battery Level",
+    key: "batteryLevel",
+    width: 50,
+    render(row) {
+      return h(
+        "div",
+        { class: "text-sm" },
+        row.batteryLevel ? `${row.batteryLevel}%` : "N/A"
+      );
+    },
+  },
+  {
+    title: "Signal Strength",
+    key: "signalStrength",
+    width: 50,
+    render(row) {
+      return h(
+        "div",
+        { class: "text-sm" },
+        row.signalStrength ? `${row.signalStrength} dBm` : "N/A"
+      );
+    },
+  },
+  {
+    title: "Actions",
+    key: "actions",
+    width: 30,
+    fixed: "right",
+    render(row) {
+      return h(
+        NSpace,
+        { size: "small" },
+        {
+          default: () => [
+            h(
+              NButton,
+              {
+                size: "small",
+                type: "info",
+                secondary: true,
+                onClick: () => viewEvent(row),
+              },
+              {
+                default: () => h("i", { class: "fas fa-eye" }),
+              }
+            ),
+            h(
+              NButton,
+              {
+                size: "small",
+                type: "primary",
+                secondary: true,
+                onClick: () => editEvent(row),
+              },
+              {
+                default: () => h("i", { class: "fas fa-edit" }),
+              }
+            ),
+            h(
+              NPopconfirm,
+              {
+                onPositiveClick: () => confirmDeleteSingle(row),
+              },
+              {
+                default: () => "Are you sure you want to delete this event?",
+                trigger: () =>
+                  h(
+                    NButton,
+                    {
+                      size: "small",
+                      type: "error",
+                      secondary: true,
+                    },
+                    {
+                      default: () => h("i", { class: "fas fa-trash" }),
+                    }
+                  ),
+              }
+            ),
+          ],
+        }
+      );
+    },
+  },
+];
+
+// Computed columns based on visibility
+const columns = computed(() => {
+  const selectionColumn = allColumns[0]; // Selection column (always first)
+  const actionsColumn = allColumns[allColumns.length - 1]; // Actions column (always last)
+
+  // Filter other columns based on visibility (exclude selection and actions)
+  const filteredColumns = allColumns
+    .slice(1, -1) // Skip selection (first) and actions (last)
+    .filter((col) => visibleColumns.value.includes(col.key));
+
+  // Always include actions column if it's in visible columns
+  const finalColumns = [selectionColumn, ...filteredColumns];
+  if (visibleColumns.value.includes("actions")) {
+    finalColumns.push(actionsColumn);
+  }
+
+  return finalColumns;
+});
 
 // Computed properties
 const filteredEvents = computed(() => {
@@ -688,13 +1018,22 @@ const filteredEvents = computed(() => {
     }
   }
 
-  // Pagination
-  const start = (currentPage.value - 1) * pageSize.value;
-  const end = start + pageSize.value;
-  return filtered.slice(start, end);
+  return filtered;
 });
 
+// Update pagination to work with filtered data
+const paginationConfig = computed(() => ({
+  page: pagination.value.page,
+  pageSize: pagination.value.pageSize,
+  showSizePicker: true,
+  pageSizes: [10, 20, 50, 100],
+  showQuickJumper: true,
+  itemCount: filteredEvents.value.length,
+  prefix: ({ itemCount }) => `Total: ${itemCount}`,
+}));
+
 const totalEvents = computed(() => events.value.length);
+const filteredEventsCount = computed(() => filteredEvents.value.length);
 const heartRateEvents = computed(
   () => events.value.filter((event) => event.HeartRate).length
 );
@@ -711,14 +1050,122 @@ const todayEvents = computed(() => {
   ).length;
 });
 
-const allSelected = computed(() => {
-  return (
-    filteredEvents.value.length > 0 &&
-    selectedEvents.value.length === filteredEvents.value.length
-  );
-});
+// Column options for dropdown
+const columnOptions = computed(() => [
+  {
+    key: "show-all",
+    label: "Show All Columns",
+    icon: () => h("i", { class: "fas fa-eye text-blue-600" }),
+  },
+  {
+    key: "reset-default",
+    label: "Reset to Default",
+    icon: () => h("i", { class: "fas fa-undo text-orange-600" }),
+  },
+  {
+    type: "divider",
+  },
+  ...availableColumns.map((col) => ({
+    key: col.key,
+    label: col.title,
+    disabled: false,
+    icon: () =>
+      h("i", {
+        class: visibleColumns.value.includes(col.key)
+          ? "fas fa-check-square text-green-600"
+          : "fas fa-square text-gray-400",
+      }),
+  })),
+]);
 
 // Methods
+const handleCheck = (rowKeys) => {
+  checkedRowKeys.value = rowKeys;
+};
+
+const handlePageChange = (page) => {
+  pagination.value.page = page;
+  currentPage.value = page;
+};
+
+const handlePageSizeChange = (pageSize) => {
+  pagination.value.pageSize = pageSize;
+  pagination.value.page = 1;
+  currentPage.value = 1;
+};
+
+const handleColumnSelect = (key) => {
+  if (key === "show-all") {
+    showAllColumns();
+  } else if (key === "reset-default") {
+    showDefaultColumns();
+  } else if (visibleColumns.value.includes(key)) {
+    // Don't allow hiding all columns
+    if (visibleColumns.value.length > 1) {
+      visibleColumns.value = visibleColumns.value.filter((col) => col !== key);
+    }
+  } else {
+    visibleColumns.value.push(key);
+  }
+};
+
+const showAllColumns = () => {
+  visibleColumns.value = availableColumns.map((col) => col.key);
+};
+
+const showDefaultColumns = () => {
+  visibleColumns.value = availableColumns
+    .filter((col) => col.default)
+    .map((col) => col.key);
+};
+
+const handleBulkDelete = () => {
+  if (checkedRowKeys.value.length === 0) return;
+
+  dialog.warning({
+    title: "Confirm Bulk Delete",
+    content: `Are you sure you want to delete ${checkedRowKeys.value.length} selected events? This action cannot be undone.`,
+    positiveText: "Delete All",
+    negativeText: "Cancel",
+    onPositiveClick: confirmBulkDelete,
+  });
+};
+
+const confirmBulkDelete = async () => {
+  try {
+    loading.value = true;
+    const deletePromises = checkedRowKeys.value.map((id) =>
+      eventApi.remove(id)
+    );
+
+    await Promise.all(deletePromises);
+
+    // Remove deleted events from the list
+    events.value = events.value.filter(
+      (event) => !checkedRowKeys.value.includes(event._id)
+    );
+
+    checkedRowKeys.value = [];
+    message.success(`Successfully deleted ${deletePromises.length} events`);
+  } catch (error) {
+    console.error("Error deleting events:", error);
+    message.error("Failed to delete some events. Please try again.");
+  } finally {
+    loading.value = false;
+  }
+};
+
+const confirmDeleteSingle = async (event) => {
+  try {
+    await eventApi.remove(event._id);
+    events.value = events.value.filter((e) => e._id !== event._id);
+    message.success(`Successfully deleted event`);
+  } catch (error) {
+    console.error("Error deleting event:", error);
+    message.error("Failed to delete event. Please try again.");
+  }
+};
+
 const loadEvents = async () => {
   try {
     loading.value = true;
@@ -733,7 +1180,8 @@ const loadEvents = async () => {
 };
 
 const refreshEvents = () => {
-  currentPage.value = 1;
+  pagination.value.page = 1;
+  checkedRowKeys.value = [];
   loadEvents();
 };
 
@@ -767,52 +1215,10 @@ const confirmDeleteEvent = async () => {
   }
 };
 
-const toggleSelectAll = () => {
-  if (allSelected.value) {
-    selectedEvents.value = [];
-  } else {
-    selectedEvents.value = filteredEvents.value.map((event) => event._id);
-  }
-};
-
-const bulkDeleteSelected = async () => {
-  if (
-    confirm(
-      `Are you sure you want to delete ${selectedEvents.value.length} selected events?`
-    )
-  ) {
-    try {
-      // Implement bulk delete
-      for (const eventId of selectedEvents.value) {
-        await eventApi.remove(eventId);
-      }
-      events.value = events.value.filter(
-        (event) => !selectedEvents.value.includes(event._id)
-      );
-      selectedEvents.value = [];
-    } catch (error) {
-      console.error("Error bulk deleting events:", error);
-      alert("Error deleting events");
-    }
-  }
-};
-
 const exportEvents = () => {
   // Implement CSV export
   console.log("Export events");
   router.push("/admin/data/export?type=events");
-};
-
-const previousPage = () => {
-  if (currentPage.value > 1) {
-    currentPage.value--;
-  }
-};
-
-const nextPage = () => {
-  if (currentPage.value * pageSize.value < totalEvents.value) {
-    currentPage.value++;
-  }
 };
 
 const formatDateTime = (dateString) => {
@@ -830,5 +1236,11 @@ const formatDateTime = (dateString) => {
 // Lifecycle
 onMounted(() => {
   loadEvents();
+});
+
+// Watch for filter changes and reset pagination
+watch([searchQuery, startDate, endDate, selectedSensorFilter], () => {
+  pagination.value.page = 1;
+  checkedRowKeys.value = [];
 });
 </script>
