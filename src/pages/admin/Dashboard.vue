@@ -143,7 +143,7 @@
       </div>
 
       <!-- System Health -->
-      <div class="bg-white p-4 rounded-lg shadow-sm border">
+      <!-- <div class="bg-white p-4 rounded-lg shadow-sm border">
         <h3 class="text-lg font-medium text-gray-900 mb-4">System Health</h3>
         <div class="space-y-4">
           <div class="flex items-center justify-between">
@@ -174,7 +174,7 @@
             >
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
 
     <!-- Activity Timeline -->

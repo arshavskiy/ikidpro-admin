@@ -6,7 +6,8 @@ import Register from "../pages/Register.vue";
 const routes = [
   {
     path: "/",
-    redirect: "/admin/dashboard",
+    name: "EventsList",
+    component: () => import("../pages/admin/EventManagement.vue"),
   },
   {
     path: "/login",
@@ -26,11 +27,11 @@ const routes = [
     component: () => import("../components/AdminLayout.vue"),
     meta: { requiresAuth: true },
     children: [
-      {
-        path: "dashboard",
-        name: "Dashboard",
-        component: () => import("../pages/admin/Dashboard.vue"),
-      },
+      // {
+      //   path: "dashboard",
+      //   name: "Dashboard",
+      //   component: () => import("../pages/admin/Dashboard.vue"),
+      // },
       {
         path: "users",
         name: "UsersList",

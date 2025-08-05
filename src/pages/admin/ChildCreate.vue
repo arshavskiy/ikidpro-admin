@@ -7,8 +7,8 @@
     </div>
 
     <!-- Child Creation Form -->
-    <div class="bg-white p-4 rounded-lg shadow-sm border">
-      <form @submit.prevent="createChild" class="space-y-6">
+    <NCard>
+      <n-form @submit.prevent="createChild" :model="form" class="space-y-6">
         <!-- Basic Information -->
         <div>
           <h3 class="text-lg font-medium text-gray-900 mb-4">
@@ -17,143 +17,105 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- First Name -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                First Name <span class="text-red-500">*</span>
-              </label>
-              <input
-                v-model="form.firstName"
-                type="text"
-                required
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Enter first name"
-              />
+              <n-form-item label="First Name" path="firstName" required>
+                <n-input
+                  v-model:value="form.firstName"
+                  placeholder="Enter first name"
+                />
+              </n-form-item>
             </div>
 
             <!-- Last Name -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Last Name <span class="text-red-500">*</span>
-              </label>
-              <input
-                v-model="form.lastName"
-                type="text"
-                required
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Enter last name"
-              />
+              <n-form-item label="Last Name" path="lastName" required>
+                <n-input
+                  v-model:value="form.lastName"
+                  placeholder="Enter last name"
+                />
+              </n-form-item>
             </div>
 
             <!-- Gender -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Gender <span class="text-red-500">*</span>
-              </label>
-              <select
-                v-model="form.gender"
-                required
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="">Select gender</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Non-binary">Non-binary</option>
-                <option value="Prefer not to say">Prefer not to say</option>
-              </select>
+              <n-form-item label="Gender" path="gender" required>
+                <n-select
+                  v-model:value="form.gender"
+                  placeholder="Select gender"
+                  :options="[
+                    { label: 'Male', value: 'Male' },
+                    { label: 'Female', value: 'Female' },
+                    { label: 'Non-binary', value: 'Non-binary' },
+                    { label: 'Prefer not to say', value: 'Prefer not to say' },
+                  ]"
+                />
+              </n-form-item>
             </div>
 
             <!-- Date of Birth -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Date of Birth
-              </label>
-              <input
-                v-model="form.dateOfBirth"
-                type="date"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
+              <n-form-item label="Date of Birth" path="dateOfBirth">
+                <n-input v-model:value="form.dateOfBirth" type="date" />
+              </n-form-item>
             </div>
 
             <!-- Age -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Age
-              </label>
-              <input
-                v-model="form.age"
-                type="number"
-                min="0"
-                max="18"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Enter age"
-              />
+              <n-form-item label="Age" path="age">
+                <n-input-number
+                  v-model:value="form.age"
+                  :min="0"
+                  :max="18"
+                  placeholder="Enter age"
+                />
+              </n-form-item>
             </div>
 
             <!-- Parent ID -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Parent <span class="text-red-500">*</span>
-              </label>
-              <p class="text-xs text-gray-500 mb-2">
-                Select the parent who will be responsible for this child
-                <i
-                  v-if="loadingParents"
-                  class="fas fa-spinner animate-spin ml-1"
-                ></i>
-              </p>
-              <div class="space-y-2">
-                <!-- Parent Selection Dropdown -->
-                <select
-                  v-model="form.parentId"
-                  required
-                  :disabled="loadingParents || showManualParentId"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-                >
-                  <option value="">
-                    {{
-                      loadingParents ? "Loading parents..." : "Select a parent"
-                    }}
-                  </option>
-                  <option
-                    v-for="parent in availableParents"
-                    :key="parent._id"
-                    :value="parent._id"
-                  >
-                    {{ parent.firstName }} {{ parent.lastName }}
-                    <span class="text-gray-500">({{ parent.email }})</span>
-                  </option>
-                  <option
-                    v-if="!loadingParents && availableParents.length === 0"
-                    value=""
-                    disabled
-                  >
-                    No parents found
-                  </option>
-                </select>
-
-                <!-- Manual Entry Toggle -->
-                <div class="flex items-center space-x-2">
-                  <input
-                    id="manualParentId"
-                    v-model="showManualParentId"
-                    type="checkbox"
-                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                    @change="handleManualToggle"
+              <n-form-item label="Parent" path="parentId" required>
+                <template #feedback>
+                  <p class="text-xs text-gray-500 mb-2">
+                    Select the parent who will be responsible for this child
+                    <i
+                      v-if="loadingParents"
+                      class="fas fa-spinner animate-spin ml-1"
+                    ></i>
+                  </p>
+                </template>
+                <div class="space-y-2">
+                  <!-- Parent Selection Dropdown -->
+                  <n-select
+                    v-model:value="form.parentId"
+                    :disabled="loadingParents || showManualParentId"
+                    placeholder="Select a parent"
+                    :loading="loadingParents"
+                    :options="
+                      availableParents.map((parent) => ({
+                        label: `${parent.firstName} ${parent.lastName} (${parent.email})`,
+                        value: parent._id,
+                      }))
+                    "
                   />
-                  <label for="manualParentId" class="text-sm text-gray-600">
-                    Enter Parent ID manually
-                  </label>
-                </div>
 
-                <!-- Manual Parent ID Input -->
-                <input
-                  v-if="showManualParentId"
-                  v-model="form.parentId"
-                  type="text"
-                  required
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Enter parent's MongoDB ObjectId"
-                />
-              </div>
+                  <!-- Manual Entry Toggle -->
+                  <div class="flex items-center space-x-2">
+                    <n-checkbox
+                      v-model:checked="showManualParentId"
+                      @update:checked="handleManualToggle"
+                    />
+                    <label class="text-sm text-gray-600">
+                      Enter Parent ID manually
+                    </label>
+                  </div>
+
+                  <!-- Manual Parent ID Input -->
+                  <n-input
+                    v-if="showManualParentId"
+                    v-model:value="form.parentId"
+                    placeholder="Enter parent's MongoDB ObjectId"
+                  />
+                </div>
+              </n-form-item>
             </div>
           </div>
         </div>
@@ -166,33 +128,27 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Height -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Height (cm)
-              </label>
-              <input
-                v-model="form.height"
-                type="number"
-                min="30"
-                max="200"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Enter height in centimeters"
-              />
+              <n-form-item label="Height (cm)" path="height">
+                <n-input-number
+                  v-model:value="form.height"
+                  :min="30"
+                  :max="200"
+                  placeholder="Enter height in centimeters"
+                />
+              </n-form-item>
             </div>
 
             <!-- Weight -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Weight (kg)
-              </label>
-              <input
-                v-model="form.weight"
-                type="number"
-                min="1"
-                max="150"
-                step="0.1"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Enter weight in kilograms"
-              />
+              <n-form-item label="Weight (kg)" path="weight">
+                <n-input-number
+                  v-model:value="form.weight"
+                  :min="1"
+                  :max="150"
+                  :step="0.1"
+                  placeholder="Enter weight in kilograms"
+                />
+              </n-form-item>
             </div>
           </div>
         </div>
@@ -205,80 +161,71 @@
           <div class="space-y-4">
             <!-- Medical Conditions -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Medical Conditions
-              </label>
-              <div class="flex items-center space-x-2 mb-2">
-                <input
-                  v-model="newMedicalCondition"
-                  type="text"
-                  class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Enter medical condition"
-                  @keyup.enter="addMedicalCondition"
-                />
-                <button
-                  type="button"
-                  @click="addMedicalCondition"
-                  class="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                >
-                  Add
-                </button>
-              </div>
-              <div class="flex flex-wrap gap-2">
-                <span
-                  v-for="(condition, index) in form.medicalCondition"
-                  :key="index"
-                  class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800"
-                >
-                  {{ condition }}
-                  <button
-                    type="button"
-                    @click="removeMedicalCondition(index)"
-                    class="ml-2 text-red-600 hover:text-red-800"
+              <n-form-item label="Medical Conditions" path="medicalCondition">
+                <div class="flex items-center space-x-2 mb-2">
+                  <n-input
+                    v-model:value="newMedicalCondition"
+                    placeholder="Enter medical condition"
+                    @keyup.enter="addMedicalCondition"
+                    class="flex-1"
+                  />
+                  <n-button type="primary" @click="addMedicalCondition">
+                    Add
+                  </n-button>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                  <span
+                    v-for="(condition, index) in form.medicalCondition"
+                    :key="index"
+                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800"
                   >
-                    <i class="fas fa-times text-xs"></i>
-                  </button>
-                </span>
-              </div>
+                    {{ condition }}
+                    <button
+                      type="button"
+                      @click="removeMedicalCondition(index)"
+                      class="ml-2 text-red-600 hover:text-red-800"
+                    >
+                      <i class="fas fa-times text-xs"></i>
+                    </button>
+                  </span>
+                </div>
+              </n-form-item>
             </div>
 
             <!-- Limitations -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Physical/Mental Limitations
-              </label>
-              <div class="flex items-center space-x-2 mb-2">
-                <input
-                  v-model="newLimitation"
-                  type="text"
-                  class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Enter limitation"
-                  @keyup.enter="addLimitation"
-                />
-                <button
-                  type="button"
-                  @click="addLimitation"
-                  class="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                >
-                  Add
-                </button>
-              </div>
-              <div class="flex flex-wrap gap-2">
-                <span
-                  v-for="(limitation, index) in form.limitations"
-                  :key="index"
-                  class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800"
-                >
-                  {{ limitation }}
-                  <button
-                    type="button"
-                    @click="removeLimitation(index)"
-                    class="ml-2 text-yellow-600 hover:text-yellow-800"
+              <n-form-item
+                label="Physical/Mental Limitations"
+                path="limitations"
+              >
+                <div class="flex items-center space-x-2 mb-2">
+                  <n-input
+                    v-model:value="newLimitation"
+                    placeholder="Enter limitation"
+                    @keyup.enter="addLimitation"
+                    class="flex-1"
+                  />
+                  <n-button type="primary" @click="addLimitation">
+                    Add
+                  </n-button>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                  <span
+                    v-for="(limitation, index) in form.limitations"
+                    :key="index"
+                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800"
                   >
-                    <i class="fas fa-times text-xs"></i>
-                  </button>
-                </span>
-              </div>
+                    {{ limitation }}
+                    <button
+                      type="button"
+                      @click="removeLimitation(index)"
+                      class="ml-2 text-yellow-600 hover:text-yellow-800"
+                    >
+                      <i class="fas fa-times text-xs"></i>
+                    </button>
+                  </span>
+                </div>
+              </n-form-item>
             </div>
           </div>
         </div>
@@ -290,58 +237,49 @@
           </h3>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Contact Name
-              </label>
-              <input
-                v-model="form.emergencyContact.name"
-                type="text"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Enter contact name"
-              />
+              <n-form-item label="Contact Name" path="emergencyContact.name">
+                <n-input
+                  v-model:value="form.emergencyContact.name"
+                  placeholder="Enter contact name"
+                />
+              </n-form-item>
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Phone Number
-              </label>
-              <input
-                v-model="form.emergencyContact.phone"
-                type="tel"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Enter phone number"
-              />
+              <n-form-item label="Phone Number" path="emergencyContact.phone">
+                <n-input
+                  v-model:value="form.emergencyContact.phone"
+                  placeholder="Enter phone number"
+                />
+              </n-form-item>
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Relationship
-              </label>
-              <input
-                v-model="form.emergencyContact.relationship"
-                type="text"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="e.g., Mother, Father, Guardian"
-              />
+              <n-form-item
+                label="Relationship"
+                path="emergencyContact.relationship"
+              >
+                <n-input
+                  v-model:value="form.emergencyContact.relationship"
+                  placeholder="e.g., Mother, Father, Guardian"
+                />
+              </n-form-item>
             </div>
           </div>
         </div>
 
         <!-- Notes -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">
-            Additional Notes
-          </label>
-          <textarea
-            v-model="form.notes"
-            rows="3"
-            maxlength="1000"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Enter any additional notes (max 1000 characters)"
-          ></textarea>
-          <p class="text-xs text-gray-500 mt-1">
-            {{ form.notes.length }}/1000 characters
-          </p>
+          <n-form-item label="Additional Notes" path="notes">
+            <n-input
+              v-model:value="form.notes"
+              type="textarea"
+              :autosize="{ minRows: 3, maxRows: 5 }"
+              placeholder="Enter any additional notes (max 1000 characters)"
+              maxlength="1000"
+              show-count
+            />
+          </n-form-item>
         </div>
 
         <!-- Error Message -->
@@ -365,17 +303,12 @@
           >
             Cancel
           </router-link>
-          <button
-            type="submit"
-            :disabled="loading"
-            class="px-4 py-2 text-sm text-white bg-blue-600 rounded hover:bg-blue-700 disabled:opacity-50 transition-colors"
-          >
-            <i v-if="loading" class="fas fa-spinner animate-spin mr-2"></i>
+          <n-button type="primary" :loading="loading" attr-type="submit">
             Create Child Profile
-          </button>
+          </n-button>
         </div>
-      </form>
-    </div>
+      </n-form>
+    </NCard>
   </div>
 </template>
 
@@ -384,6 +317,17 @@ import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import * as childUserApi from "../../services/childUserApi";
 import * as userApi from "../../services/userApi";
+import {
+  NCard,
+  NForm,
+  NFormItem,
+  NInput,
+  NInputNumber,
+  NSelect,
+  NButton,
+  NCheckbox,
+  useMessage,
+} from "naive-ui";
 
 const router = useRouter();
 

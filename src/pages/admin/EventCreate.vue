@@ -15,7 +15,7 @@
     </div>
 
     <!-- Event Creation Form -->
-    <div class="bg-white p-4 rounded-lg shadow-sm border">
+    <NCard>
       <form @submit.prevent="createEvent" class="space-y-6">
         <!-- Basic Information -->
         <div>
@@ -405,7 +405,7 @@
           </button>
         </div>
       </form>
-    </div>
+    </NCard>
   </div>
 </template>
 

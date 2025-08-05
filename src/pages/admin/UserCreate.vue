@@ -2,95 +2,81 @@
   <div class="space-y-6">
     <!-- Page Header -->
     <div>
-      <h2 class="text-2xl font-bold text-gray-900">Create New User</h2>
+      <h2 class="text-2xl font-bold text-gray-900">Create New Parent</h2>
       <p class="text-gray-600">Add a new user account to the system</p>
     </div>
 
     <!-- User Creation Form -->
-    <div class="bg-white p-4 rounded-lg shadow-sm border">
-      <form @submit.prevent="createUser" class="space-y-6">
+    <NCard>
+      <n-form @submit.prevent="createUser" :model="form" class="space-y-6">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <!-- First Name -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              First Name <span class="text-red-500">*</span>
-            </label>
-            <input
-              v-model="form.firstName"
-              type="text"
-              required
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter first name"
-            />
+            <n-form-item label="First Name" path="firstName" required>
+              <n-input
+                v-model:value="form.firstName"
+                placeholder="Enter first name"
+              />
+            </n-form-item>
           </div>
 
           <!-- Last Name -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Last Name <span class="text-red-500">*</span>
-            </label>
-            <input
-              v-model="form.lastName"
-              type="text"
-              required
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter last name"
-            />
+            <n-form-item label="Last Name" path="lastName" required>
+              <n-input
+                v-model:value="form.lastName"
+                placeholder="Enter last name"
+              />
+            </n-form-item>
           </div>
 
           <!-- Email -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Email Address <span class="text-red-500">*</span>
-            </label>
-            <input
-              v-model="form.email"
-              type="email"
-              required
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter email address"
-            />
+            <n-form-item label="Email Address" path="email" required>
+              <n-input
+                v-model:value="form.email"
+                type="email"
+                placeholder="Enter email address"
+              />
+            </n-form-item>
           </div>
 
           <!-- Mobile -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Mobile Number
-            </label>
-            <input
-              v-model="form.mobile"
-              type="tel"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter mobile number"
-            />
+            <n-form-item label="Mobile Number" path="mobile">
+              <n-input
+                v-model:value="form.mobile"
+                placeholder="Enter mobile number"
+              />
+            </n-form-item>
           </div>
 
           <!-- Password -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Password <span class="text-red-500">*</span>
-            </label>
-            <input
-              v-model="form.password"
-              type="password"
-              required
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter password"
-            />
+            <n-form-item label="Password" path="password" required>
+              <n-input
+                v-model:value="form.password"
+                type="password"
+                show-password-on="click"
+                placeholder="Enter password"
+              />
+            </n-form-item>
           </div>
 
           <!-- Confirm Password -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Confirm Password <span class="text-red-500">*</span>
-            </label>
-            <input
-              v-model="form.confirmPassword"
-              type="password"
+            <n-form-item
+              label="Confirm Password"
+              path="confirmPassword"
               required
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Confirm password"
-            />
+            >
+              <n-input
+                v-model:value="form.confirmPassword"
+                type="password"
+                show-password-on="click"
+                placeholder="Confirm password"
+              />
+            </n-form-item>
           </div>
         </div>
 
@@ -115,17 +101,12 @@
           >
             Cancel
           </router-link>
-          <button
-            type="submit"
-            :disabled="loading"
-            class="px-4 py-2 text-sm text-white bg-blue-600 rounded hover:bg-blue-700 disabled:opacity-50 transition-colors"
-          >
-            <i v-if="loading" class="fas fa-spinner animate-spin mr-2"></i>
+          <n-button type="primary" :loading="loading" attr-type="submit">
             Create User
-          </button>
+          </n-button>
         </div>
-      </form>
-    </div>
+      </n-form>
+    </NCard>
   </div>
 </template>
 
@@ -133,6 +114,7 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import * as userApi from "../../services/userApi";
+import { NForm, NFormItem, NInput, NButton, useMessage } from "naive-ui";
 
 const router = useRouter();
 

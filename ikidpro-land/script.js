@@ -11,6 +11,42 @@ document.addEventListener("DOMContentLoaded", function () {
   handleWaitlistForm();
 });
 
+const form = document.getElementById("waitlist-form");
+const nameInput = document.getElementById("waitlist-name");
+const emailInput = document.getElementById("waitlist-email");
+const successMsg = document.getElementById("successMsg");
+const errorMsg = document.getElementById("errorMsg");
+const submitBtn = document.getElementById("submitBtn");
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  successMsg.classList.add("hidden");
+  errorMsg.classList.add("hidden");
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Joining...";
+
+  const email = emailInput.value;
+
+  try {
+    const res = await fetch("//api.watchforme.com/waitlist", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: nameInput, email: nameInput }),
+    });
+
+    if (!res.ok) throw new Error("Something went wrong. Try again.");
+
+    successMsg.classList.remove("hidden");
+    emailInput.value = "";
+  } catch (err) {
+    errorMsg.textContent = err.message;
+    errorMsg.classList.remove("hidden");
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Join Waitlist";
+  }
+});
+
 // Navigation functionality
 function initNavigation() {
   const nav = document.querySelector("nav");

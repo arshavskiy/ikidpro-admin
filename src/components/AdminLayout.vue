@@ -180,12 +180,12 @@ const user = computed(() => userStore.user);
 // Route definitions for sidebar menu
 
 const analyticsRoutes = [
-  {
-    name: "Dashboard",
-    path: "/admin/dashboard",
-    label: "Dashboard",
-    icon: "fas fa-tachometer-alt",
-  },
+  // {
+  //   name: "Dashboard",
+  //   path: "/admin/dashboard",
+  //   label: "Dashboard",
+  //   icon: "fas fa-tachometer-alt",
+  // },
   {
     name: "EventStats",
     path: "/admin/analytics/events",
@@ -310,7 +310,7 @@ const pageTitle = computed(() => {
   const titles = {
     "/admin/dashboard": "Dashboard",
     "/admin/users": "Parent Management",
-    "/admin/users/create": "Create New User",
+    "/admin/users/create": "Create New Parent",
     "/admin/users/profiles": "User Profiles",
     "/admin/children": "Child Management",
     "/admin/children/create": "Create New Child",

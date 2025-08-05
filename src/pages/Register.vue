@@ -13,7 +13,11 @@
 
       <!-- Form Container -->
       <div class="p-8">
-        <form @submit.prevent="handleSubmit" class="space-y-8">
+        <n-form
+          ref="formRef"
+          :model="parentForm"
+          @submit.prevent="handleSubmit"
+        >
           <!-- Parent Information Section -->
           <div class="border-b border-gray-200 pb-8">
             <h2
@@ -37,79 +41,76 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2"
-                  >First Name</label
+                <n-form-item
+                  label="First Name"
+                  path="firstName"
+                  :validation-status="errors.firstName ? 'error' : undefined"
+                  :feedback="errors.firstName"
                 >
-                <n-input
-                  v-model:value="parentForm.firstName"
-                  placeholder="Enter your first name"
-                  :status="errors.firstName ? 'error' : undefined"
-                />
-                <p v-if="errors.firstName" class="text-red-600 text-sm mt-1">
-                  {{ errors.firstName }}
-                </p>
+                  <n-input
+                    v-model:value="parentForm.firstName"
+                    placeholder="Enter your first name"
+                  />
+                </n-form-item>
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2"
-                  >Last Name</label
+                <n-form-item
+                  label="Last Name"
+                  path="lastName"
+                  :validation-status="errors.lastName ? 'error' : undefined"
+                  :feedback="errors.lastName"
                 >
-                <n-input
-                  v-model:value="parentForm.lastName"
-                  placeholder="Enter your last name"
-                  :status="errors.lastName ? 'error' : undefined"
-                />
-                <p v-if="errors.lastName" class="text-red-600 text-sm mt-1">
-                  {{ errors.lastName }}
-                </p>
+                  <n-input
+                    v-model:value="parentForm.lastName"
+                    placeholder="Enter your last name"
+                  />
+                </n-form-item>
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2"
-                  >Mobile Number</label
+                <n-form-item
+                  label="Mobile Number"
+                  path="mobile"
+                  :validation-status="errors.mobile ? 'error' : undefined"
+                  :feedback="errors.mobile"
                 >
-                <input
-                  v-model="parentForm.mobile"
-                  type="tel"
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
-                  :class="{ 'border-red-500': errors.mobile }"
-                  placeholder="Enter your mobile number"
-                />
-                <p v-if="errors.mobile" class="text-red-600 text-sm mt-1">
-                  {{ errors.mobile }}
-                </p>
+                  <n-input
+                    v-model:value="parentForm.mobile"
+                    placeholder="Enter your mobile number"
+                  />
+                </n-form-item>
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2"
-                  >Email Address</label
+                <n-form-item
+                  label="Email Address"
+                  path="email"
+                  :validation-status="errors.email ? 'error' : undefined"
+                  :feedback="errors.email"
                 >
-                <input
-                  v-model="parentForm.email"
-                  type="email"
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
-                  :class="{ 'border-red-500': errors.email }"
-                  placeholder="Enter your email address"
-                />
-                <p v-if="errors.email" class="text-red-600 text-sm mt-1">
-                  {{ errors.email }}
-                </p>
+                  <n-input
+                    v-model:value="parentForm.email"
+                    type="email"
+                    placeholder="Enter your email address"
+                  />
+                </n-form-item>
               </div>
 
               <div class="md:col-span-2">
-                <label class="block text-sm font-medium text-gray-700 mb-2"
-                  >Password</label
+                <n-form-item
+                  label="Password"
+                  path="password"
+                  :validation-status="errors.password ? 'error' : undefined"
+                  :feedback="errors.password"
                 >
-                <input
-                  v-model="parentForm.password"
-                  type="password"
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
-                  :class="{ 'border-red-500': errors.password }"
-                  placeholder="Create a strong password"
-                />
-                <p v-if="errors.password" class="text-red-600 text-sm mt-1">
-                  {{ errors.password }}
-                </p>
+                  <n-input
+                    v-model:value="parentForm.password"
+                    type="password"
+                    show-password-on="click"
+                    placeholder="Create a strong password"
+                  />
+                </n-form-item>
               </div>
             </div>
           </div>
@@ -135,10 +136,10 @@
                 </svg>
                 Children Information
               </h2>
-              <button
-                type="button"
+              <n-button
+                type="primary"
                 @click="addChild"
-                class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center"
+                class="flex items-center"
               >
                 <svg
                   class="w-4 h-4 mr-2"
@@ -154,7 +155,7 @@
                   ></path>
                 </svg>
                 Add Child
-              </button>
+              </n-button>
             </div>
 
             <!-- Child Forms -->
@@ -167,11 +168,11 @@
                 <h3 class="text-lg font-medium text-gray-800">
                   Child {{ index + 1 }}
                 </h3>
-                <button
+                <n-button
                   v-if="childrenForms.length > 1"
-                  type="button"
+                  type="error"
+                  text
                   @click="removeChild(index)"
-                  class="text-red-600 hover:text-red-800 transition-colors"
                 >
                   <svg
                     class="w-5 h-5"
@@ -186,230 +187,192 @@
                       d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                     ></path>
                   </svg>
-                </button>
+                </n-button>
               </div>
 
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1"
-                    >First Name</label
+                  <n-form-item
+                    :label="'First Name'"
+                    :path="`child_${index}_firstName`"
+                    :validation-status="
+                      errors[`child_${index}_firstName`] ? 'error' : undefined
+                    "
+                    :feedback="errors[`child_${index}_firstName`]"
                   >
-                  <input
-                    v-model="child.firstName"
-                    type="text"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                    :class="{
-                      'border-red-500': errors[`child_${index}_firstName`],
-                    }"
-                    placeholder="Child's first name"
-                  />
-                  <p
-                    v-if="errors[`child_${index}_firstName`]"
-                    class="text-red-600 text-xs mt-1"
-                  >
-                    {{ errors[`child_${index}_firstName`] }}
-                  </p>
+                    <n-input
+                      v-model:value="child.firstName"
+                      placeholder="Child's first name"
+                    />
+                  </n-form-item>
                 </div>
 
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1"
-                    >Last Name</label
+                  <n-form-item
+                    :label="'Last Name'"
+                    :path="`child_${index}_lastName`"
+                    :validation-status="
+                      errors[`child_${index}_lastName`] ? 'error' : undefined
+                    "
+                    :feedback="errors[`child_${index}_lastName`]"
                   >
-                  <input
-                    v-model="child.lastName"
-                    type="text"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                    :class="{
-                      'border-red-500': errors[`child_${index}_lastName`],
-                    }"
-                    placeholder="Child's last name"
-                  />
-                  <p
-                    v-if="errors[`child_${index}_lastName`]"
-                    class="text-red-600 text-xs mt-1"
-                  >
-                    {{ errors[`child_${index}_lastName`] }}
-                  </p>
+                    <n-input
+                      v-model:value="child.lastName"
+                      placeholder="Child's last name"
+                    />
+                  </n-form-item>
                 </div>
 
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1"
-                    >Gender</label
+                  <n-form-item
+                    :label="'Gender'"
+                    :path="`child_${index}_gender`"
+                    :validation-status="
+                      errors[`child_${index}_gender`] ? 'error' : undefined
+                    "
+                    :feedback="errors[`child_${index}_gender`]"
                   >
-                  <select
-                    v-model="child.gender"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                    :class="{
-                      'border-red-500': errors[`child_${index}_gender`],
-                    }"
-                  >
-                    <option value="">Select gender</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Non-binary">Non-binary</option>
-                    <option value="Prefer not to say">Prefer not to say</option>
-                  </select>
-                  <p
-                    v-if="errors[`child_${index}_gender`]"
-                    class="text-red-600 text-xs mt-1"
-                  >
-                    {{ errors[`child_${index}_gender`] }}
-                  </p>
+                    <n-select
+                      v-model:value="child.gender"
+                      placeholder="Select gender"
+                      :options="[
+                        { label: 'Male', value: 'Male' },
+                        { label: 'Female', value: 'Female' },
+                        { label: 'Non-binary', value: 'Non-binary' },
+                        {
+                          label: 'Prefer not to say',
+                          value: 'Prefer not to say',
+                        },
+                      ]"
+                    />
+                  </n-form-item>
                 </div>
 
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1"
-                    >Date of Birth</label
+                  <n-form-item
+                    :label="'Date of Birth'"
+                    :path="`child_${index}_dateOfBirth`"
+                    :validation-status="
+                      errors[`child_${index}_dateOfBirth`] ? 'error' : undefined
+                    "
+                    :feedback="errors[`child_${index}_dateOfBirth`]"
                   >
-                  <input
-                    v-model="child.dateOfBirth"
-                    type="date"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                    :class="{
-                      'border-red-500': errors[`child_${index}_dateOfBirth`],
-                    }"
-                  />
-                  <p
-                    v-if="errors[`child_${index}_dateOfBirth`]"
-                    class="text-red-600 text-xs mt-1"
-                  >
-                    {{ errors[`child_${index}_dateOfBirth`] }}
-                  </p>
+                    <n-input v-model:value="child.dateOfBirth" type="date" />
+                  </n-form-item>
                 </div>
 
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1"
-                    >Age</label
+                  <n-form-item
+                    :label="'Age'"
+                    :path="`child_${index}_age`"
+                    :validation-status="
+                      errors[`child_${index}_age`] ? 'error' : undefined
+                    "
+                    :feedback="errors[`child_${index}_age`]"
                   >
-                  <input
-                    v-model.number="child.age"
-                    type="number"
-                    min="0"
-                    max="18"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                    :class="{ 'border-red-500': errors[`child_${index}_age`] }"
-                    placeholder="Age"
-                  />
-                  <p
-                    v-if="errors[`child_${index}_age`]"
-                    class="text-red-600 text-xs mt-1"
-                  >
-                    {{ errors[`child_${index}_age`] }}
-                  </p>
+                    <n-input-number
+                      v-model:value="child.age"
+                      :min="0"
+                      :max="18"
+                      placeholder="Age"
+                    />
+                  </n-form-item>
                 </div>
 
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1"
-                    >Height (cm)</label
+                  <n-form-item
+                    :label="'Height (cm)'"
+                    :path="`child_${index}_height`"
+                    :validation-status="
+                      errors[`child_${index}_height`] ? 'error' : undefined
+                    "
+                    :feedback="errors[`child_${index}_height`]"
                   >
-                  <input
-                    v-model.number="child.height"
-                    type="number"
-                    min="30"
-                    max="200"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                    :class="{
-                      'border-red-500': errors[`child_${index}_height`],
-                    }"
-                    placeholder="Height in cm"
-                  />
-                  <p
-                    v-if="errors[`child_${index}_height`]"
-                    class="text-red-600 text-xs mt-1"
-                  >
-                    {{ errors[`child_${index}_height`] }}
-                  </p>
+                    <n-input-number
+                      v-model:value="child.height"
+                      :min="30"
+                      :max="200"
+                      placeholder="Height in cm"
+                    />
+                  </n-form-item>
                 </div>
 
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1"
-                    >Weight (kg)</label
+                  <n-form-item
+                    :label="'Weight (kg)'"
+                    :path="`child_${index}_weight`"
+                    :validation-status="
+                      errors[`child_${index}_weight`] ? 'error' : undefined
+                    "
+                    :feedback="errors[`child_${index}_weight`]"
                   >
-                  <input
-                    v-model.number="child.weight"
-                    type="number"
-                    min="1"
-                    max="150"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                    :class="{
-                      'border-red-500': errors[`child_${index}_weight`],
-                    }"
-                    placeholder="Weight in kg"
-                  />
-                  <p
-                    v-if="errors[`child_${index}_weight`]"
-                    class="text-red-600 text-xs mt-1"
-                  >
-                    {{ errors[`child_${index}_weight`] }}
-                  </p>
+                    <n-input-number
+                      v-model:value="child.weight"
+                      :min="1"
+                      :max="150"
+                      placeholder="Weight in kg"
+                    />
+                  </n-form-item>
                 </div>
 
                 <div class="md:col-span-2">
-                  <label class="block text-sm font-medium text-gray-700 mb-1"
-                    >Medical Conditions</label
-                  >
-                  <input
-                    v-model="child.medicalConditionsInput"
-                    type="text"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                    placeholder="Separate multiple conditions with commas"
-                  />
-                  <p class="text-xs text-gray-500 mt-1">Leave empty if none</p>
+                  <n-form-item :label="'Medical Conditions'">
+                    <n-input
+                      v-model:value="child.medicalConditionsInput"
+                      placeholder="Separate multiple conditions with commas"
+                    />
+                    <template #feedback>
+                      <p class="text-xs text-gray-500 mt-1">
+                        Leave empty if none
+                      </p>
+                    </template>
+                  </n-form-item>
                 </div>
 
                 <div class="md:col-span-2">
-                  <label class="block text-sm font-medium text-gray-700 mb-1"
-                    >Physical/Mental Limitations</label
-                  >
-                  <input
-                    v-model="child.limitationsInput"
-                    type="text"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                    placeholder="Separate multiple limitations with commas"
-                  />
-                  <p class="text-xs text-gray-500 mt-1">Leave empty if none</p>
+                  <n-form-item :label="'Physical/Mental Limitations'">
+                    <n-input
+                      v-model:value="child.limitationsInput"
+                      placeholder="Separate multiple limitations with commas"
+                    />
+                    <template #feedback>
+                      <p class="text-xs text-gray-500 mt-1">
+                        Leave empty if none
+                      </p>
+                    </template>
+                  </n-form-item>
                 </div>
 
                 <div class="lg:col-span-3">
-                  <label class="block text-sm font-medium text-gray-700 mb-1"
-                    >Emergency Contact</label
-                  >
-                  <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <input
-                      v-model="child.emergencyContact.name"
-                      type="text"
-                      class="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      placeholder="Contact name"
-                    />
-                    <input
-                      v-model="child.emergencyContact.phone"
-                      type="tel"
-                      class="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      placeholder="Phone number"
-                    />
-                    <input
-                      v-model="child.emergencyContact.relationship"
-                      type="text"
-                      class="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      placeholder="Relationship"
-                    />
-                  </div>
+                  <n-form-item :label="'Emergency Contact'">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      <n-input
+                        v-model:value="child.emergencyContact.name"
+                        placeholder="Contact name"
+                      />
+                      <n-input
+                        v-model:value="child.emergencyContact.phone"
+                        placeholder="Phone number"
+                      />
+                      <n-input
+                        v-model:value="child.emergencyContact.relationship"
+                        placeholder="Relationship"
+                      />
+                    </div>
+                  </n-form-item>
                 </div>
 
                 <div class="lg:col-span-3">
-                  <label class="block text-sm font-medium text-gray-700 mb-1"
-                    >Additional Notes</label
-                  >
-                  <textarea
-                    v-model="child.notes"
-                    rows="3"
-                    maxlength="1000"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                    placeholder="Any additional information about the child"
-                  ></textarea>
-                  <p class="text-xs text-gray-500 mt-1">
-                    {{ child.notes?.length || 0 }}/1000 characters
-                  </p>
+                  <n-form-item :label="'Additional Notes'">
+                    <n-input
+                      v-model:value="child.notes"
+                      type="textarea"
+                      :autosize="{ minRows: 3, maxRows: 5 }"
+                      placeholder="Any additional information about the child"
+                      maxlength="1000"
+                      show-count
+                    />
+                  </n-form-item>
                 </div>
               </div>
             </div>
@@ -432,38 +395,17 @@
               Already have an account? Sign in
             </router-link>
 
-            <button
-              type="submit"
-              :disabled="loading"
-              class="px-8 py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            <n-button
+              type="primary"
+              size="large"
+              :loading="loading"
+              attr-type="submit"
+              class="px-8"
             >
-              <span v-if="loading" class="flex items-center">
-                <svg
-                  class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    class="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    stroke-width="4"
-                  ></circle>
-                  <path
-                    class="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-                Creating Account...
-              </span>
-              <span v-else>Create Account</span>
-            </button>
+              {{ loading ? "Creating Account..." : "Create Account" }}
+            </n-button>
           </div>
-        </form>
+        </n-form>
       </div>
     </div>
   </div>
@@ -475,9 +417,29 @@ import { useRouter } from "vue-router";
 import { useUserStore } from "../stores/userStore";
 import { validateParentForm, validateChildForm } from "../utils/validation";
 import { registerParentWithChildren } from "../services/registrationApi";
+import {
+  NForm,
+  NFormItem,
+  NInput,
+  NInputNumber,
+  NSelect,
+  NButton,
+  NGrid,
+  NGridItem,
+} from "naive-ui";
 
 export default {
   name: "Register",
+  components: {
+    NForm,
+    NFormItem,
+    NInput,
+    NInputNumber,
+    NSelect,
+    NButton,
+    NGrid,
+    NGridItem,
+  },
   setup() {
     const router = useRouter();
     const userStore = useUserStore();
