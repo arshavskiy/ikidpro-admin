@@ -18,7 +18,7 @@
 
     <!-- Search and Filters -->
     <n-card>
-      <div class="flex flex-wrap gap-4 items-center">
+      <div class="flex gap-2">
         <div class="flex-1 min-w-64">
           <n-input
             v-model:value="searchQuery"
@@ -26,7 +26,7 @@
             clearable
           />
         </div>
-        <n-date-picker
+        <!-- <n-date-picker
           v-model:value="startDate"
           type="date"
           placeholder="Start Date"
@@ -35,12 +35,13 @@
           v-model:value="endDate"
           type="date"
           placeholder="End Date"
-        />
+        /> -->
         <n-select
           v-model:value="selectedSensorFilter"
           :options="sensorFilterOptions"
           placeholder="All Sensors"
         />
+
         <n-button @click="refreshEvents" type="default">
           <template #icon>
             <i class="fas fa-refresh"></i>
@@ -488,7 +489,6 @@ import { useMessage, useDialog } from "naive-ui";
 import {
   NButton,
   NTag,
-  NAvatar,
   NSpace,
   NPopconfirm,
   NCard,
@@ -498,7 +498,6 @@ import {
   NDescriptions,
   NDescriptionsItem,
   NInput,
-  NDatePicker,
   NSelect,
 } from "naive-ui";
 import * as eventApi from "../../services/eventApi";
@@ -597,13 +596,14 @@ const pagination = ref({
 const allColumns = [
   {
     type: "selection",
+    width: 20,
   },
   {
     title: "Timestamp",
     key: "timestamp",
     width: 60,
     render(row) {
-      return h("div", { class: "text-sm" }, formatDateTime(row.Timestamp));
+      return h("div", { class: "text-sm" }, formatDateTime(row?.Timestamp));
     },
   },
   {
@@ -977,11 +977,13 @@ const filteredEvents = computed(() => {
 
   // Date range filter
   if (startDate.value) {
+    debugger;
     filtered = filtered.filter(
       (event) => new Date(event.Timestamp) >= new Date(startDate.value)
     );
   }
   if (endDate.value) {
+    debugger;
     filtered = filtered.filter(
       (event) => new Date(event.Timestamp) <= new Date(endDate.value)
     );
@@ -1240,13 +1242,17 @@ const formatDateTime = (dateString) => {
 };
 
 // Lifecycle
-onMounted(() => {
-  loadEvents();
+onMounted(async () => {
+  try {
+    await loadEvents();
+  } catch (error) {
+    console.error("Error during component mount:", error);
+  }
 });
 
 // Watch for filter changes and reset pagination
-watch([searchQuery, startDate, endDate, selectedSensorFilter], () => {
-  pagination.value.page = 1;
-  checkedRowKeys.value = [];
-});
+// watch([searchQuery, selectedSensorFilter], () => {
+//   pagination.value.page = 1;
+//   checkedRowKeys.value = [];
+// });
 </script>
