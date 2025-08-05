@@ -84,18 +84,12 @@
           </label>
         </div>
         <div class="flex space-x-2">
-          <button
-            @click="selectAllFields"
-            class="text-xs text-blue-600 hover:text-blue-800 cursor-pointer"
-          >
+          <NButton @click="selectAllFields" type="success">
             Select All
-          </button>
-          <button
-            @click="deselectAllFields"
-            class="text-xs text-gray-600 hover:text-gray-800 cursor-pointer"
-          >
+          </NButton>
+          <NButton @click="deselectAllFields" type="warning">
             Deselect All
-          </button>
+          </NButton>
         </div>
       </div>
 
@@ -187,6 +181,7 @@ import { useRoute } from "vue-router";
 import * as userApi from "../../services/userApi";
 import * as childUserApi from "../../services/childUserApi";
 import * as eventApi from "../../services/eventApi";
+import { NButton } from "naive-ui";
 
 const emit = defineEmits(["export-success", "export-error"]);
 

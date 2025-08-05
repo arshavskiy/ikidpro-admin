@@ -179,25 +179,14 @@
       </div>
 
       <!-- Quick Actions -->
-      <div class="flex space-x-2">
-        <button
-          @click="autoMapFields"
-          class="text-xs text-blue-600 hover:text-blue-800 cursor-pointer"
-        >
+      <div class="flex">
+        <NButton type="success" class="mr-2" @click="autoMapFields">
           Auto-Map Similar Names
-        </button>
-        <button
-          @click="clearAllMappings"
-          class="text-xs text-gray-600 hover:text-gray-800 cursor-pointer"
-        >
+        </NButton>
+        <NButton type="success" class="mr-2" @click="clearAllMappings">
           Clear All Mappings
-        </button>
-        <button
-          @click="mapAllFields"
-          class="text-xs text-green-600 hover:text-green-800 cursor-pointer"
-        >
-          Map All Fields
-        </button>
+        </NButton>
+        <NButton type="success" @click="mapAllFields"> Map All Fields </NButton>
       </div>
 
       <!-- Mapping Summary -->
