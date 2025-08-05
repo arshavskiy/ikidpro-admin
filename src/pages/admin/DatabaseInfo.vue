@@ -101,17 +101,17 @@
             <h3 class="text-lg font-medium text-gray-900">
               Collections Overview
             </h3>
-            <button
+            <n-button
               @click="refreshCollections"
-              :disabled="loading"
-              class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+              :loading="loading"
+              type="primary"
+              size="small"
             >
-              <i
-                class="fas fa-refresh mr-1"
-                :class="{ 'animate-spin': loading }"
-              ></i>
+              <template #icon>
+                <i class="fas fa-refresh"></i>
+              </template>
               Refresh
-            </button>
+            </n-button>
           </div>
         </div>
 
@@ -193,18 +193,26 @@
                 <td
                   class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2"
                 >
-                  <button
+                  <n-button
                     @click="viewCollectionDetails(collection)"
-                    class="text-blue-600 hover:text-blue-900"
+                    type="info"
+                    size="small"
+                    secondary
                   >
-                    <i class="fas fa-eye"></i>
-                  </button>
-                  <button
+                    <template #icon>
+                      <i class="fas fa-eye"></i>
+                    </template>
+                  </n-button>
+                  <n-button
                     @click="exportCollection(collection)"
-                    class="text-green-600 hover:text-green-900"
+                    type="success"
+                    size="small"
+                    secondary
                   >
-                    <i class="fas fa-download"></i>
-                  </button>
+                    <template #icon>
+                      <i class="fas fa-download"></i>
+                    </template>
+                  </n-button>
                 </td>
               </tr>
             </tbody>
@@ -380,12 +388,16 @@
               <h3 class="text-lg font-medium text-gray-900">
                 Collection Details: {{ selectedCollection.name }}
               </h3>
-              <button
+              <n-button
                 @click="selectedCollection = null"
-                class="text-gray-400 hover:text-gray-600"
+                type="default"
+                size="small"
+                circle
               >
-                <i class="fas fa-times"></i>
-              </button>
+                <template #icon>
+                  <i class="fas fa-times"></i>
+                </template>
+              </n-button>
             </div>
           </div>
           <div class="p-6">
@@ -516,18 +528,19 @@
       <p class="text-gray-500 mb-4">
         Unable to connect to the database or fetch information.
       </p>
-      <button
-        @click="refreshCollections"
-        class="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-      >
-        <i class="fas fa-refresh mr-2"></i>Retry Connection
-      </button>
+      <n-button @click="refreshCollections" type="primary">
+        <template #icon>
+          <i class="fas fa-refresh"></i>
+        </template>
+        Retry Connection
+      </n-button>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
+import { NButton } from "naive-ui";
 import StatisticsCard from "../../components/StatisticsCard.vue";
 import * as eventApi from "../../services/eventApi";
 

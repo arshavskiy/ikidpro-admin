@@ -1,11 +1,6 @@
 <template>
   <!-- Sensor Values Line Chart -->
-  <div class="bg-white p-4 rounded-lg shadow-sm border">
-    <div class="flex justify-between items-center mb-4">
-      <h3 class="text-lg font-medium text-gray-900">Sensor Values Over Time</h3>
-      <div class="text-sm text-gray-500">Real-time sensor measurements</div>
-    </div>
-
+  <div class="bg-white p-4 rounded-lg shadow-sm">
     <!-- Multi-Checkbox Sensor Selection -->
     <!-- <div class="mb-6 p-4 bg-gray-50 rounded-lg">
       <h4 class="text-sm font-medium text-gray-700 mb-3">
@@ -51,11 +46,7 @@
 
     <!-- ECharts Line Chart for Values -->
     <div v-if="sensorValues && sensorValues.length > 0" class="h-106">
-      <v-chart
-        :option="sensorValuesChartOption"
-        :autoresize="true"
-        class="h-full w-full"
-      />
+      <v-chart :option="sensorValuesChartOption" :autoresize="true" />
     </div>
 
     <!-- Empty State -->
@@ -229,7 +220,7 @@ const sensorValuesChartOption = computed(() => ({
           {
             type: "slider",
             show: true,
-            start: 20,
+            start: 70,
             end: 100,
           },
         ]

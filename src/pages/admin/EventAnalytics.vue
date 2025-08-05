@@ -9,54 +9,25 @@
         </p>
       </div>
       <div class="flex items-center space-x-2">
-        <!-- <select
-          v-model="selectedEventType"
-          @change="loadAnalytics"
-          class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option
-            v-for="option in eventTypeOptions"
-            :key="option.value"
-            :value="option.value"
-          >
-            {{ option.label }}
-          </option>
-        </select> -->
-        <select
-          v-model="selectedChildId"
-          @change="loadAnalytics"
-          class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="all">All Children</option>
-          <option
-            v-for="childId in availableChildren"
-            :key="childId"
-            :value="childId"
-          >
-            Child {{ childId }}
-          </option>
-        </select>
-        <select
-          v-model="selectedTimeRange"
-          @change="loadAnalytics"
-          class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="7">Last 7 days</option>
-          <option value="30">Last 30 days</option>
-          <option value="90">Last 90 days</option>
-          <option value="365">Last year</option>
-        </select>
-        <button
-          @click="loadAnalytics"
-          :disabled="loading"
-          class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
-        >
-          <i
-            class="fas fa-refresh mr-2"
-            :class="{ 'animate-spin': loading }"
-          ></i>
+        <n-select
+          v-model:value="selectedChildId"
+          @update:value="loadAnalytics"
+          :options="childOptions"
+          placeholder="Select Child"
+          :style="{ minWidth: '200px' }"
+        />
+        <n-select
+          v-model:value="selectedTimeRange"
+          @update:value="loadAnalytics"
+          :options="timeRangeOptions"
+          placeholder="Select Time Range"
+        />
+        <n-button @click="loadAnalytics" :loading="loading" type="primary">
+          <template #icon>
+            <i class="fas fa-refresh"></i>
+          </template>
           Refresh
-        </button>
+        </n-button>
       </div>
     </div>
 
@@ -78,30 +49,8 @@
         :event-type-options="eventTypeOptions"
       />
 
-      <!-- Charts Row -->
-      <ChartsRow
-        :analytics="analytics"
-        :selected-event-type="selectedEventType"
-        :selected-time-range="selectedTimeRange"
-        :event-type-options="eventTypeOptions"
-      />
-
-      <!-- GPS Activity Map -->
-      <GpsActivityMap
-        :gps-events="gpsEventsForMap"
-        :selected-child-id="selectedChildId"
-      />
-
-      <!-- Event Data Line Chart -->
-      <EventDataTimeline
-        :event-timeline="analytics.eventTimeline"
-        :selected-event-type="selectedEventType"
-        :selected-time-range="selectedTimeRange"
-        :event-type-options="eventTypeOptions"
-      />
-
       <!-- Sensor Data Distribution -->
-      <div class="bg-white p-4 rounded-lg shadow-sm border">
+      <n-card>
         <h3 class="text-lg font-medium text-gray-900 mb-4">
           Sensor Data Distribution
         </h3>
@@ -164,10 +113,133 @@
             </div>
           </div>
         </div>
+      </n-card>
+
+      <!-- Event Data Line Chart -->
+      <EventDataTimeline
+        :event-timeline="analytics.eventTimeline"
+        :selected-event-type="selectedEventType"
+        :selected-time-range="selectedTimeRange"
+        :event-type-options="eventTypeOptions"
+      />
+
+      <!-- Charts Row -->
+      <ChartsRow
+        :analytics="analytics"
+        :selected-event-type="selectedEventType"
+        :selected-time-range="selectedTimeRange"
+        :event-type-options="eventTypeOptions"
+      />
+
+      <!-- GPS Activity Map -->
+      <GpsActivityMap
+        :gps-events="gpsEventsForMap"
+        :selected-child-id="selectedChildId"
+      />
+
+      <!-- Health Metrics Overview -->
+      <div
+        class="grid grid-cols-1 md:grid-cols-3 gap-6 bg-white p-4 rounded-lg shadow-sm"
+      >
+        <Card>
+          <h3 class="text-lg font-medium text-gray-900 mb-4">
+            Heart Rate Stats
+          </h3>
+          <div class="space-y-3">
+            <div class="flex justify-between">
+              <span class="text-sm text-gray-500">Average HR:</span>
+              <span class="text-sm font-medium"
+                >{{ analytics.heartRate.average }} bpm</span
+              >
+            </div>
+            <div class="flex justify-between">
+              <span class="text-sm text-gray-500">Max HR:</span>
+              <span class="text-sm font-medium text-red-600"
+                >{{ analytics.heartRate.max }} bpm</span
+              >
+            </div>
+            <div class="flex justify-between">
+              <span class="text-sm text-gray-500">Min HR:</span>
+              <span class="text-sm font-medium text-blue-600"
+                >{{ analytics.heartRate.min }} bpm</span
+              >
+            </div>
+            <div class="flex justify-between">
+              <span class="text-sm text-gray-500">Total Readings:</span>
+              <span class="text-sm font-medium">{{
+                analytics.heartRate.count
+              }}</span>
+            </div>
+          </div>
+        </Card>
+
+        <Card>
+          <h3 class="text-lg font-medium text-gray-900 mb-4">
+            Temperature Stats
+          </h3>
+          <div class="space-y-3">
+            <div class="flex justify-between">
+              <span class="text-sm text-gray-500">Average Temp:</span>
+              <span class="text-sm font-medium"
+                >{{ analytics.temperature.average }}°C</span
+              >
+            </div>
+            <div class="flex justify-between">
+              <span class="text-sm text-gray-500">Max Temp:</span>
+              <span class="text-sm font-medium text-red-600"
+                >{{ analytics.temperature.max }}°C</span
+              >
+            </div>
+            <div class="flex justify-between">
+              <span class="text-sm text-gray-500">Min Temp:</span>
+              <span class="text-sm font-medium text-blue-600"
+                >{{ analytics.temperature.min }}°C</span
+              >
+            </div>
+            <div class="flex justify-between">
+              <span class="text-sm text-gray-500">Total Readings:</span>
+              <span class="text-sm font-medium">{{
+                analytics.temperature.count
+              }}</span>
+            </div>
+          </div>
+        </Card>
+
+        <Card>
+          <h3 class="text-lg font-medium text-gray-900 mb-4">
+            Activity Overview
+          </h3>
+          <div class="space-y-3">
+            <div class="flex justify-between">
+              <span class="text-sm text-gray-500">GPS Locations:</span>
+              <span class="text-sm font-medium">{{
+                analytics.activity.gpsCount
+              }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-sm text-gray-500">Sound Events:</span>
+              <span class="text-sm font-medium">{{
+                analytics.activity.soundCount
+              }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-sm text-gray-500">Motion Events:</span>
+              <span class="text-sm font-medium">{{
+                analytics.activity.motionCount
+              }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-sm text-gray-500">Avg Sound Level:</span>
+              <span class="text-sm font-medium"
+                >{{ analytics.activity.avgSoundLevel }} dB</span
+              >
+            </div>
+          </div>
+        </Card>
       </div>
 
       <!-- Top Active Children -->
-      <div class="bg-white p-4 rounded-lg shadow-sm border">
+      <n-card>
         <div class="flex justify-between items-center mb-4">
           <h3 class="text-lg font-medium text-gray-900">
             Most Active Children
@@ -268,11 +340,11 @@
             </tbody>
           </table>
         </div>
-      </div>
+      </n-card>
 
       <!-- Health Alerts & Insights -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="bg-white p-4 rounded-lg shadow-sm border">
+        <n-card>
           <h3 class="text-lg font-medium text-gray-900 mb-4">
             Health Insights
           </h3>
@@ -307,9 +379,9 @@
               </div>
             </div>
           </div>
-        </div>
+        </n-card>
 
-        <div class="bg-white p-4 rounded-lg shadow-sm border">
+        <n-card>
           <h3 class="text-lg font-medium text-gray-900 mb-4">
             Recent Activity Patterns
           </h3>
@@ -348,7 +420,7 @@
               >
             </div>
           </div>
-        </div>
+        </n-card>
       </div>
     </div>
 
@@ -372,6 +444,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from "vue";
+import { NSelect, NButton, NCard } from "naive-ui";
 import VChart from "vue-echarts";
 import * as echarts from "echarts";
 import * as eventApi from "../../services/eventApi";
@@ -383,10 +456,27 @@ import GpsActivityMap from "../../components/GpsActivityMap.vue";
 
 // Reactive data
 const loading = ref(false);
-const selectedTimeRange = ref(30);
+const selectedTimeRange = ref("30");
 const selectedEventType = ref("all");
 const selectedChildId = ref("all");
 const availableChildren = ref([]);
+
+// Child options computed from available children
+const childOptions = computed(() => [
+  { label: "All Children", value: "all" },
+  ...availableChildren.value.map((childId) => ({
+    label: `Child ${childId}`,
+    value: childId,
+  })),
+]);
+
+// Time range options
+const timeRangeOptions = [
+  { label: "Last 7 days", value: "7" },
+  { label: "Last 30 days", value: "30" },
+  { label: "Last 90 days", value: "90" },
+  { label: "Last year", value: "365" },
+];
 
 // Event type options
 const eventTypeOptions = [

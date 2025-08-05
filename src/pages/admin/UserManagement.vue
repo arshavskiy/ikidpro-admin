@@ -3,7 +3,7 @@
     <!-- Page Header -->
     <div class="flex justify-between items-center">
       <div>
-        <h2 class="text-2xl font-bold text-gray-900">User Management</h2>
+        <h2 class="text-2xl font-bold text-gray-900">Parent Management</h2>
         <p class="text-gray-600">Manage all registered users in the system</p>
       </div>
       <router-link
@@ -15,24 +15,23 @@
     </div>
 
     <!-- Search and Filters -->
-    <Card>
+    <n-card>
       <div class="flex flex-wrap gap-4 items-center">
         <div class="flex-1 min-w-64">
-          <input
-            v-model="searchQuery"
-            type="text"
-            placeholder="Search users by name, email, or mobile..."
-            class="w-full px-3 py-2border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          <n-input
+            v-model:value="searchQuery"
+            placeholder="Search users by name email..."
+            clearable
           />
         </div>
-        <button
-          @click="refreshUsers"
-          class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
-        >
-          <i class="fas fa-refresh mr-2"></i>Refresh
-        </button>
+        <n-button @click="refreshUsers" type="default">
+          <template #icon>
+            <i class="fas fa-refresh"></i>
+          </template>
+          Refresh
+        </n-button>
       </div>
-    </Card>
+    </n-card>
 
     <!-- Statistics Cards -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -68,7 +67,7 @@
     <!-- Users Table -->
     <div class="bg-white rounded-lg shadow-smoverflow-hidden max-h-150">
       <div class="px-6 py-4 border-b border-gray-200">
-        <h3 class="text-lg font-medium text-gray-900">All Users</h3>
+        <h3 class="text-lg font-medium text-gray-900">All Parents</h3>
       </div>
 
       <div class="overflow-auto max-h-150">
@@ -146,25 +145,37 @@
               <td
                 class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2"
               >
-                <button
+                <n-button
                   @click="viewUser(user)"
-                  class="text-blue-600 hover:text-blue-900 cursor-pointer"
+                  type="info"
+                  size="small"
+                  secondary
                 >
-                  <i class="fas fa-eye"></i>
-                </button>
-                <button
+                  <template #icon>
+                    <i class="fas fa-eye"></i>
+                  </template>
+                </n-button>
+                <n-button
                   @click="editUser(user)"
-                  class="text-indigo-600 hover:text-indigo-900 cursor-pointer"
+                  type="primary"
+                  size="small"
+                  secondary
                 >
-                  <i class="fas fa-edit"></i>
-                </button>
-                <button
+                  <template #icon>
+                    <i class="fas fa-edit"></i>
+                  </template>
+                </n-button>
+                <n-button
                   @click="deleteUser(user)"
-                  class="text-red-600 hover:text-red-900 cursor-pointer"
+                  type="error"
+                  size="small"
+                  secondary
                   :disabled="user._id === currentUserId"
                 >
-                  <i class="fas fa-trash"></i>
-                </button>
+                  <template #icon>
+                    <i class="fas fa-trash"></i>
+                  </template>
+                </n-button>
               </td>
             </tr>
           </tbody>
@@ -190,12 +201,16 @@
         <div class="p-6 border-b border-gray-200">
           <div class="flex justify-between items-center">
             <h3 class="text-lg font-medium text-gray-900">User Details</h3>
-            <button
+            <n-button
               @click="selectedUser = null"
-              class="text-gray-400 hover:text-gray-600"
+              type="default"
+              size="small"
+              circle
             >
-              <i class="fas fa-times"></i>
-            </button>
+              <template #icon>
+                <i class="fas fa-times"></i>
+              </template>
+            </n-button>
           </div>
         </div>
         <div class="p-6">
@@ -339,21 +354,20 @@
           </div>
 
           <div class="flex space-x-3">
-            <button
-              @click="closeDeleteModal"
-              class="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-whiteborder-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
+            <n-button @click="closeDeleteModal" type="default" style="flex: 1">
               Cancel
-            </button>
-            <button
+            </n-button>
+            <n-button
               @click="confirmDelete"
-              :disabled="deleting"
-              class="flex-1 px-4 py-2 text-sm font-medium text-white bg-red-600border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
+              :loading="deleting"
+              type="error"
+              style="flex: 1"
             >
-              <i v-if="deleting" class="fas fa-spinner animate-spin mr-2"></i>
-              <i v-else class="fas fa-trash mr-2"></i>
+              <template #icon>
+                <i class="fas fa-trash"></i>
+              </template>
               {{ deleting ? "Deleting..." : "Delete User" }}
-            </button>
+            </n-button>
           </div>
         </div>
       </div>
@@ -364,6 +378,7 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
+import { NInput, NButton, NCard } from "naive-ui";
 import { useUserStore } from "../../stores/userStore";
 import * as userApi from "../../services/userApi";
 import Card from "../../components/Card.vue";
@@ -415,7 +430,7 @@ const newUsersThisMonth = computed(() => {
 const loadUsers = async () => {
   try {
     loading.value = true;
-    console.log("🔄 Loading all users from API...");
+    console.log("🔄 Loading All Parents from API...");
 
     const response = await userApi.getAllUsers();
     users.value = response.data.data || response.data || [];

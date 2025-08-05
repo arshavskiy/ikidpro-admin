@@ -20,42 +20,33 @@
     <n-card>
       <div class="flex flex-wrap gap-4 items-center">
         <div class="flex-1 min-w-64">
-          <input
-            v-model="searchQuery"
-            type="text"
+          <n-input
+            v-model:value="searchQuery"
             placeholder="Search by child ID or parent ID..."
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            clearable
           />
         </div>
-        <input
-          v-model="startDate"
+        <n-date-picker
+          v-model:value="startDate"
           type="date"
-          class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Start Date"
         />
-        <input
-          v-model="endDate"
+        <n-date-picker
+          v-model:value="endDate"
           type="date"
-          class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="End Date"
         />
-        <select
-          v-model="selectedSensorFilter"
-          class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="">All Sensors</option>
-          <option value="heartrate">Heart Rate</option>
-          <option value="heartrate">HRV</option>
-          <option value="gps">GPS Data</option>
-          <option value="accelerometer">Accelerometer</option>
-          <option value="gyroscope">Gyroscope</option>
-          <option value="temperature">Temperature</option>
-          <option value="sound">Sound Level</option>
-        </select>
-        <button
-          @click="refreshEvents"
-          class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
-        >
-          <i class="fas fa-refresh mr-2"></i>Refresh
-        </button>
+        <n-select
+          v-model:value="selectedSensorFilter"
+          :options="sensorFilterOptions"
+          placeholder="All Sensors"
+        />
+        <n-button @click="refreshEvents" type="default">
+          <template #icon>
+            <i class="fas fa-refresh"></i>
+          </template>
+          Refresh
+        </n-button>
       </div>
     </n-card>
 
@@ -506,6 +497,9 @@ import {
   NModal,
   NDescriptions,
   NDescriptionsItem,
+  NInput,
+  NDatePicker,
+  NSelect,
 } from "naive-ui";
 import * as eventApi from "../../services/eventApi";
 import StatisticsCard from "../../components/StatisticsCard.vue";
@@ -513,6 +507,18 @@ import StatisticsCard from "../../components/StatisticsCard.vue";
 const router = useRouter();
 const message = useMessage();
 const dialog = useDialog();
+
+// Sensor filter options
+const sensorFilterOptions = [
+  { label: "All Sensors", value: "" },
+  { label: "Heart Rate", value: "heartrate" },
+  { label: "HRV", value: "hrv" },
+  { label: "GPS Data", value: "gps" },
+  { label: "Accelerometer", value: "accelerometer" },
+  { label: "Gyroscope", value: "gyroscope" },
+  { label: "Temperature", value: "temperature" },
+  { label: "Sound Level", value: "sound" },
+];
 
 // Reactive data
 const events = ref([]);

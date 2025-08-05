@@ -40,12 +40,10 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2"
                   >First Name</label
                 >
-                <input
-                  v-model="parentForm.firstName"
-                  type="text"
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
-                  :class="{ 'border-red-500': errors.firstName }"
+                <n-input
+                  v-model:value="parentForm.firstName"
                   placeholder="Enter your first name"
+                  :status="errors.firstName ? 'error' : undefined"
                 />
                 <p v-if="errors.firstName" class="text-red-600 text-sm mt-1">
                   {{ errors.firstName }}
@@ -56,12 +54,10 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2"
                   >Last Name</label
                 >
-                <input
-                  v-model="parentForm.lastName"
-                  type="text"
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
-                  :class="{ 'border-red-500': errors.lastName }"
+                <n-input
+                  v-model:value="parentForm.lastName"
                   placeholder="Enter your last name"
+                  :status="errors.lastName ? 'error' : undefined"
                 />
                 <p v-if="errors.lastName" class="text-red-600 text-sm mt-1">
                   {{ errors.lastName }}

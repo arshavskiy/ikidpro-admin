@@ -325,7 +325,7 @@ const userEndpoints = [
   { name: "Admin Login", method: "POST", url: "/admin/login" },
   { name: "Login User", method: "POST", url: "/auth/login" },
   { name: "Get Current User", method: "GET", url: "/auth/me" },
-  { name: "Get All Users", method: "GET", url: "/users" },
+  { name: "Get All Parents", method: "GET", url: "/users" },
   {
     name: "Get Users by ID",
     method: "GET",

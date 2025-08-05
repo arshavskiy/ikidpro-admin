@@ -11,14 +11,6 @@
 
         <!-- Navigation Menu -->
         <nav class="mt-4">
-          <div class="px-4 py-2">
-            <h2
-              class="text-sm font-semibold text-gray-600 uppercase tracking-wide"
-            >
-              API Management
-            </h2>
-          </div>
-
           <!-- Analytics & Reports -->
           <div class="mt-4">
             <div class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50">
@@ -37,10 +29,10 @@
             </router-link>
           </div>
 
-          <!-- User Management -->
+          <!-- Parent Management -->
           <div class="mt-2">
             <div class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50">
-              <i class="fas fa-users mr-2"></i>User Management
+              <i class="fas fa-users mr-2"></i>Parent Management
             </div>
             <router-link
               v-for="route in userRoutes"
@@ -55,7 +47,7 @@
             </router-link>
           </div>
 
-          <!-- Child User Management -->
+          <!-- Child Parent Management -->
           <div class="mt-4">
             <div class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50">
               <i class="fas fa-child mr-2"></i>Child Management
@@ -212,7 +204,7 @@ const userRoutes = [
   {
     name: "UsersList",
     path: "/admin/users",
-    label: "All Users",
+    label: "All Parents",
     icon: "fas fa-list",
   },
   {
@@ -317,7 +309,7 @@ const systemRoutes = [
 const pageTitle = computed(() => {
   const titles = {
     "/admin/dashboard": "Dashboard",
-    "/admin/users": "User Management",
+    "/admin/users": "Parent Management",
     "/admin/users/create": "Create New User",
     "/admin/users/profiles": "User Profiles",
     "/admin/children": "Child Management",

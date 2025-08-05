@@ -7,18 +7,18 @@
         <p class="text-gray-600">Import and export data using CSV files</p>
       </div>
       <div class="flex space-x-2">
-        <button
-          @click="showTemplateModal = true"
-          class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
-        >
-          <i class="fas fa-download mr-2"></i>Download Templates
-        </button>
-        <router-link
-          to="/admin/data/export"
-          class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors inline-flex items-center"
-        >
-          <i class="fas fa-file-export mr-2"></i>Data Export
-        </router-link>
+        <n-button @click="showTemplateModal = true" type="success">
+          <template #icon>
+            <i class="fas fa-download"></i>
+          </template>
+          Download Templates
+        </n-button>
+        <n-button @click="$router.push('/admin/data/export')" type="primary">
+          <template #icon>
+            <i class="fas fa-file-export"></i>
+          </template>
+          Data Export
+        </n-button>
       </div>
     </div>
 
@@ -137,19 +137,28 @@
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <button
+                <n-button
                   @click="viewImportDetails(item)"
-                  class="text-blue-600 hover:text-blue-900 mr-3 cursor-pointer"
+                  type="info"
+                  size="small"
+                  secondary
                 >
-                  <i class="fas fa-eye"></i>
-                </button>
-                <button
+                  <template #icon>
+                    <i class="fas fa-eye"></i>
+                  </template>
+                </n-button>
+                <n-button
                   v-if="item.errors && item.errors.length > 0"
                   @click="downloadErrorReport(item)"
-                  class="text-red-600 hover:text-red-900 cursor-pointer"
+                  type="warning"
+                  size="small"
+                  secondary
+                  style="margin-left: 8px"
                 >
-                  <i class="fas fa-exclamation-triangle"></i>
-                </button>
+                  <template #icon>
+                    <i class="fas fa-exclamation-triangle"></i>
+                  </template>
+                </n-button>
               </td>
             </tr>
           </tbody>
@@ -178,9 +187,9 @@
           </h3>
         </div>
         <div class="p-6 space-y-4">
-          <button
+          <div
             @click="downloadTemplate('users')"
-            class="w-full flex items-center p-3 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+            class="w-full flex items-center p-3 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors cursor-pointer"
           >
             <i class="fas fa-users text-blue-600 mr-3"></i>
             <div class="text-left">
@@ -189,11 +198,11 @@
                 Template for importing user data
               </div>
             </div>
-          </button>
+          </div>
 
-          <button
+          <div
             @click="downloadTemplate('children')"
-            class="w-full flex items-center p-3 bg-green-50 rounded-lg hover:bg-green-100 transition-colors"
+            class="w-full flex items-center p-3 bg-green-50 rounded-lg hover:bg-green-100 transition-colors cursor-pointer"
           >
             <i class="fas fa-child text-green-600 mr-3"></i>
             <div class="text-left">
@@ -202,11 +211,11 @@
                 Template for importing children data
               </div>
             </div>
-          </button>
+          </div>
 
-          <button
+          <div
             @click="downloadTemplate('events')"
-            class="w-full flex items-center p-3 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors"
+            class="w-full flex items-center p-3 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors cursor-pointer"
           >
             <i class="fas fa-chart-line text-purple-600 mr-3"></i>
             <div class="text-left">
@@ -215,15 +224,12 @@
                 Template for importing sensor events
               </div>
             </div>
-          </button>
+          </div>
         </div>
         <div class="p-6 border-t border-gray-200 flex justify-end">
-          <button
-            @click="showTemplateModal = false"
-            class="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded hover:bg-gray-200 transition-colors"
-          >
+          <n-button @click="showTemplateModal = false" type="default">
             Close
-          </button>
+          </n-button>
         </div>
       </div>
     </div>
@@ -232,6 +238,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
+import { NButton } from "naive-ui";
 import CsvImporter from "../../components/data/CsvImporter.vue";
 import StatisticsCard from "../../components/StatisticsCard.vue";
 import * as userApi from "../../services/userApi";

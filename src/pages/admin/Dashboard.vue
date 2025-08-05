@@ -128,9 +128,9 @@
                 </p>
               </div>
             </div>
-            <div class="text-right">
+            <div class="text-right" v-if="event.steps">
               <p class="text-sm text-gray-900">{{ event.HeartRate }} bpm</p>
-              <p class="text-xs text-gray-500">{{ event.Temperature }}°C</p>
+              <p class="text-xs text-gray-500">{{ event.steps }} steps</p>
             </div>
           </div>
           <div
@@ -178,7 +178,7 @@
     </div>
 
     <!-- Activity Timeline -->
-    <div class="bg-white p-4 rounded-lg shadow-sm border">
+    <!-- <div class="bg-white p-4 rounded-lg shadow-sm border">
       <h3 class="text-lg font-medium text-gray-900 mb-4">
         Recent Activity Timeline
       </h3>
@@ -212,7 +212,7 @@
           </li>
         </ul>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -246,10 +246,13 @@ const systemHealth = ref({
 const loadDashboardData = async () => {
   try {
     // Load statistics
-    const [eventsResponse, eventsCountResponse] = await Promise.all([
-      eventApi.getAll(),
-      eventApi.getCount(),
-    ]);
+    const [eventsResponse, eventsCountResponse, allUsers, allChildren] =
+      await Promise.all([
+        eventApi.getAll(),
+        eventApi.getCount(),
+        userApi.getAllUsers(),
+        childUserApi.getAllChildUsers(),
+      ]);
 
     const events = eventsResponse.data;
     stats.value.totalEvents = events.length;
@@ -261,16 +264,24 @@ const loadDashboardData = async () => {
 
     // Calculate today's events
     const today = new Date().toDateString();
+
     stats.value.newEventsToday = events.filter(
       (event) => new Date(event.Timestamp).toDateString() === today
     ).length;
 
+    stats.value.newUsersToday = allUsers.data.data.filter(
+      (user) => new Date(user.Timestamp).toDateString() === today
+    ).length;
+
+    stats.value.newChildrenToday = allChildren.data.data.filter(
+      (child) => new Date(child.Timestamp).toDateString() === today
+    ).length;
+
     // Sample data for other stats (replace with actual API calls)
-    stats.value.totalUsers = 25;
-    stats.value.newUsersToday = 2;
-    stats.value.totalChildren = 42;
-    stats.value.newChildrenToday = 3;
-    stats.value.activeDevices = 18;
+
+    stats.value.totalUsers = allUsers.data.data.length;
+    stats.value.totalChildren = allChildren.data.data.length;
+    // stats.value.activeDevices = 18;
 
     // Generate recent activity
     generateRecentActivity();
@@ -282,15 +293,7 @@ const loadDashboardData = async () => {
 };
 
 const loadSampleData = () => {
-  stats.value = {
-    totalUsers: 156,
-    newUsersToday: 5,
-    totalChildren: 298,
-    newChildrenToday: 8,
-    totalEvents: 15247,
-    newEventsToday: 342,
-    activeDevices: 89,
-  };
+  stats.value = {};
 
   recentEvents.value = [];
   generateRecentActivity();

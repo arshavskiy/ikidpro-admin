@@ -2,7 +2,7 @@
   <!-- Charts Row -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
     <!-- Daily Events Chart -->
-    <div class="bg-white p-4 rounded-lg shadow-sm border">
+    <div class="bg-white p-4 rounded-lg shadow-sm">
       <div class="flex justify-between items-center mb-4">
         <h3 class="text-lg font-medium text-gray-900">Daily Events Trend</h3>
         <div class="text-sm text-gray-500">
@@ -33,7 +33,7 @@
     </div>
 
     <!-- Hourly Distribution Chart -->
-    <div class="bg-white p-4 rounded-lg shadow-sm border">
+    <div class="bg-white p-4 rounded-lg shadow-sm">
       <div class="flex justify-between items-center mb-4">
         <h3 class="text-lg font-medium text-gray-900">
           Hourly Activity Distribution
