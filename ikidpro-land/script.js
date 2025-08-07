@@ -447,7 +447,7 @@ function handleWaitlistForm() {
 // Simulate waitlist signup (replace with actual API call)
 async function sendWaitlistSignup(formData) {
   try {
-    const res = await fetch("//api.watchforme.com/waitlist", {
+    const res = await fetch("http://localhost:3333/api/waitlist", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
