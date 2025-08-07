@@ -12,40 +12,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 const form = document.getElementById("waitlist-form");
-const nameInput = document.getElementById("waitlist-name");
-const emailInput = document.getElementById("waitlist-email");
-const successMsg = document.getElementById("successMsg");
-const errorMsg = document.getElementById("errorMsg");
-const submitBtn = document.getElementById("submitBtn");
-
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  successMsg.classList.add("hidden");
-  errorMsg.classList.add("hidden");
-  submitBtn.disabled = true;
-  submitBtn.textContent = "Joining...";
-
-  const email = emailInput.value;
-
-  try {
-    const res = await fetch("//api.watchforme.com/waitlist", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: nameInput, email: nameInput }),
-    });
-
-    if (!res.ok) throw new Error("Something went wrong. Try again.");
-
-    successMsg.classList.remove("hidden");
-    emailInput.value = "";
-  } catch (err) {
-    errorMsg.textContent = err.message;
-    errorMsg.classList.remove("hidden");
-  } finally {
-    submitBtn.disabled = false;
-    submitBtn.textContent = "Join Waitlist";
-  }
-});
 
 // Navigation functionality
 function initNavigation() {
@@ -365,7 +331,7 @@ function handleContactForm() {
   if (form) {
     form.addEventListener("submit", (e) => {
       e.preventDefault();
-      // Add form submission logic here
+      handleContactForm();
       console.log("Contact form submitted");
     });
   }
@@ -377,7 +343,7 @@ function handleNewsletterSignup() {
   if (newsletter) {
     newsletter.addEventListener("submit", (e) => {
       e.preventDefault();
-      // Add newsletter signup logic here
+      handleNewsletterSignup();
       console.log("Newsletter signup submitted");
     });
   }
@@ -427,7 +393,7 @@ function handleWaitlistForm() {
         }
 
         // Simulate API call (replace with actual endpoint)
-        await simulateWaitlistSignup(formData);
+        await sendWaitlistSignup(formData);
 
         // Show success message
         successMessage.classList.remove("hidden");
@@ -479,21 +445,23 @@ function handleWaitlistForm() {
 }
 
 // Simulate waitlist signup (replace with actual API call)
-async function simulateWaitlistSignup(formData) {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      // Simulate success/failure
-      if (Math.random() > 0.1) {
-        // 90% success rate
-        resolve({ success: true, id: Date.now() });
-      } else {
-        reject(new Error("Network error. Please try again."));
-      }
-    }, 1500); // Simulate network delay
-  });
-}
+async function sendWaitlistSignup(formData) {
+  try {
+    const res = await fetch("http://localhost:3333/api/waitlist", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: formData.name,
+        email: formData.email,
+        source: formData.source,
+        notes: "Optional notes",
+      }),
+    });
 
-// Initialize additional features
-handleContactForm();
-handleNewsletterSignup();
-handleWaitlistForm();
+    if (!res.ok) throw new Error("Something went wrong. Try again.");
+
+    return await res.json();
+  } catch (error) {
+    console.log("API error:", error);
+  }
+}

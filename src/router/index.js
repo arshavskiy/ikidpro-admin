@@ -108,6 +108,11 @@ const routes = [
         component: () => import("../pages/admin/DataExport.vue"),
       },
       {
+        path: "waitlist",
+        name: "WaitlistManagement",
+        component: () => import("../pages/admin/WaitlistManagement.vue"),
+      },
+      {
         path: "analytics/events",
         name: "EventStats",
         component: () => import("../pages/admin/EventAnalytics.vue"),

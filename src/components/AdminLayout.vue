@@ -282,6 +282,12 @@ const dataRoutes = [
     label: "Data Export",
     icon: "fas fa-file-download",
   },
+  {
+    name: "WaitlistManagement",
+    path: "/admin/waitlist",
+    label: "Waitlist Management",
+    icon: "fas fa-clipboard-list",
+  },
 ];
 
 const systemRoutes = [
@@ -320,6 +326,7 @@ const pageTitle = computed(() => {
     "/admin/events/by-child": "Events by Child",
     "/admin/events/bulk": "Bulk Event Operations",
     "/admin/data/management": "Data Management",
+    "/admin/waitlist": "Waitlist Management",
     "/admin/analytics/events": "Event Analytics",
     "/admin/analytics/users": "User Analytics",
     "/admin/system/database": "Database Information",
@@ -341,6 +348,7 @@ const pageDescription = computed(() => {
     "/admin/events": "Manage sensor events and data",
     "/admin/events/create": "Add a new sensor event",
     "/admin/data/management": "Import and export data using CSV files",
+    "/admin/waitlist": "Manage and monitor waitlist signups",
     "/admin/events/by-child": "View events filtered by child",
     "/admin/events/bulk": "Perform bulk operations on events",
     "/admin/analytics/events": "Event data analysis and insights",
