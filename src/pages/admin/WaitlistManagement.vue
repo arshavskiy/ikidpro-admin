@@ -121,11 +121,8 @@
           placeholder="Filter by source"
           @update:value="handleFilter"
           clearable
+          :options="sourceOptions"
         >
-          <n-option value="landing-page" label="Landing Page" />
-          <n-option value="website" label="Website" />
-          <n-option value="social-media" label="Social Media" />
-          <n-option value="referral" label="Referral" />
         </n-select>
 
         <n-date-picker
@@ -260,6 +257,56 @@
         </div>
       </n-card>
     </n-modal>
+
+    <!-- Edit Notes Modal -->
+    <n-modal v-model:show="showEditNotesModal">
+      <n-card
+        style="width: 600px"
+        title="Edit Notes"
+        :bordered="false"
+        role="dialog"
+        aria-modal="true"
+      >
+        <template #header-extra>
+          <n-button @click="showEditNotesModal = false" quaternary circle>
+            <template #icon>
+              <i class="fas fa-times"></i>
+            </template>
+          </n-button>
+        </template>
+
+        <div v-if="selectedEntry" class="space-y-4">
+          <div class="mb-4">
+            <p class="text-sm text-gray-600 mb-2">
+              Editing notes for: <strong>{{ selectedEntry.email }}</strong>
+            </p>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Notes
+            </label>
+            <n-input
+              v-model:value="editingNotes"
+              placeholder="Enter notes for this waitlist entry..."
+              :rows="6"
+              show-count
+              :maxlength="500"
+              clearable
+            />
+          </div>
+        </div>
+
+        <template #footer>
+          <div class="flex justify-end space-x-2">
+            <n-button @click="showEditNotesModal = false">Cancel</n-button>
+            <n-button @click="updateNotes" type="primary" :loading="deleting">
+              Save Notes
+            </n-button>
+          </div>
+        </template>
+      </n-card>
+    </n-modal>
   </div>
 </template>
 
@@ -289,7 +336,9 @@ const sourceFilter = ref(null);
 const dateRange = ref(null);
 const showDeleteModal = ref(false);
 const showDetailsModal = ref(false);
+const showEditNotesModal = ref(false);
 const selectedEntry = ref(null);
+const editingNotes = ref("");
 
 const message = useMessage();
 
@@ -350,7 +399,7 @@ const columns = [
   {
     title: "Actions",
     key: "actions",
-    width: 150,
+    width: 200,
     render(row) {
       return [
         h(
@@ -360,11 +409,25 @@ const columns = [
             type: "info",
             secondary: true,
             onClick: () => viewDetails(row),
-            style: { marginRight: "8px" },
+            style: { marginRight: "4px" },
           },
           {
             icon: () => h("i", { class: "fas fa-eye" }),
             default: () => "View",
+          }
+        ),
+        h(
+          NButton,
+          {
+            size: "small",
+            type: "warning",
+            secondary: true,
+            onClick: () => editNotes(row),
+            style: { marginRight: "4px" },
+          },
+          {
+            icon: () => h("i", { class: "fas fa-edit" }),
+            default: () => "Notes",
           }
         ),
         h(
@@ -383,6 +446,13 @@ const columns = [
       ];
     },
   },
+];
+
+const sourceOptions = [
+  { value: "landing-page", label: "Landing Page" },
+  { value: "website", label: "Website" },
+  { value: "social-media", label: "Social Media" },
+  { value: "referral", label: "Referral" },
 ];
 
 // Computed properties
@@ -481,6 +551,41 @@ const handlePageSizeChange = (pageSize) => {
 const viewDetails = (entry) => {
   selectedEntry.value = entry;
   showDetailsModal.value = true;
+};
+
+const editNotes = (entry) => {
+  selectedEntry.value = entry;
+  editingNotes.value = entry.notes || "";
+  showEditNotesModal.value = true;
+};
+
+const updateNotes = async () => {
+  if (!selectedEntry.value) return;
+
+  deleting.value = true; // Reuse the deleting state for loading
+  try {
+    await apiClient.put(`/waitlist/${selectedEntry.value._id}/notes`, {
+      notes: editingNotes.value,
+    });
+
+    // Update the local data
+    const index = waitlistData.value.findIndex(
+      (entry) => entry._id === selectedEntry.value._id
+    );
+    if (index !== -1) {
+      waitlistData.value[index].notes = editingNotes.value;
+    }
+
+    message.success("Notes updated successfully");
+    showEditNotesModal.value = false;
+    selectedEntry.value = null;
+    editingNotes.value = "";
+  } catch (error) {
+    console.error("Error updating notes:", error);
+    message.error("Failed to update notes");
+  } finally {
+    deleting.value = false;
+  }
 };
 
 const deleteEntry = (entry) => {
