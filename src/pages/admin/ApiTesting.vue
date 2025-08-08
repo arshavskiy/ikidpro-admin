@@ -103,6 +103,26 @@
           </button>
         </div>
       </div>
+
+      <!-- Registration APIs -->
+      <div class="bg-white p-4 rounded-lg shadow-sm border">
+        <div class="flex items-center mb-4">
+          <i class="fas fa-id-card text-amber-600 text-xl mr-3"></i>
+          <h3 class="text-lg font-medium text-gray-900">Registration APIs</h3>
+        </div>
+        <div class="space-y-2">
+          <button
+            v-for="endpoint in registrationEndpoints"
+            :key="endpoint.name"
+            @click="testEndpoint(endpoint)"
+            class="w-full text-left px-3 py-2 text-sm rounded border hover:bg-gray-50"
+            :class="getMethodClass(endpoint.method)"
+          >
+            <span class="font-mono text-xs mr-2">{{ endpoint.method }}</span>
+            {{ endpoint.name }}
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- API Testing Interface -->
@@ -321,23 +341,33 @@ const tokenPreview = computed(() => {
 
 // API endpoint definitions
 const userEndpoints = [
+  // Auth
   { name: "Register User", method: "POST", url: "/auth/register" },
-  { name: "Admin Login", method: "POST", url: "/admin/login" },
   { name: "Login User", method: "POST", url: "/auth/login" },
-  { name: "Get Current User", method: "GET", url: "/auth/me" },
-  { name: "Get All Parents", method: "GET", url: "/users" },
+  { name: "Logout User", method: "POST", url: "/auth/logout" },
+  { name: "Get Current User (me)", method: "GET", url: "/auth/me" },
+  { name: "Refresh Token", method: "POST", url: "/auth/refresh" },
+  { name: "User Stats", method: "GET", url: "/auth/stats" },
+  // Admin user management
+  { name: "Get All Users", method: "GET", url: "/users" },
+  { name: "Get User Count", method: "GET", url: "/users/count" },
   {
-    name: "Get Users by ID",
+    name: "Get User by ID",
     method: "GET",
     url: "/user/id/:id",
     params: ["id"],
   },
-  { name: "Logout User", method: "POST", url: "/auth/logout" },
-  { name: "Refresh Token", method: "POST", url: "/auth/refresh" },
+  { name: "Create User", method: "POST", url: "/users" },
+  {
+    name: "Update User",
+    method: "PUT",
+    url: "/user/id/:id",
+    params: ["id"],
+  },
   {
     name: "Delete User",
     method: "DELETE",
-    url: "/users/:id",
+    url: "/user/id/:id",
     params: ["id"],
   },
 ];
@@ -345,22 +375,23 @@ const userEndpoints = [
 const childEndpoints = [
   { name: "Create Child", method: "POST", url: "/child-users" },
   { name: "Get All Children", method: "GET", url: "/child-users" },
+  { name: "Get Child Count", method: "GET", url: "/child-users/count" },
   {
     name: "Get Child by ID",
     method: "GET",
-    url: "/child-users/:id",
+    url: "/child-users/id/:id",
     params: ["id"],
   },
   {
     name: "Update Child",
     method: "PUT",
-    url: "/child-users/:id",
+    url: "/child-users/id/:id",
     params: ["id"],
   },
   {
     name: "Delete Child",
     method: "DELETE",
-    url: "/child-users/:id",
+    url: "/child-users/id/:id",
     params: ["id"],
   },
   {
@@ -369,6 +400,13 @@ const childEndpoints = [
     url: "/child-users/parent/:parentId/children",
     params: ["parentId"],
   },
+  { name: "Children Stats", method: "GET", url: "/child-users/stats" },
+  {
+    name: "Search Children",
+    method: "GET",
+    url: "/child-users/search?q=:query",
+    params: ["query"],
+  },
 ];
 
 const eventEndpoints = [
@@ -376,6 +414,7 @@ const eventEndpoints = [
   { name: "Get All Events", method: "GET", url: "/event" },
   { name: "Get Event Count", method: "GET", url: "/event/count" },
   { name: "Get Collections", method: "GET", url: "/event/dbs" },
+  { name: "Get DB Stats", method: "GET", url: "/admin/database-stats" },
   {
     name: "Get Event by ID",
     method: "GET",
@@ -385,8 +424,8 @@ const eventEndpoints = [
   {
     name: "Get Events by Child",
     method: "GET",
-    url: "/event/child/:aid",
-    params: ["aid"],
+    url: "/event/child/:childId",
+    params: ["childId"],
   },
   {
     name: "Update Event",
@@ -400,17 +439,12 @@ const eventEndpoints = [
     url: "/event/:id",
     params: ["id"],
   },
-  {
-    name: "Bulk Update Events",
-    method: "PUT",
-    url: "/event/bulkUpdateByParam",
-  },
-  {
-    name: "Update by Child ID",
-    method: "PUT",
-    url: "/event/update-by-child-id/:aid",
-    params: ["aid"],
-  },
+];
+
+// Registration-specific endpoints
+const registrationEndpoints = [
+  { name: "Register Parent", method: "POST", url: "/user/register" },
+  { name: "Register Child", method: "POST", url: "/child-users" },
 ];
 
 // Sample request bodies
@@ -498,9 +532,13 @@ const testEndpoint = (endpoint) => {
 
   // Set sample request body for POST/PUT requests
   if (["POST", "PUT"].includes(endpoint.method)) {
-    if (endpoint.url.includes("/admin/login")) {
+    if (endpoint.url.includes("/auth/login")) {
       requestBody.value = samples.value.adminLogin;
-    } else if (endpoint.url.includes("/auth/register")) {
+    } else if (
+      endpoint.url.includes("/auth/register") ||
+      endpoint.url.includes("/user/register") ||
+      endpoint.url === "/users"
+    ) {
       requestBody.value = samples.value.userRegistration;
     } else if (endpoint.url.includes("/child-users")) {
       requestBody.value = samples.value.childUser;
