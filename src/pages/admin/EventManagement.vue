@@ -596,12 +596,12 @@ const pagination = ref({
 const allColumns = [
   {
     type: "selection",
-    width: 20,
+    width: 10,
   },
   {
     title: "Timestamp",
     key: "timestamp",
-    width: 60,
+    width: 40,
     render(row) {
       return h("div", { class: "text-sm" }, formatDateTime(row?.Timestamp));
     },
@@ -977,13 +977,11 @@ const filteredEvents = computed(() => {
 
   // Date range filter
   if (startDate.value) {
-    debugger;
     filtered = filtered.filter(
       (event) => new Date(event.Timestamp) >= new Date(startDate.value)
     );
   }
   if (endDate.value) {
-    debugger;
     filtered = filtered.filter(
       (event) => new Date(event.Timestamp) <= new Date(endDate.value)
     );

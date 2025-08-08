@@ -10,127 +10,31 @@
         </div>
 
         <!-- Navigation Menu -->
-        <nav class="mt-4">
-          <!-- Analytics & Reports -->
-          <div class="mt-4">
-            <div class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50">
-              <i class="fas fa-analytics mr-2"></i>Analytics
-            </div>
-            <router-link
-              v-for="route in analyticsRoutes"
-              :key="route.name"
-              :to="route.path"
-              class="block px-6 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-colors"
-              :class="{
-                'bg-blue-100 text-blue-700': $route.path === route.path,
-              }"
-            >
-              <i :class="route.icon + ' mr-2'"></i>{{ route.label }}
-            </router-link>
-          </div>
-
-          <!-- Parent Management -->
-          <div class="mt-2">
-            <div class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50">
-              <i class="fas fa-users mr-2"></i>Parent Management
-            </div>
-            <router-link
-              v-for="route in userRoutes"
-              :key="route.name"
-              :to="route.path"
-              class="block px-6 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-colors"
-              :class="{
-                'bg-blue-100 text-blue-700': $route.path === route.path,
-              }"
-            >
-              <i :class="route.icon + ' mr-2'"></i>{{ route.label }}
-            </router-link>
-          </div>
-
-          <!-- Child Parent Management -->
-          <div class="mt-4">
-            <div class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50">
-              <i class="fas fa-child mr-2"></i>Child Management
-            </div>
-            <router-link
-              v-for="route in childRoutes"
-              :key="route.name"
-              :to="route.path"
-              class="block px-6 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-colors"
-              :class="{
-                'bg-blue-100 text-blue-700': $route.path === route.path,
-              }"
-            >
-              <i :class="route.icon + ' mr-2'"></i>{{ route.label }}
-            </router-link>
-          </div>
-
-          <!-- Event Management -->
-          <div class="mt-4">
-            <div class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50">
-              <i class="fas fa-chart-line mr-2"></i>Event Management
-            </div>
-            <router-link
-              v-for="route in eventRoutes"
-              :key="route.name"
-              :to="route.path"
-              class="block px-6 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-colors"
-              :class="{
-                'bg-blue-100 text-blue-700': $route.path === route.path,
-              }"
-            >
-              <i :class="route.icon + ' mr-2'"></i>{{ route.label }}
-            </router-link>
-          </div>
-
-          <!-- Data Management -->
-          <div class="mt-4">
-            <div class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50">
-              <i class="fas fa-database mr-2"></i>Data Management
-            </div>
-            <router-link
-              v-for="route in dataRoutes"
-              :key="route.name"
-              :to="route.path"
-              class="block px-6 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-colors"
-              :class="{
-                'bg-blue-100 text-blue-700': $route.path === route.path,
-              }"
-            >
-              <i :class="route.icon + ' mr-2'"></i>{{ route.label }}
-            </router-link>
-          </div>
-
-          <!-- System -->
-          <div class="mt-4">
-            <div class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50">
-              <i class="fas fa-cog mr-2"></i>System
-            </div>
-            <router-link
-              v-for="route in systemRoutes"
-              :key="route.name"
-              :to="route.path"
-              class="block px-6 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-colors"
-              :class="{
-                'bg-blue-100 text-blue-700': $route.path === route.path,
-              }"
-            >
-              <i :class="route.icon + ' mr-2 '"></i>
-              {{ route.label }}
-            </router-link>
-          </div>
+        <div class="mt-4">
+          <n-menu
+            :value="selectedKey"
+            :options="menuOptions"
+            @update:value="handleMenuSelect"
+            :default-expand-all="true"
+            :accordion="false"
+            :indent="24"
+            class="admin-menu"
+          />
 
           <div class="logout-button">
-            <button
+            <n-button
               @click="logout"
-              class="px-4 py-2 text-sm text-white bg-red-600 rounded hover:bg-red-700 transition-colors"
+              type="error"
+              size="small"
+              class="w-full mt-4"
             >
-              <i class="fas fa-sign-out-alt mr-2"></i>Logout
-            </button>
+              <template #icon>
+                <i class="fas fa-sign-out-alt"></i>
+              </template>
+              Logout
+            </n-button>
           </div>
-        </nav>
-
-        <!-- Logout Button -->
+        </div>
       </div>
 
       <!-- Main Content -->
@@ -138,12 +42,6 @@
         <!-- Header -->
         <header class="bg-white shadow-sm border-b border-gray-200">
           <div class="flex items-center justify-between px-6 py-4">
-            <div>
-              <!-- <h1 class="text-2xl font-semibold text-gray-800">
-              {{ pageTitle }}
-            </h1>
-            <p class="text-sm text-gray-600">{{ pageDescription }}</p> -->
-            </div>
             <div class="flex items-center space-x-4">
               <span class="text-sm text-gray-600"
                 >Welcome, {{ user?.firstName || "Admin" }}</span
@@ -167,9 +65,10 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, ref, h } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useUserStore } from "../stores/userStore";
+import { NMenu, NButton } from "naive-ui";
 
 const route = useRoute();
 const router = useRouter();
@@ -177,7 +76,138 @@ const userStore = useUserStore();
 
 const user = computed(() => userStore.user);
 
-// Route definitions for sidebar menu
+// Selected menu key based on current route
+const selectedKey = computed(() => route.path);
+
+// Menu options for Naive UI
+const menuOptions = [
+  {
+    label: "Analytics",
+    key: "analytics",
+    icon: () => h("i", { class: "fas fa-chart-bar" }),
+    children: [
+      {
+        label: "Event Statistics",
+        key: "/admin/analytics/events",
+        icon: () => h("i", { class: "fas fa-chart-bar" }),
+      },
+    ],
+  },
+  {
+    label: "Parent Management",
+    key: "users",
+    icon: () => h("i", { class: "fas fa-users" }),
+    children: [
+      {
+        label: "All Parents",
+        key: "/admin/users",
+        icon: () => h("i", { class: "fas fa-list" }),
+      },
+      {
+        label: "Add Parent User",
+        key: "/admin/users/create",
+        icon: () => h("i", { class: "fas fa-plus" }),
+      },
+      {
+        label: "User Profiles",
+        key: "/admin/users/profiles",
+        icon: () => h("i", { class: "fas fa-id-card" }),
+      },
+    ],
+  },
+  {
+    label: "Child Management",
+    key: "children",
+    icon: () => h("i", { class: "fas fa-child" }),
+    children: [
+      {
+        label: "All Children",
+        key: "/admin/children",
+        icon: () => h("i", { class: "fas fa-list" }),
+      },
+      {
+        label: "Add Child",
+        key: "/admin/children/create",
+        icon: () => h("i", { class: "fas fa-plus" }),
+      },
+      {
+        label: "By Parent",
+        key: "/admin/children/by-parent",
+        icon: () => h("i", { class: "fas fa-family" }),
+      },
+    ],
+  },
+  {
+    label: "Event Management",
+    key: "events",
+    icon: () => h("i", { class: "fas fa-chart-line" }),
+    children: [
+      {
+        label: "All Events",
+        key: "/admin/events",
+        icon: () => h("i", { class: "fas fa-list" }),
+      },
+      {
+        label: "Add Event",
+        key: "/admin/events/create",
+        icon: () => h("i", { class: "fas fa-plus" }),
+      },
+      {
+        label: "By Child",
+        key: "/admin/events/by-child",
+        icon: () => h("i", { class: "fas fa-child" }),
+      },
+    ],
+  },
+  {
+    label: "Data Management",
+    key: "data",
+    icon: () => h("i", { class: "fas fa-database" }),
+    children: [
+      {
+        label: "Data Import",
+        key: "/admin/data/management",
+        icon: () => h("i", { class: "fas fa-file-upload" }),
+      },
+      {
+        label: "Data Export",
+        key: "/admin/data/export",
+        icon: () => h("i", { class: "fas fa-file-download" }),
+      },
+      {
+        label: "Waitlist Management",
+        key: "/admin/waitlist",
+        icon: () => h("i", { class: "fas fa-clipboard-list" }),
+      },
+    ],
+  },
+  {
+    label: "System",
+    key: "system",
+    icon: () => h("i", { class: "fas fa-cog" }),
+    children: [
+      {
+        label: "Database Info",
+        key: "/admin/system/database",
+        icon: () => h("i", { class: "fas fa-database" }),
+      },
+      {
+        label: "API Testing",
+        key: "/admin/system/api-test",
+        icon: () => h("i", { class: "fas fa-flask" }),
+      },
+    ],
+  },
+];
+
+// Handle menu selection
+const handleMenuSelect = (key) => {
+  if (key.startsWith("/admin/")) {
+    router.push(key);
+  }
+};
+
+// Route definitions for sidebar menu (keeping for compatibility)
 
 const analyticsRoutes = [
   // {
@@ -312,53 +342,6 @@ const systemRoutes = [
 ];
 
 // Computed page title and description based on current route
-const pageTitle = computed(() => {
-  const titles = {
-    "/admin/dashboard": "Dashboard",
-    "/admin/users": "Parent Management",
-    "/admin/users/create": "Create New Parent",
-    "/admin/users/profiles": "User Profiles",
-    "/admin/children": "Child Management",
-    "/admin/children/create": "Create New Child",
-    "/admin/children/by-parent": "Children by Parent",
-    "/admin/events": "Event Management",
-    "/admin/events/create": "Create New Event",
-    "/admin/events/by-child": "Events by Child",
-    "/admin/events/bulk": "Bulk Event Operations",
-    "/admin/data/management": "Data Management",
-    "/admin/waitlist": "Waitlist Management",
-    "/admin/analytics/events": "Event Analytics",
-    "/admin/analytics/users": "User Analytics",
-    "/admin/system/database": "Database Information",
-    "/admin/system/api-test": "API Testing",
-    "/admin/system/logs": "System Logs",
-  };
-  return titles[route.path] || "Admin Panel";
-});
-
-const pageDescription = computed(() => {
-  const descriptions = {
-    "/admin/dashboard": "Overview of system metrics and recent activity",
-    "/admin/users": "Manage user accounts and permissions",
-    "/admin/users/create": "Add a new user to the system",
-    "/admin/users/profiles": "View and edit user profile information",
-    "/admin/children": "Manage child user accounts",
-    "/admin/children/create": "Add a new child user",
-    "/admin/children/by-parent": "View children grouped by parent",
-    "/admin/events": "Manage sensor events and data",
-    "/admin/events/create": "Add a new sensor event",
-    "/admin/data/management": "Import and export data using CSV files",
-    "/admin/waitlist": "Manage and monitor waitlist signups",
-    "/admin/events/by-child": "View events filtered by child",
-    "/admin/events/bulk": "Perform bulk operations on events",
-    "/admin/analytics/events": "Event data analysis and insights",
-    "/admin/analytics/users": "User behavior and statistics",
-    "/admin/system/database": "Database health and collection info",
-    "/admin/system/api-test": "Test API endpoints and functionality",
-    "/admin/system/logs": "View system logs and errors",
-  };
-  return descriptions[route.path] || "Administrative interface for IKidPro API";
-});
 
 const logout = async () => {
   await userStore.logout();
@@ -371,7 +354,38 @@ const logout = async () => {
   display: flex;
   justify-content: center;
   margin: 20px 0;
+  padding: 0 16px;
 }
+
+/* Custom styling for admin menu */
+:deep(.admin-menu) {
+  --n-item-height: 32px !important;
+  --n-item-text-color: #6b7280;
+  --n-item-text-color-hover: #1d4ed8;
+  --n-item-text-color-active: #1d4ed8;
+  --n-item-color-hover: #dbeafe;
+  --n-item-color-active: #dbeafe;
+  --n-arrow-color: #6b7280;
+  --n-arrow-color-hover: #1d4ed8;
+  --n-arrow-color-active: #1d4ed8;
+}
+
+:deep(.admin-menu .n-menu-item-content) {
+  padding-left: 16px !important;
+}
+
+:deep(.admin-menu .n-menu-item-content .n-menu-item-content__icon) {
+  margin-right: 8px;
+}
+
+:deep(.admin-menu .n-menu-item-content .n-menu-item-content__icon i) {
+  font-size: 12px;
+}
+
+:deep(.admin-menu .n-submenu-children .n-menu-item-content) {
+  padding-left: 40px !important;
+}
+
 /* Custom scrollbar for sidebar */
 nav::-webkit-scrollbar {
   width: 4px;

@@ -401,12 +401,16 @@ const currentUserId = computed(() => userStore.user?._id);
 
 const filteredUsers = computed(() => {
   if (!searchQuery.value) return users.value;
-
   const query = searchQuery.value.toLowerCase();
+  console.log("🔍 Filtering users with query:", query);
   return users.value.filter(
     (user) =>
+      (
+        user.firstName?.toLowerCase() +
+        " " +
+        user.lastName?.toLowerCase()
+      ).includes(query) ||
       user.firstName?.toLowerCase().includes(query) ||
-      user.lastName?.toLowerCase().includes(query) ||
       user.email?.toLowerCase().includes(query) ||
       user.mobile?.toString().includes(query)
   );

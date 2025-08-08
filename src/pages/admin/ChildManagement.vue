@@ -818,10 +818,12 @@ const filteredChildren = computed(() => {
   // Search filter
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase();
-    filtered = filtered.filter(
-      (child) =>
-        child.firstName?.toLowerCase().includes(query) ||
-        child.lastName?.toLowerCase().includes(query)
+    filtered = filtered.filter((child) =>
+      (
+        child.firstName?.toLowerCase() +
+        " " +
+        child.lastName?.toLowerCase()
+      ).includes(query)
     );
   }
 
