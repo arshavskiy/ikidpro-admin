@@ -9,6 +9,7 @@
         </p>
       </div>
       <div class="flex items-center space-x-2">
+        <!-- parent filter -->
         <n-select
           v-model:value="selectedParentId"
           @update:value="onParentChange"
@@ -16,6 +17,23 @@
           placeholder="Select Parent"
           :style="{ minWidth: '200px' }"
         />
+
+        <!-- event types (multi) dropdown -->
+        <n-dropdown
+          trigger="click"
+          :options="dropdownEventTypeOptions"
+          @select="onEventTypeSelect"
+        >
+          <n-button secondary>
+            {{
+              selectedEventTypes.length > 0
+                ? `Event Types (${selectedEventTypes.length})`
+                : "Event Types"
+            }}
+          </n-button>
+        </n-dropdown>
+
+        <!-- child filter -->
         <n-select
           v-model:value="selectedChildId"
           @update:value="loadAnalytics"
@@ -39,12 +57,15 @@
     </div>
 
     <!-- Loading State -->
-    <div v-if="loading" class="text-center py-12">
+    <div
+      v-if="loading"
+      class="text-center py-12 absolute z-10 left-280 top-100"
+    >
       <i class="fas fa-spinner animate-spin text-4xl text-blue-600 mb-4"></i>
       <p class="text-gray-600">Loading analytics data...</p>
     </div>
 
-    <div v-else class="space-y-6">
+    <div class="space-y-6">
       <!-- Sensor Data Distribution -->
       <OverviewStatistics :analytics="analytics" />
 
@@ -119,8 +140,9 @@
       <SensorValuesLineChart
         :sensor-values="analytics.sensorValues"
         :selected-event-type="selectedEventType"
+        :selected-event-types="selectedEventTypes"
         :selected-time-range="selectedTimeRange"
-        :event-type-options="eventTypeOptions"
+        :event-type-options="filteredEventTypeOptions"
       />
 
       <!-- Event Data Line Chart -->
@@ -452,7 +474,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from "vue";
-import { NSelect, NButton, NCard } from "naive-ui";
+import { NSelect, NButton, NCard, NDropdown } from "naive-ui";
 import VChart from "vue-echarts";
 import * as echarts from "echarts";
 import * as eventApi from "../../services/eventApi";
@@ -468,6 +490,7 @@ import GpsActivityMap from "../../components/GpsActivityMap.vue";
 const loading = ref(false);
 const selectedTimeRange = ref("30");
 const selectedEventType = ref("all");
+const selectedEventTypes = ref([]);
 const selectedChildId = ref("all");
 const selectedParentId = ref("all");
 const availableChildren = ref([]);
@@ -535,7 +558,6 @@ const eventTypeOptions = [
   { value: "satellites", label: "Satellites" },
   { value: "steps", label: "Steps" },
   { value: "calories", label: "Calories" },
-  { value: "speed", label: "Speed" },
   { value: "magneticX", label: "Magnetometer X" },
   { value: "magneticY", label: "Magnetometer Y" },
   { value: "magneticZ", label: "Magnetometer Z" },
@@ -544,6 +566,25 @@ const eventTypeOptions = [
   { value: "gps", label: "GPS Location" },
   { value: "motion", label: "Motion/Acceleration" },
 ];
+// Multi-select options exclude 'all'
+const eventTypeOptionsMulti = eventTypeOptions.filter((o) => o.value !== "all");
+// Only show selected types to the line chart (fallback to all when none selected)
+const filteredEventTypeOptions = computed(() =>
+  selectedEventTypes.value.length
+    ? eventTypeOptions.filter(
+        (o) => o.value === "all" || selectedEventTypes.value.includes(o.value)
+      )
+    : eventTypeOptions
+);
+// Dropdown options: add checkmark for selected
+const dropdownEventTypeOptions = computed(() =>
+  eventTypeOptionsMulti.map((o) => ({
+    key: o.value,
+    label: `${selectedEventTypes.value.includes(o.value) ? "✓ " : ""}${
+      o.label
+    }`,
+  }))
+);
 const analytics = ref({
   totalEvents: 0,
   activeChildren: 0,
@@ -696,74 +737,15 @@ const loadAnalytics = async () => {
       (event) => new Date(event.Timestamp) >= cutoffDate
     );
 
-    // Filter by event type
-    if (selectedEventType.value !== "all") {
-      filteredEvents = filteredEvents.filter((event) => {
-        switch (selectedEventType.value) {
-          case "HeartRate":
-            return event.HeartRate !== null && event.HeartRate !== undefined;
-          case "HRV":
-            return event.HRV !== null && event.HRV !== undefined;
-          case "AccelX":
-            return event.AccelX !== null && event.AccelX !== undefined;
-          case "AccelY":
-            return event.AccelY !== null && event.AccelY !== undefined;
-          case "AccelZ":
-            return event.AccelZ !== null && event.AccelZ !== undefined;
-          case "GyroX":
-            return event.GyroX !== null && event.GyroX !== undefined;
-          case "GyroY":
-            return event.GyroY !== null && event.GyroY !== undefined;
-          case "GyroZ":
-            return event.GyroZ !== null && event.GyroZ !== undefined;
-          case "EDA":
-            return event.EDA !== null && event.EDA !== undefined;
-          case "TemperatureC":
-            return (
-              event.TemperatureC !== null && event.TemperatureC !== undefined
-            );
-          case "SoundLevel":
-            return event.SoundLevel !== null && event.SoundLevel !== undefined;
-          case "latitude":
-            return event.latitude !== null && event.latitude !== undefined;
-          case "longitude":
-            return event.longitude !== null && event.longitude !== undefined;
-          case "altitude":
-            return event.altitude !== null && event.altitude !== undefined;
-          case "speed_mps":
-            return event.speed_mps !== null && event.speed_mps !== undefined;
-          case "bearing_deg":
-            return (
-              event.bearing_deg !== null && event.bearing_deg !== undefined
-            );
-          case "accuracy_m":
-            return event.accuracy_m !== null && event.accuracy_m !== undefined;
-          case "satellites":
-            return event.satellites !== null && event.satellites !== undefined;
-          case "steps":
-            return event.steps !== null && event.steps !== undefined;
-          case "calories":
-            return event.calories !== null && event.calories !== undefined;
-          case "speed":
-            return event.speed !== null && event.speed !== undefined;
-          case "magneticX":
-            return event.magneticX !== null && event.magneticX !== undefined;
-          case "magneticY":
-            return event.magneticY !== null && event.magneticY !== undefined;
-          case "magneticZ":
-            return event.magneticZ !== null && event.magneticZ !== undefined;
-          case "pressure":
-            return event.pressure !== null && event.pressure !== undefined;
-          case "light":
-            return event.light !== null && event.light !== undefined;
-          case "gps":
-            return event.latitude && event.longitude;
-          case "motion":
-            return event.AccelX || event.AccelY || event.AccelZ;
-          default:
-            return true;
-        }
-      });
+    // Filter by event type(s)
+    if (selectedEventTypes.value.length > 0) {
+      filteredEvents = filteredEvents.filter((event) =>
+        selectedEventTypes.value.some((t) => eventHasType(event, t))
+      );
+    } else if (selectedEventType.value !== "all") {
+      filteredEvents = filteredEvents.filter((event) =>
+        eventHasType(event, selectedEventType.value)
+      );
     }
 
     // Filter by child ID
@@ -819,9 +801,88 @@ const loadAnalytics = async () => {
   }
 };
 
+// Helper to check if an event has a given type's value
+const eventHasType = (event, type) => {
+  switch (type) {
+    case "HeartRate":
+      return event.HeartRate !== null && event.HeartRate !== undefined;
+    case "HRV":
+      return event.HRV !== null && event.HRV !== undefined;
+    case "AccelX":
+      return event.AccelX !== null && event.AccelX !== undefined;
+    case "AccelY":
+      return event.AccelY !== null && event.AccelY !== undefined;
+    case "AccelZ":
+      return event.AccelZ !== null && event.AccelZ !== undefined;
+    case "GyroX":
+      return event.GyroX !== null && event.GyroX !== undefined;
+    case "GyroY":
+      return event.GyroY !== null && event.GyroY !== undefined;
+    case "GyroZ":
+      return event.GyroZ !== null && event.GyroZ !== undefined;
+    case "EDA":
+      return event.EDA !== null && event.EDA !== undefined;
+    case "Temperature":
+    case "TemperatureC":
+      return (
+        (event.Temperature !== null && event.Temperature !== undefined) ||
+        (event.TemperatureC !== null && event.TemperatureC !== undefined)
+      );
+    case "SoundLevel":
+      return event.SoundLevel !== null && event.SoundLevel !== undefined;
+    case "latitude":
+      return event.latitude !== null && event.latitude !== undefined;
+    case "longitude":
+      return event.longitude !== null && event.longitude !== undefined;
+    case "altitude":
+      return event.altitude !== null && event.altitude !== undefined;
+    case "speed_mps":
+      return event.speed_mps !== null && event.speed_mps !== undefined;
+    case "bearing_deg":
+      return event.bearing_deg !== null && event.bearing_deg !== undefined;
+    case "accuracy_m":
+      return event.accuracy_m !== null && event.accuracy_m !== undefined;
+    case "satellites":
+      return event.satellites !== null && event.satellites !== undefined;
+    case "steps":
+      return event.steps !== null && event.steps !== undefined;
+    case "calories":
+      return event.calories !== null && event.calories !== undefined;
+    case "speed":
+      return event.speed !== null && event.speed !== undefined;
+    case "magneticX":
+      return event.magneticX !== null && event.magneticX !== undefined;
+    case "magneticY":
+      return event.magneticY !== null && event.magneticY !== undefined;
+    case "magneticZ":
+      return event.magneticZ !== null && event.magneticZ !== undefined;
+    case "pressure":
+      return event.pressure !== null && event.pressure !== undefined;
+    case "light":
+      return event.light !== null && event.light !== undefined;
+    case "gps":
+      return event.latitude && event.longitude;
+    case "motion":
+      return event.AccelX || event.AccelY || event.AccelZ;
+    default:
+      return true;
+  }
+};
+
 // When parent changes, reset child to 'all' and reload analytics
 const onParentChange = () => {
   selectedChildId.value = "all";
+  loadAnalytics();
+};
+
+// Toggle selected event types and refresh analytics
+const onEventTypeSelect = (key) => {
+  const idx = selectedEventTypes.value.indexOf(key);
+  if (idx >= 0) {
+    selectedEventTypes.value.splice(idx, 1);
+  } else {
+    selectedEventTypes.value.push(key);
+  }
   loadAnalytics();
 };
 

@@ -45,7 +45,7 @@
     </div> -->
 
     <!-- ECharts Line Chart for Values -->
-    <div v-if="sensorValues && sensorValues.length > 0" class="h-106">
+    <div v-if="filteredChartData && filteredChartData.length > 0" class="h-106">
       <v-chart :option="sensorValuesChartOption" :autoresize="true" />
     </div>
 
@@ -77,6 +77,10 @@ const props = defineProps({
   selectedEventType: {
     type: String,
     default: "all",
+  },
+  selectedEventTypes: {
+    type: Array,
+    default: () => [],
   },
   selectedTimeRange: {
     type: Number,
@@ -143,17 +147,113 @@ const clearAllSensors = () => {
   updateSensorSelection();
 };
 
+// Sensor configuration map (shared by helpers and series builder)
+const sensorConfig = {
+  HeartRate: { field: "heartRate", color: "#ef4444", yAxisIndex: 0 },
+  HRV: { field: "hrv", color: "#f59e0b", yAxisIndex: 0 },
+  Temperature: {
+    field: ["temperatureC", "temperature"],
+    color: "#3b82f6",
+    yAxisIndex: 1,
+  },
+  SoundLevel: { field: "soundLevel", color: "#8b5cf6", yAxisIndex: 0 },
+  EDA: { field: "eda", color: "#7c3aed", yAxisIndex: 0 },
+  Altitude: { field: "altitude", color: "#0f766e", yAxisIndex: 1 },
+  // Support both "Speed" and legacy "Speed_spm" option values
+  Speed: { field: ["speed_mps", "speed"], color: "#be123c", yAxisIndex: 0 },
+  Speed_spm: {
+    field: ["speed_mps", "speed"],
+    color: "#be123c",
+    yAxisIndex: 0,
+  },
+  Bearing: { field: "bearing_deg", color: "#a21caf", yAxisIndex: 1 },
+  Accuracy: { field: "accuracy_m", color: "#9333ea", yAxisIndex: 0 },
+  Steps: { field: "steps", color: "#365314", yAxisIndex: 0 },
+  Calories: { field: "calories", color: "#92400e", yAxisIndex: 0 },
+  Pressure: { field: "pressure", color: "#581c87", yAxisIndex: 0 },
+  Light: { field: "light", color: "#fbbf24", yAxisIndex: 0 },
+};
+
+// Map external event type keys to our sensor keys (only those we chart)
+const eventTypeToSensorKey = {
+  HeartRate: "HeartRate",
+  HRV: "HRV",
+  Temperature: "Temperature",
+  TemperatureC: "Temperature",
+  SoundLevel: "SoundLevel",
+  altitude: "Altitude",
+  bearing_deg: "Bearing",
+  accuracy_m: "Accuracy",
+  steps: "Steps",
+  calories: "Calories",
+  pressure: "Pressure",
+  light: "Light",
+  speed_mps: "Speed_spm",
+  speed: "Speed_spm",
+  // Unsupported in this chart: Accel*, Gyro*, gps, motion, magnetic*, latitude/longitude
+};
+
+// Helper: get a single sensor's value from an event item
+const getSensorValue = (sensorKey, item) => {
+  const config = sensorConfig[sensorKey];
+  if (config === 0) return null;
+  if (Array.isArray(config.field)) {
+    for (const field of config.field) {
+      const v = item?.[field];
+      if (v !== undefined && v !== null) return v;
+    }
+    return null;
+  }
+  const v = item?.[config.field];
+  return v !== undefined && v !== null ? v : null;
+};
+
+// Raw and filtered chart data (keep only events that have any selected value)
+const chartDataRaw = computed(
+  () => props.sensorValues.chartData || props.sensorValues
+);
+// Effective selected sensors: follow external selectedEventTypes when provided
+const effectiveSelectedSensors = computed(() => {
+  if (
+    Array.isArray(props.selectedEventTypes) &&
+    props.selectedEventTypes.length > 0
+  ) {
+    const mapped = props.selectedEventTypes
+      .map((t) => eventTypeToSensorKey[t])
+      .filter(Boolean);
+    // Deduplicate and keep only known option values
+    const allowed = new Set(availableSensorOptions.value.map((s) => s.value));
+    return [...new Set(mapped)].filter((k) => allowed.has(k));
+  }
+  return selectedSensors.value;
+});
+
+const filteredChartData = computed(() => {
+  const data = Array.isArray(chartDataRaw.value) ? chartDataRaw.value : [];
+  if (
+    !effectiveSelectedSensors.value ||
+    effectiveSelectedSensors.value.length === 0
+  )
+    return data;
+  return data.filter((item) =>
+    effectiveSelectedSensors.value.some(
+      (key) => getSensorValue(key, item) !== null
+    )
+  );
+});
+
 // Computed properties for ECharts options
 const sensorValuesChartOption = computed(() => ({
   title: {
     text: `Sensor Values Over Time (${
-      selectedSensors.value.length === 0
+      effectiveSelectedSensors.value.length === 0
         ? "No Sensors Selected"
-        : selectedSensors.value.length === availableSensorOptions.value.length
+        : effectiveSelectedSensors.value.length ===
+          availableSensorOptions.value.length
         ? "All Sensors"
-        : selectedSensors.value.length > 3
-        ? `${selectedSensors.value.length} Sensors`
-        : selectedSensors.value
+        : effectiveSelectedSensors.value.length > 3
+        ? `${effectiveSelectedSensors.value.length} Sensors`
+        : effectiveSelectedSensors.value
             .map((sensorValue) => {
               const sensor = availableSensorOptions.value.find(
                 (s) => s.value === sensorValue
@@ -177,11 +277,13 @@ const sensorValuesChartOption = computed(() => ({
       },
     },
     formatter: (params) => {
-      let result = `${params[0].axisValue}<br/>`;
-      params.forEach((param) => {
-        const unit = getSensorUnit(param.seriesName);
-        result += `${param.seriesName}: ${param.value}${unit}<br/>`;
-      });
+      let result = `${params?.[0]?.axisValue || ""}<br/>`;
+      params
+        .filter((p) => p.value !== null && p.value !== undefined)
+        .forEach((param) => {
+          const unit = getSensorUnit(param.seriesName);
+          result += `${param.seriesName}: ${param.value}${unit}<br/>`;
+        });
       return result;
     },
   },
@@ -199,7 +301,7 @@ const sensorValuesChartOption = computed(() => ({
   xAxis: {
     type: "category",
     boundaryGap: false,
-    data: (props.sensorValues.chartData || props.sensorValues).map((item) =>
+    data: filteredChartData.value.map((item) =>
       new Date(item.timestamp).toLocaleTimeString("en-US", {
         month: "short",
         day: "numeric",
@@ -215,7 +317,7 @@ const sensorValuesChartOption = computed(() => ({
   yAxis: getSensorValuesYAxis(),
   series: getSensorValuesSeries(),
   dataZoom:
-    (props.sensorValues.chartData || props.sensorValues).length > 50
+    filteredChartData.value.length > 50
       ? [
           {
             type: "slider",
@@ -230,7 +332,7 @@ const sensorValuesChartOption = computed(() => ({
 // Helper functions for sensor values chart
 const getSensorValuesSeriesNames = () => {
   // Use selected sensors from checkboxes
-  return selectedSensors.value.map((sensorValue) => {
+  return effectiveSelectedSensors.value.map((sensorValue) => {
     const sensor = availableSensorOptions.value.find(
       (s) => s.value === sensorValue
     );
@@ -289,7 +391,7 @@ const getSensorUnit = (seriesName) => {
 };
 
 const getSensorValuesYAxis = () => {
-  if (selectedSensors.value.length === 0) {
+  if (effectiveSelectedSensors.value.length === 0) {
     return {
       type: "value",
       name: "No Sensors Selected",
@@ -297,11 +399,11 @@ const getSensorValuesYAxis = () => {
   }
 
   // Group sensors by similar units for better Y-axis organization
-  const hasTemperature = selectedSensors.value.includes("Temperature");
-  const hasLocation = selectedSensors.value.some((s) =>
+  const hasTemperature = effectiveSelectedSensors.value.includes("Temperature");
+  const hasLocation = effectiveSelectedSensors.value.some((s) =>
     ["Altitude", "Bearing"].includes(s)
   );
-  const hasOtherSensors = selectedSensors.value.some(
+  const hasOtherSensors = effectiveSelectedSensors.value.some(
     (s) => !["Temperature", "Altitude", "Bearing"].includes(s)
   );
 
@@ -325,7 +427,7 @@ const getSensorValuesYAxis = () => {
       },
     ];
   } else {
-    const sensorLabels = selectedSensors.value
+    const sensorLabels = effectiveSelectedSensors.value
       .map((sensorValue) => {
         const sensor = availableSensorOptions.value.find(
           (s) => s.value === sensorValue
@@ -338,7 +440,7 @@ const getSensorValuesYAxis = () => {
       type: "value",
       name:
         sensorLabels.length > 50
-          ? `${selectedSensors.value.length} Sensors`
+          ? `${effectiveSelectedSensors.value.length} Sensors`
           : sensorLabels,
       nameLocation: "middle",
       nameGap: 50,
@@ -347,93 +449,24 @@ const getSensorValuesYAxis = () => {
 };
 
 const getSensorValuesSeries = () => {
-  const chartData = props.sensorValues.chartData || props.sensorValues;
+  const chartData = filteredChartData.value;
 
   if (
     !chartData ||
     chartData.length === 0 ||
-    selectedSensors.value.length === 0
+    effectiveSelectedSensors.value.length === 0
   ) {
     return [];
   }
 
-  // Define sensor mapping and colors
-  const sensorConfig = {
-    HeartRate: {
-      field: "heartRate",
-      color: "#ef4444",
-      yAxisIndex: 0,
-    },
-    HRV: {
-      field: "hrv",
-      color: "#f59e0b",
-      yAxisIndex: 0,
-    },
-    Temperature: {
-      field: ["temperatureC", "temperature"],
-      color: "#3b82f6",
-      yAxisIndex: 1,
-    },
-    SoundLevel: {
-      field: "soundLevel",
-      color: "#8b5cf6",
-      yAxisIndex: 0,
-    },
-    EDA: {
-      field: "eda",
-      color: "#7c3aed",
-      yAxisIndex: 0,
-    },
-    Altitude: {
-      field: "altitude",
-      color: "#0f766e",
-      yAxisIndex: 1,
-    },
-    Speed: {
-      field: ["speed_mps", "speed"],
-      color: "#be123c",
-      yAxisIndex: 0,
-    },
-    Bearing: {
-      field: "bearing_deg",
-      color: "#a21caf",
-      yAxisIndex: 1,
-    },
-    Accuracy: {
-      field: "accuracy_m",
-      color: "#9333ea",
-      yAxisIndex: 0,
-    },
-    Steps: {
-      field: "steps",
-      color: "#365314",
-      yAxisIndex: 0,
-    },
-    Calories: {
-      field: "calories",
-      color: "#92400e",
-      yAxisIndex: 0,
-    },
-    Pressure: {
-      field: "pressure",
-      color: "#581c87",
-      yAxisIndex: 0,
-    },
-    Light: {
-      field: "light",
-      color: "#fbbf24",
-      yAxisIndex: 0,
-    },
-  };
-
   // Determine Y-axis assignment based on selected sensors
-  const hasTemperature = selectedSensors.value.includes("Temperature");
-  const hasLocation = selectedSensors.value.some((s) =>
+  const hasTemperature = effectiveSelectedSensors.value.includes("Temperature");
+  const hasLocation = effectiveSelectedSensors.value.some((s) =>
     ["Altitude", "Bearing"].includes(s)
   );
   const useSecondaryAxis = hasTemperature || hasLocation;
 
-  return selectedSensors.value
+  return effectiveSelectedSensors.value
     .map((sensorValue) => {
       const config = sensorConfig[sensorValue];
       if (!config) return null;
@@ -457,21 +490,9 @@ const getSensorValuesSeries = () => {
       return {
         name: seriesName,
         type: "line",
-        yAxisIndex: yAxisIndex,
+        yAxisIndex,
         smooth: true,
-        data: chartData.map((item) => {
-          if (Array.isArray(config.field)) {
-            // Try multiple field names
-            for (const field of config.field) {
-              if (item[field] !== undefined && item[field] !== null) {
-                return item[field];
-              }
-            }
-            return null;
-          } else {
-            return item[config.field] || null;
-          }
-        }),
+        data: chartData.map((item) => getSensorValue(sensorValue, item)),
         itemStyle: { color: config.color },
         lineStyle: { width: 2 },
         connectNulls: false,
