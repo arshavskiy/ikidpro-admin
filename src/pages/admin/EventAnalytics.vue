@@ -66,71 +66,42 @@
     </div>
 
     <div class="space-y-6">
-      <!-- Sensor Data Distribution -->
       <OverviewStatistics :analytics="analytics" />
 
+      <!-- Sensor Data Distribution -->
       <n-card>
         <h3 class="text-lg font-medium text-gray-900 mb-4">
           Sensor Data Distribution
         </h3>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div class="text-center p-4 bg-red-50 rounded-lg">
-            <i class="fas fa-heartbeat text-red-600 text-2xl mb-2"></i>
-            <p class="text-sm font-medium text-gray-900">Heart Rate</p>
-            <p class="text-xs text-gray-600">
-              {{ analytics.sensorDistribution.heartRate }}%
-            </p>
+        <div
+          v-if="distributionTiles.length > 0"
+          class="grid grid-cols-6 md:grid-cols-10 gap-2"
+        >
+          <div
+            v-for="tile in distributionTiles"
+            :key="tile.key"
+            class="text-center p-4 rounded-lg"
+            :class="tile.bgClass"
+          >
+            <i
+              :class="['fas', tile.icon, tile.iconClass, 'text-2xl', 'mb-2']"
+            ></i>
+            <p class="text-sm font-medium text-gray-900">{{ tile.label }}</p>
+            <p class="text-xs text-gray-600">{{ tile.percent }}%</p>
             <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
               <div
-                class="bg-red-600 h-2 rounded-full"
-                :style="{ width: analytics.sensorDistribution.heartRate + '%' }"
+                class="h-2 rounded-full font-bold"
+                :class="tile.barClass"
+                :style="{ width: tile.percent + '%' }"
               ></div>
             </div>
           </div>
-
-          <div class="text-center p-4 bg-blue-50 rounded-lg">
-            <i class="fas fa-thermometer-half text-blue-600 text-2xl mb-2"></i>
-            <p class="text-sm font-medium text-gray-900">Temperature</p>
-            <p class="text-xs text-gray-600">
-              {{ analytics.sensorDistribution.temperature }}%
-            </p>
-            <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
-              <div
-                class="bg-blue-600 h-2 rounded-full"
-                :style="{
-                  width: analytics.sensorDistribution.temperature + '%',
-                }"
-              ></div>
-            </div>
-          </div>
-
-          <div class="text-center p-4 bg-green-50 rounded-lg">
-            <i class="fas fa-map-marker-alt text-green-600 text-2xl mb-2"></i>
-            <p class="text-sm font-medium text-gray-900">GPS Location</p>
-            <p class="text-xs text-gray-600">
-              {{ analytics.sensorDistribution.gps }}%
-            </p>
-            <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
-              <div
-                class="bg-green-600 h-2 rounded-full"
-                :style="{ width: analytics.sensorDistribution.gps + '%' }"
-              ></div>
-            </div>
-          </div>
-
-          <div class="text-center p-4 bg-purple-50 rounded-lg">
-            <i class="fas fa-volume-up text-purple-600 text-2xl mb-2"></i>
-            <p class="text-sm font-medium text-gray-900">Sound Level</p>
-            <p class="text-xs text-gray-600">
-              {{ analytics.sensorDistribution.sound }}%
-            </p>
-            <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
-              <div
-                class="bg-purple-600 h-2 rounded-full"
-                :style="{ width: analytics.sensorDistribution.sound + '%' }"
-              ></div>
-            </div>
-          </div>
+        </div>
+        <div
+          v-else
+          class="p-4 bg-gray-50 rounded text-center text-sm text-gray-500"
+        >
+          No sensors selected
         </div>
       </n-card>
 
@@ -653,6 +624,248 @@ const analytics = ref({
     stableHeartRate: 0,
     normalTemperature: 0,
   },
+});
+
+// Map eventType value to sensorDistribution key and presentation
+const distributionMap = {
+  HeartRate: {
+    distKey: "heartRate",
+    label: "Heart Rate",
+    icon: "fa-heartbeat",
+    iconClass: "text-red-600",
+    bgClass: "bg-red-50",
+    barClass: "bg-red-600",
+  },
+  HRV: {
+    distKey: "hrv",
+    label: "HRV",
+    icon: "fa-wave-square",
+    iconClass: "text-amber-600",
+    bgClass: "bg-amber-50",
+    barClass: "bg-amber-600",
+  },
+  EDA: {
+    distKey: "eda",
+    label: "EDA",
+    icon: "fa-bolt",
+    iconClass: "text-violet-600",
+    bgClass: "bg-violet-50",
+    barClass: "bg-violet-600",
+  },
+  Temperature: {
+    distKey: "temperature",
+    label: "Temperature",
+    icon: "fa-thermometer-half",
+    iconClass: "text-blue-600",
+    bgClass: "bg-blue-50",
+    barClass: "bg-blue-600",
+  },
+  SoundLevel: {
+    distKey: "sound",
+    label: "Sound Level",
+    icon: "fa-volume-up",
+    iconClass: "text-purple-600",
+    bgClass: "bg-purple-50",
+    barClass: "bg-purple-600",
+  },
+  gps: {
+    distKey: "gps",
+    label: "GPS Location",
+    icon: "fa-map-marker-alt",
+    iconClass: "text-green-600",
+    bgClass: "bg-green-50",
+    barClass: "bg-green-600",
+  },
+  motion: {
+    distKey: "motion",
+    label: "Motion/Acceleration",
+    icon: "fa-running",
+    iconClass: "text-teal-600",
+    bgClass: "bg-teal-50",
+    barClass: "bg-teal-600",
+  },
+  GyroX: {
+    distKey: "gyro",
+    label: "Gyroscope",
+    icon: "fa-sync",
+    iconClass: "text-indigo-600",
+    bgClass: "bg-indigo-50",
+    barClass: "bg-indigo-600",
+  },
+  GyroY: {
+    distKey: "gyro",
+    label: "Gyroscope",
+    icon: "fa-sync",
+    iconClass: "text-indigo-600",
+    bgClass: "bg-indigo-50",
+    barClass: "bg-indigo-600",
+  },
+  GyroZ: {
+    distKey: "gyro",
+    label: "Gyroscope",
+    icon: "fa-sync",
+    iconClass: "text-indigo-600",
+    bgClass: "bg-indigo-50",
+    barClass: "bg-indigo-600",
+  },
+  AccelX: {
+    distKey: "motion",
+    label: "Accelerometer",
+    icon: "fa-arrows-alt",
+    iconClass: "text-cyan-600",
+    bgClass: "bg-cyan-50",
+    barClass: "bg-cyan-600",
+  },
+  AccelY: {
+    distKey: "motion",
+    label: "Accelerometer",
+    icon: "fa-arrows-alt",
+    iconClass: "text-cyan-600",
+    bgClass: "bg-cyan-50",
+    barClass: "bg-cyan-600",
+  },
+  AccelZ: {
+    distKey: "motion",
+    label: "Accelerometer",
+    icon: "fa-arrows-alt",
+    iconClass: "text-cyan-600",
+    bgClass: "bg-cyan-50",
+    barClass: "bg-cyan-600",
+  },
+  magneticX: {
+    distKey: "magnetic",
+    label: "Magnetometer",
+    icon: "fa-magnet",
+    iconClass: "text-fuchsia-600",
+    bgClass: "bg-fuchsia-50",
+    barClass: "bg-fuchsia-600",
+  },
+  magneticY: {
+    distKey: "magnetic",
+    label: "Magnetometer",
+    icon: "fa-magnet",
+    iconClass: "text-fuchsia-600",
+    bgClass: "bg-fuchsia-50",
+    barClass: "bg-fuchsia-600",
+  },
+  magneticZ: {
+    distKey: "magnetic",
+    label: "Magnetometer",
+    icon: "fa-magnet",
+    iconClass: "text-fuchsia-600",
+    bgClass: "bg-fuchsia-50",
+    barClass: "bg-fuchsia-600",
+  },
+  pressure: {
+    distKey: "pressure",
+    label: "Pressure",
+    icon: "fa-tachometer-alt",
+    iconClass: "text-purple-700",
+    bgClass: "bg-purple-50",
+    barClass: "bg-purple-700",
+  },
+  light: {
+    distKey: "light",
+    label: "Light",
+    icon: "fa-lightbulb",
+    iconClass: "text-yellow-600",
+    bgClass: "bg-yellow-50",
+    barClass: "bg-yellow-600",
+  },
+  steps: {
+    distKey: "steps",
+    label: "Steps",
+    icon: "fa-shoe-prints",
+    iconClass: "text-emerald-600",
+    bgClass: "bg-emerald-50",
+    barClass: "bg-emerald-600",
+  },
+  calories: {
+    distKey: "calories",
+    label: "Calories",
+    icon: "fa-fire",
+    iconClass: "text-orange-600",
+    bgClass: "bg-orange-50",
+    barClass: "bg-orange-600",
+  },
+  altitude: {
+    distKey: "altitude",
+    label: "Altitude",
+    icon: "fa-mountain",
+    iconClass: "text-teal-700",
+    bgClass: "bg-teal-50",
+    barClass: "bg-teal-700",
+  },
+  speed_mps: {
+    distKey: "speed",
+    label: "Speed",
+    icon: "fa-tachometer-alt",
+    iconClass: "text-rose-600",
+    bgClass: "bg-rose-50",
+    barClass: "bg-rose-600",
+  },
+  speed: {
+    distKey: "speed",
+    label: "Speed",
+    icon: "fa-tachometer-alt",
+    iconClass: "text-rose-600",
+    bgClass: "bg-rose-50",
+    barClass: "bg-rose-600",
+  },
+  bearing_deg: {
+    distKey: "bearing",
+    label: "Bearing",
+    icon: "fa-compass",
+    iconClass: "text-pink-600",
+    bgClass: "bg-pink-50",
+    barClass: "bg-pink-600",
+  },
+  accuracy_m: {
+    distKey: "accuracy",
+    label: "Accuracy",
+    icon: "fa-bullseye",
+    iconClass: "text-indigo-700",
+    bgClass: "bg-indigo-50",
+    barClass: "bg-indigo-700",
+  },
+  satellites: {
+    distKey: "satellites",
+    label: "Satellites",
+    icon: "fa-satellite",
+    iconClass: "text-slate-600",
+    bgClass: "bg-slate-50",
+    barClass: "bg-slate-600",
+  },
+};
+
+// Build distribution tiles based on current selection
+const distributionTiles = computed(() => {
+  // Use selectedEventTypes when available; otherwise default to a small helpful set
+  const selected = selectedEventTypes.value.length
+    ? selectedEventTypes.value
+    : [];
+  if (selected.length === 0) return [];
+
+  // Aggregate by unique distKey to avoid duplicates (e.g., GyroX/Y/Z => gyro)
+  const added = new Set();
+  const tiles = [];
+  for (const key of selected) {
+    const conf = distributionMap[key];
+    if (!conf) continue;
+    if (added.has(conf.distKey)) continue;
+    added.add(conf.distKey);
+    const percent = analytics.value.sensorDistribution?.[conf.distKey] ?? 0;
+    tiles.push({
+      key,
+      label: conf.label,
+      percent,
+      icon: conf.icon,
+      iconClass: conf.iconClass,
+      bgClass: conf.bgClass,
+      barClass: conf.barClass,
+    });
+  }
+  return tiles;
 });
 
 // Computed properties
