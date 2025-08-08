@@ -568,23 +568,37 @@ const eventTypeOptions = [
 ];
 // Multi-select options exclude 'all'
 const eventTypeOptionsMulti = eventTypeOptions.filter((o) => o.value !== "all");
-// Only show selected types to the line chart (fallback to all when none selected)
+// Only show selected types to the line chart; when none selected, pass empty list
 const filteredEventTypeOptions = computed(() =>
   selectedEventTypes.value.length
     ? eventTypeOptions.filter(
         (o) => o.value === "all" || selectedEventTypes.value.includes(o.value)
       )
-    : eventTypeOptions
+    : []
 );
-// Dropdown options: add checkmark for selected
-const dropdownEventTypeOptions = computed(() =>
-  eventTypeOptionsMulti.map((o) => ({
+// Dropdown options: include 'All' and 'Select None' at the top and add checkmark for selected
+const dropdownEventTypeOptions = computed(() => {
+  const allKeys = eventTypeOptionsMulti.map((o) => o.value);
+  const areAllSelected = allKeys.every((k) =>
+    selectedEventTypes.value.includes(k)
+  );
+  const isNoneSelected = selectedEventTypes.value.length === 0;
+  const allOption = {
+    key: "all",
+    label: `${areAllSelected ? "✓ " : ""}All Events`,
+  };
+  const noneOption = {
+    key: "none",
+    label: `${isNoneSelected ? "✓ " : ""}Select None`,
+  };
+  const items = eventTypeOptionsMulti.map((o) => ({
     key: o.value,
     label: `${selectedEventTypes.value.includes(o.value) ? "✓ " : ""}${
       o.label
     }`,
-  }))
-);
+  }));
+  return [allOption, noneOption, ...items];
+});
 const analytics = ref({
   totalEvents: 0,
   activeChildren: 0,
@@ -877,12 +891,26 @@ const onParentChange = () => {
 
 // Toggle selected event types and refresh analytics
 const onEventTypeSelect = (key) => {
-  const idx = selectedEventTypes.value.indexOf(key);
-  if (idx >= 0) {
-    selectedEventTypes.value.splice(idx, 1);
+  const allKeys = eventTypeOptionsMulti.map((o) => o.value);
+  const areAllSelected = allKeys.every((k) =>
+    selectedEventTypes.value.includes(k)
+  );
+
+  if (key === "all") {
+    // Toggle select/deselect all
+    selectedEventTypes.value = areAllSelected ? [] : [...allKeys];
+  } else if (key === "none") {
+    // Explicitly clear all selections
+    selectedEventTypes.value = [];
   } else {
-    selectedEventTypes.value.push(key);
+    const idx = selectedEventTypes.value.indexOf(key);
+    if (idx >= 0) {
+      selectedEventTypes.value.splice(idx, 1);
+    } else {
+      selectedEventTypes.value.push(key);
+    }
   }
+
   loadAnalytics();
 };
 
@@ -1329,6 +1357,8 @@ const getDefaultAnalytics = () => ({
 
 // Lifecycle
 onMounted(() => {
+  // Default to all event types selected
+  selectedEventTypes.value = eventTypeOptionsMulti.map((o) => o.value);
   loadAnalytics();
 });
 </script>

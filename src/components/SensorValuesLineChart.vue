@@ -214,10 +214,9 @@ const chartDataRaw = computed(
 );
 // Effective selected sensors: follow external selectedEventTypes when provided
 const effectiveSelectedSensors = computed(() => {
-  if (
-    Array.isArray(props.selectedEventTypes) &&
-    props.selectedEventTypes.length > 0
-  ) {
+  if (Array.isArray(props.selectedEventTypes)) {
+    // Explicitly respect an empty external selection: show no sensors
+    if (props.selectedEventTypes.length === 0) return [];
     const mapped = props.selectedEventTypes
       .map((t) => eventTypeToSensorKey[t])
       .filter(Boolean);
@@ -234,7 +233,7 @@ const filteredChartData = computed(() => {
     !effectiveSelectedSensors.value ||
     effectiveSelectedSensors.value.length === 0
   )
-    return data;
+    return [];
   return data.filter((item) =>
     effectiveSelectedSensors.value.some(
       (key) => getSensorValue(key, item) !== null
