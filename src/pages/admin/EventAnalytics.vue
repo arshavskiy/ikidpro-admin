@@ -10,6 +10,13 @@
       </div>
       <div class="flex items-center space-x-2">
         <n-select
+          v-model:value="selectedParentId"
+          @update:value="onParentChange"
+          :options="parentOptions"
+          placeholder="Select Parent"
+          :style="{ minWidth: '200px' }"
+        />
+        <n-select
           v-model:value="selectedChildId"
           @update:value="loadAnalytics"
           :options="childOptions"
@@ -449,6 +456,8 @@ import { NSelect, NButton, NCard } from "naive-ui";
 import VChart from "vue-echarts";
 import * as echarts from "echarts";
 import * as eventApi from "../../services/eventApi";
+import * as userApi from "../../services/userApi";
+import * as childUserApi from "../../services/childUserApi";
 import SensorValuesLineChart from "../../components/SensorValuesLineChart.vue";
 import EventDataTimeline from "../../components/EventDataTimeline.vue";
 import OverviewStatistics from "../../components/OverviewStatistics.vue";
@@ -460,16 +469,40 @@ const loading = ref(false);
 const selectedTimeRange = ref("30");
 const selectedEventType = ref("all");
 const selectedChildId = ref("all");
+const selectedParentId = ref("all");
 const availableChildren = ref([]);
+const availableParents = ref([]);
+const childParentMap = ref({});
+const parentsById = ref({});
+const childrenById = ref({});
 
-// Child options computed from available children
-const childOptions = computed(() => [
-  { label: "All Children", value: "all" },
-  ...availableChildren.value.map((childId) => ({
-    label: `Child ${childId}`,
-    value: childId,
-  })),
-]);
+// Parent options
+const parentOptions = computed(() => {
+  const opts = availableParents.value.map((parent) => ({
+    label: parentsById.value[parent]?.label,
+    value: parent,
+  }));
+  return [{ label: "All Parents", value: "all" }, ...opts];
+});
+
+// Child options computed from available children and selected parent
+const childOptions = computed(() => {
+  const source =
+    selectedParentId.value === "all"
+      ? availableChildren.value
+      : availableChildren.value.filter(
+          (cid) => childParentMap.value[cid] === selectedParentId.value
+        );
+  return [
+    { label: "All Children", value: "all" },
+    ...source.map((childId) => ({
+      label:
+        childrenById.value[childId]?.label ||
+        `Child ${String(childId).slice(0, 8)}`,
+      value: childId,
+    })),
+  ];
+});
 
 // Time range options
 const timeRangeOptions = [
@@ -584,14 +617,77 @@ const loadAnalytics = async () => {
     console.log("🔄 Loading analytics data...");
 
     // Load events data
-    const response = await eventApi.getAll();
-    const allEvents = response.data || [];
+    const [response, usersRes, childUsersRes] = await Promise.all([
+      eventApi.getAll(),
+      userApi.getAll().catch(() => null),
+      childUserApi.getAll().catch(() => null),
+    ]);
+
+    // Build parents map from users list (if available)
+    if (usersRes && Array.isArray(usersRes.data?.data)) {
+      const map = {};
+      usersRes.data.data.forEach((u) => {
+        const id = u?._id || u?.id;
+        if (!id) return;
+        const nameParts = [u?.firstName, u?.lastName].filter(Boolean);
+        const name = nameParts.length
+          ? nameParts.join(" ")
+          : u?.name || u?.email || u?.mobile || String(id);
+        map[id] = { id, label: name, raw: u };
+      });
+      console.log("✅ Parents map built", map);
+      parentsById.value = map;
+    }
+
+    // Build children map from child users list (if available)
+    if (childUsersRes) {
+      const raw = Array.isArray(childUsersRes.data?.data)
+        ? childUsersRes.data.data
+        : Array.isArray(childUsersRes.data)
+        ? childUsersRes.data
+        : [];
+      const cmap = {};
+      raw.forEach((c) => {
+        const cid = c?.aid || c?._id || c?.id;
+        if (!cid) return;
+        const nameParts = [c?.firstName, c?.lastName].filter(Boolean);
+        const label = nameParts.length
+          ? nameParts.join(" ")
+          : c?.name || c?.nickname || String(cid);
+        cmap[cid] = { id: cid, label, raw: c };
+      });
+      childrenById.value = cmap;
+    }
+    let allEvents = response.data || [];
+
+    // Apply parent filter to events if a parent is selected
+    if (selectedParentId.value !== "all") {
+      allEvents = allEvents.filter(
+        (e) => e.parentId && e.parentId === selectedParentId.value
+      );
+    }
 
     // Get unique children for selector
     const uniqueChildren = [...new Set(allEvents.map((e) => e.aid))].filter(
       Boolean
     );
     availableChildren.value = uniqueChildren.sort();
+
+    // Build parent list and child->parent map from the complete dataset (unfiltered by parent)
+    const rawAll = response.data || [];
+    const parents = [...new Set(rawAll.map((e) => e.parentId))].filter(Boolean);
+    availableParents.value = parents.sort();
+
+    const map = {};
+    rawAll.forEach((e) => {
+      if (e.aid && e.parentId) map[e.aid] = e.parentId;
+    });
+    // Merge mapping from children list if present
+    Object.values(childrenById.value).forEach((c) => {
+      const pid = c.raw?.parentId;
+      if (c.id && pid && !map[c.id]) map[c.id] = pid;
+    });
+    childParentMap.value = map;
 
     // Filter events by selected time range
     const cutoffDate = new Date();
@@ -721,6 +817,12 @@ const loadAnalytics = async () => {
   } finally {
     loading.value = false;
   }
+};
+
+// When parent changes, reset child to 'all' and reload analytics
+const onParentChange = () => {
+  selectedChildId.value = "all";
+  loadAnalytics();
 };
 
 const calculateAnalytics = (events) => {

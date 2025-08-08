@@ -41,10 +41,10 @@
       <div class="flex-1 flex flex-col overflow-hidden">
         <!-- Header -->
         <header class="bg-white shadow-sm border-b border-gray-200">
-          <div class="flex items-center justify-between px-6 py-4">
-            <div class="flex items-center space-x-4">
-              <span class="text-sm text-gray-600"
-                >Welcome, {{ user?.firstName || "Admin" }}</span
+          <div class="flex items-center px-6 py-4">
+            <div class="flex items-center justify-end space-x-4">
+              <span class="text-sm text-gray-600">
+                Welcome, {{ user?.firstName || "Admin" }}</span
               >
               <div
                 class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center"
