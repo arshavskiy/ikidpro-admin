@@ -38,18 +38,9 @@
     </div>
 
     <div v-else class="space-y-6">
-      <!-- Overview Statistics -->
+      <!-- Sensor Data Distribution -->
       <OverviewStatistics :analytics="analytics" />
 
-      <!-- Sensor Values Line Chart -->
-      <SensorValuesLineChart
-        :sensor-values="analytics.sensorValues"
-        :selected-event-type="selectedEventType"
-        :selected-time-range="selectedTimeRange"
-        :event-type-options="eventTypeOptions"
-      />
-
-      <!-- Sensor Data Distribution -->
       <n-card>
         <h3 class="text-lg font-medium text-gray-900 mb-4">
           Sensor Data Distribution
@@ -114,6 +105,16 @@
           </div>
         </div>
       </n-card>
+
+      <!-- Overview Statistics -->
+
+      <!-- Sensor Values Line Chart -->
+      <SensorValuesLineChart
+        :sensor-values="analytics.sensorValues"
+        :selected-event-type="selectedEventType"
+        :selected-time-range="selectedTimeRange"
+        :event-type-options="eventTypeOptions"
+      />
 
       <!-- Event Data Line Chart -->
       <EventDataTimeline
