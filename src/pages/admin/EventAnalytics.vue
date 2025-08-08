@@ -80,8 +80,14 @@
           <div
             v-for="tile in distributionTiles"
             :key="tile.key"
-            class="text-center p-4 rounded-lg"
-            :class="tile.bgClass"
+            class="text-center p-4 rounded-lg transition cursor-pointer"
+            :class="[
+              tile.bgClass,
+              isTileSelected(tile)
+                ? 'border-2 border-blue-500 shadow-sm'
+                : 'border border-transparent hover:border-gray-300',
+            ]"
+            @click="onTileClick(tile)"
           >
             <i
               :class="['fas', tile.icon, tile.iconClass, 'text-2xl', 'mb-2']"
@@ -838,25 +844,26 @@ const distributionMap = {
   },
 };
 
-// Build distribution tiles based on current selection
+// Build distribution tiles from available analytics distribution (always visible)
 const distributionTiles = computed(() => {
-  // Use selectedEventTypes when available; otherwise default to a small helpful set
-  const selected = selectedEventTypes.value.length
-    ? selectedEventTypes.value
-    : [];
-  if (selected.length === 0) return [];
+  const dist = analytics.value.sensorDistribution || {};
+  const availableKeys = Object.keys(dist).filter((k) => (dist[k] ?? 0) > 0);
+  if (availableKeys.length === 0) return [];
 
-  // Aggregate by unique distKey to avoid duplicates (e.g., GyroX/Y/Z => gyro)
+  // Preserve a stable order using eventTypeOptions while deduping by distKey
   const added = new Set();
   const tiles = [];
-  for (const key of selected) {
-    const conf = distributionMap[key];
+  for (const opt of eventTypeOptions) {
+    if (opt.value === "all") continue;
+    const conf = distributionMap[opt.value];
     if (!conf) continue;
-    if (added.has(conf.distKey)) continue;
-    added.add(conf.distKey);
-    const percent = analytics.value.sensorDistribution?.[conf.distKey] ?? 0;
+    const dk = conf.distKey;
+    if (!availableKeys.includes(dk)) continue;
+    if (added.has(dk)) continue;
+    added.add(dk);
+    const percent = dist[dk] ?? 0;
     tiles.push({
-      key,
+      key: dk,
       label: conf.label,
       percent,
       icon: conf.icon,
@@ -867,6 +874,55 @@ const distributionTiles = computed(() => {
   }
   return tiles;
 });
+
+// Map distribution category (distKey) back to event type keys for selection highlighting
+const distKeyToEventTypes = {
+  heartRate: ["HeartRate"],
+  hrv: ["HRV"],
+  eda: ["EDA"],
+  temperature: ["Temperature"],
+  sound: ["SoundLevel"],
+  gps: ["gps", "latitude", "longitude"],
+  motion: ["AccelX", "AccelY", "AccelZ", "motion"],
+  gyro: ["GyroX", "GyroY", "GyroZ"],
+  magnetic: ["magneticX", "magneticY", "magneticZ"],
+  pressure: ["pressure"],
+  light: ["light"],
+  steps: ["steps"],
+  calories: ["calories"],
+  altitude: ["altitude"],
+  speed: ["speed_mps", "speed"],
+  bearing: ["bearing_deg"],
+  accuracy: ["accuracy_m"],
+  satellites: ["satellites"],
+};
+
+// Highlight tile if any of its event types are selected in the dropdown
+const isTileSelected = (tile) => {
+  const related = distKeyToEventTypes[tile.key] || [];
+  if (!related.length) return false;
+  return related.some((k) => selectedEventTypes.value.includes(k));
+};
+
+// Clicking a tile toggles all its related event types through onEventTypeSelect
+const onTileClick = (tile) => {
+  const related = distKeyToEventTypes[tile.key] || [];
+  if (!related.length) return;
+
+  const allSelected = related.every((k) =>
+    selectedEventTypes.value.includes(k)
+  );
+
+  if (allSelected) {
+    // remove all
+    related.forEach((k) => onEventTypeSelect(k));
+  } else {
+    // add any missing
+    related.forEach((k) => {
+      if (!selectedEventTypes.value.includes(k)) onEventTypeSelect(k);
+    });
+  }
+};
 
 // Computed properties
 const gpsEventsForMap = computed(() => {
@@ -1124,7 +1180,7 @@ const onEventTypeSelect = (key) => {
     }
   }
 
-  loadAnalytics();
+  // loadAnalytics();
 };
 
 const calculateAnalytics = (events) => {
