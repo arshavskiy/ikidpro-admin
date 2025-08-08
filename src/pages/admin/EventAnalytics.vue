@@ -26,7 +26,7 @@
         >
           <n-button secondary>
             {{
-              selectedEventTypes.length > 0
+              selectedEventTypes.length > (0).length > 0
                 ? `Event Types (${selectedEventTypes.length})`
                 : "Event Types"
             }}
@@ -80,14 +80,13 @@
           <div
             v-for="tile in distributionTiles"
             :key="tile.key"
-            class="text-center p-4 rounded-lg transition cursor-pointer"
+            class="text-center p-4 rounded-lg transition"
             :class="[
               tile.bgClass,
               isTileSelected(tile)
                 ? 'border-2 border-blue-500 shadow-sm'
                 : 'border border-transparent hover:border-gray-300',
             ]"
-            @click="onTileClick(tile)"
           >
             <i
               :class="['fas', tile.icon, tile.iconClass, 'text-2xl', 'mb-2']"
@@ -553,13 +552,28 @@ const filteredEventTypeOptions = computed(() =>
       )
     : []
 );
-// Dropdown options: include 'All' and 'Select None' at the top and add checkmark for selected
+// Dropdown options: include 'All' and 'Select None' and hide gps + X/Y axis items
 const dropdownEventTypeOptions = computed(() => {
-  const allKeys = eventTypeOptionsMulti.map((o) => o.value);
-  const areAllSelected = allKeys.every((k) =>
-    selectedEventTypes.value.includes(k)
-  );
+  const hiddenKeys = new Set([
+    "gps",
+    "latitude",
+    "longitude",
+    "AccelX",
+    "AccelY",
+    "GyroX",
+    "GyroY",
+    "magneticX",
+    "magneticY",
+  ]);
+
+  const visible = eventTypeOptionsMulti.filter((o) => !hiddenKeys.has(o.value));
+  const allKeys = visible.map((o) => o.value);
+
+  const areAllSelected =
+    allKeys.length > 0 &&
+    allKeys.every((k) => selectedEventTypes.value.includes(k));
   const isNoneSelected = selectedEventTypes.value.length === 0;
+
   const allOption = {
     key: "all",
     label: `${areAllSelected ? "✓ " : ""}All Events`,
@@ -568,12 +582,14 @@ const dropdownEventTypeOptions = computed(() => {
     key: "none",
     label: `${isNoneSelected ? "✓ " : ""}Select None`,
   };
-  const items = eventTypeOptionsMulti.map((o) => ({
+
+  const items = visible.map((o) => ({
     key: o.value,
     label: `${selectedEventTypes.value.includes(o.value) ? "✓ " : ""}${
       o.label
     }`,
   }));
+
   return [allOption, noneOption, ...items];
 });
 const analytics = ref({
@@ -906,21 +922,25 @@ const isTileSelected = (tile) => {
 
 // Clicking a tile toggles all its related event types through onEventTypeSelect
 const onTileClick = (tile) => {
-  const related = distKeyToEventTypes[tile.key] || [];
-  if (!related.length) return;
+  try {
+    const related = distKeyToEventTypes[tile.key] || [];
+    if (!related.length) return;
 
-  const allSelected = related.every((k) =>
-    selectedEventTypes.value.includes(k)
-  );
+    const allSelected = related.every((k) =>
+      selectedEventTypes.value.includes(k)
+    );
 
-  if (allSelected) {
-    // remove all
-    related.forEach((k) => onEventTypeSelect(k));
-  } else {
-    // add any missing
-    related.forEach((k) => {
-      if (!selectedEventTypes.value.includes(k)) onEventTypeSelect(k);
-    });
+    if (allSelected) {
+      // remove all
+      related.forEach((k) => onEventTypeSelect(k));
+    } else {
+      // add any missing
+      related.forEach((k) => {
+        if (!selectedEventTypes.value.includes(k)) onEventTypeSelect(k);
+      });
+    }
+  } catch (error) {
+    console.error("Error toggling tile selection:", error);
   }
 };
 
