@@ -69,7 +69,7 @@
     <!-- Loading State -->
     <div
       v-if="loading"
-      class="text-center py-12 absolute z-10 left-280 top-100"
+      class="text-center py-12 absolute z-10 left-280 top-100 bg-white p-20 rounded-2xl border-1 shadow-lg border-gray-200"
     >
       <i class="fas fa-spinner animate-spin text-4xl text-blue-600 mb-4"></i>
       <p class="text-gray-600">Loading analytics data...</p>
