@@ -4,9 +4,9 @@
     <div class="flex justify-between items-center">
       <div>
         <h2 class="text-2xl font-bold text-gray-900">Event Analytics</h2>
-        <p class="text-gray-600">
+        <!-- <p class="text-gray-600">
           Comprehensive analytics and insights from sensor data
-        </p>
+        </p> -->
       </div>
       <div class="flex items-center space-x-2">
         <!-- parent filter -->
@@ -41,6 +41,16 @@
           placeholder="Select Child"
           :style="{ minWidth: '200px' }"
         />
+        <!-- date range filter -->
+        <n-date-picker
+          v-model:value="selectedDateRange"
+          type="daterange"
+          clearable
+          :update-value-on-close="true"
+          :actions="['confirm']"
+          @update:value="onDateRangeChange"
+          :style="{ minWidth: '280px' }"
+        />
         <n-select
           v-model:value="selectedTimeRange"
           @update:value="loadAnalytics"
@@ -70,7 +80,7 @@
 
       <!-- Sensor Data Distribution -->
       <n-card>
-        <h3 class="text-lg font-medium text-gray-900 mb-4">
+        <h3 class="text-lg font-medium text-center text-gray-900 mb-4">
           Sensor Data Distribution
         </h3>
         <div
@@ -80,7 +90,8 @@
           <div
             v-for="tile in distributionTiles"
             :key="tile.key"
-            class="text-center p-4 rounded-lg transition"
+            class="text-center p-4 rounded-lg transition cursor-pointer"
+            @click="onTileClick(tile)"
             :class="[
               tile.bgClass,
               isTileSelected(tile)
@@ -450,7 +461,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from "vue";
-import { NSelect, NButton, NCard, NDropdown } from "naive-ui";
+import { NSelect, NButton, NCard, NDropdown, NDatePicker } from "naive-ui";
 import VChart from "vue-echarts";
 import * as echarts from "echarts";
 import * as eventApi from "../../services/eventApi";
@@ -469,6 +480,8 @@ const selectedEventType = ref("all");
 const selectedEventTypes = ref([]);
 const selectedChildId = ref("all");
 const selectedParentId = ref("all");
+// [start, end] timestamps in ms for custom date range
+const selectedDateRange = ref(null);
 const availableChildren = ref([]);
 const availableParents = ref([]);
 const childParentMap = ref({});
@@ -1033,12 +1046,25 @@ const loadAnalytics = async () => {
     });
     childParentMap.value = map;
 
-    // Filter events by selected time range
-    const cutoffDate = new Date();
-    cutoffDate.setDate(cutoffDate.getDate() - selectedTimeRange.value);
-    let filteredEvents = allEvents.filter(
-      (event) => new Date(event.Timestamp) >= cutoffDate
-    );
+    // Filter events by custom date range or selected time range
+    let filteredEvents = allEvents;
+    if (selectedDateRange.value && Array.isArray(selectedDateRange.value)) {
+      const [startMs, endMs] = selectedDateRange.value;
+      const start = startMs ? new Date(startMs) : null;
+      const end = endMs ? new Date(endMs) : null;
+      if (start || end) {
+        filteredEvents = filteredEvents.filter((event) => {
+          const t = new Date(event.Timestamp);
+          return (!start || t >= start) && (!end || t <= end);
+        });
+      }
+    } else {
+      const cutoffDate = new Date();
+      cutoffDate.setDate(cutoffDate.getDate() - selectedTimeRange.value);
+      filteredEvents = filteredEvents.filter(
+        (event) => new Date(event.Timestamp) >= cutoffDate
+      );
+    }
 
     // Filter by event type(s)
     if (selectedEventTypes.value.length > 0) {
@@ -1072,13 +1098,23 @@ const loadAnalytics = async () => {
     );
 
     // Apply time range filter to GPS events
-    const cutoffDateForGps = new Date();
-    cutoffDateForGps.setDate(
-      cutoffDateForGps.getDate() - selectedTimeRange.value
-    );
-    allEventsWithGps.value = gpsEvents.filter(
-      (event) => new Date(event.Timestamp) >= cutoffDateForGps
-    );
+    if (selectedDateRange.value && Array.isArray(selectedDateRange.value)) {
+      const [startMs, endMs] = selectedDateRange.value;
+      const start = startMs ? new Date(startMs) : null;
+      const end = endMs ? new Date(endMs) : null;
+      allEventsWithGps.value = gpsEvents.filter((event) => {
+        const t = new Date(event.Timestamp);
+        return (!start || t >= start) && (!end || t <= end);
+      });
+    } else {
+      const cutoffDateForGps = new Date();
+      cutoffDateForGps.setDate(
+        cutoffDateForGps.getDate() - selectedTimeRange.value
+      );
+      allEventsWithGps.value = gpsEvents.filter(
+        (event) => new Date(event.Timestamp) >= cutoffDateForGps
+      );
+    }
 
     // Apply child filter to GPS events if selected
     if (selectedChildId.value !== "all") {
@@ -1102,6 +1138,12 @@ const loadAnalytics = async () => {
   } finally {
     loading.value = false;
   }
+};
+
+// If a date range is chosen, prefer it over preset and reload
+const onDateRangeChange = (val) => {
+  selectedDateRange.value = val;
+  loadAnalytics();
 };
 
 // Helper to check if an event has a given type's value

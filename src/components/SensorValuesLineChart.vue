@@ -45,6 +45,9 @@
     </div> -->
 
     <!-- ECharts Line Chart for Values -->
+    <h3 class="text-lg font-medium text-gray-900 mb-4 text-center">
+      Sensor Values Over Time
+    </h3>
     <div v-if="filteredChartData && filteredChartData.length > 0" class="h-106">
       <v-chart :option="sensorValuesChartOption" :autoresize="true" />
     </div>
@@ -244,14 +247,14 @@ const filteredChartData = computed(() => {
 // Computed properties for ECharts options
 const sensorValuesChartOption = computed(() => ({
   title: {
-    text: `Sensor Values Over Time (${
+    text: `${
       effectiveSelectedSensors.value.length === 0
         ? "No Sensors Selected"
         : effectiveSelectedSensors.value.length ===
           availableSensorOptions.value.length
         ? "All Sensors"
         : effectiveSelectedSensors.value.length > 3
-        ? `${effectiveSelectedSensors.value.length} Sensors`
+        ? ``
         : effectiveSelectedSensors.value
             .map((sensorValue) => {
               const sensor = availableSensorOptions.value.find(
@@ -260,7 +263,7 @@ const sensorValuesChartOption = computed(() => ({
               return sensor ? sensor.label : sensorValue;
             })
             .join(", ")
-    })`,
+    }`,
     left: "center",
     textStyle: {
       fontSize: 16,
@@ -397,54 +400,49 @@ const getSensorValuesYAxis = () => {
     };
   }
 
-  // Group sensors by similar units for better Y-axis organization
+  // Decide if we need a secondary axis: if any of Temperature/Altitude/Bearing is selected
   const hasTemperature = effectiveSelectedSensors.value.includes("Temperature");
-  const hasLocation = effectiveSelectedSensors.value.some((s) =>
+  const hasLocationOnly = effectiveSelectedSensors.value.some((s) =>
     ["Altitude", "Bearing"].includes(s)
   );
-  const hasOtherSensors = effectiveSelectedSensors.value.some(
-    (s) => !["Temperature", "Altitude", "Bearing"].includes(s)
-  );
+  const needSecondaryAxis = hasTemperature || hasLocationOnly;
 
-  if (hasTemperature && (hasLocation || hasOtherSensors)) {
+  if (needSecondaryAxis) {
     return [
       {
         type: "value",
         name: "Primary Sensors",
         position: "left",
-        axisLabel: {
-          formatter: "{value}",
-        },
+        axisLabel: { formatter: "{value}" },
       },
       {
         type: "value",
         name: "Temperature / Location",
         position: "right",
-        axisLabel: {
-          formatter: "{value}",
-        },
+        axisLabel: { formatter: "{value}" },
       },
     ];
-  } else {
-    const sensorLabels = effectiveSelectedSensors.value
-      .map((sensorValue) => {
-        const sensor = availableSensorOptions.value.find(
-          (s) => s.value === sensorValue
-        );
-        return sensor ? sensor.label : sensorValue;
-      })
-      .join(", ");
-
-    return {
-      type: "value",
-      name:
-        sensorLabels.length > 50
-          ? `${effectiveSelectedSensors.value.length} Sensors`
-          : sensorLabels,
-      nameLocation: "middle",
-      nameGap: 50,
-    };
   }
+
+  // Single axis case
+  const sensorLabels = effectiveSelectedSensors.value
+    .map((sensorValue) => {
+      const sensor = availableSensorOptions.value.find(
+        (s) => s.value === sensorValue
+      );
+      return sensor ? sensor.label : sensorValue;
+    })
+    .join(", ");
+
+  return {
+    type: "value",
+    name:
+      sensorLabels.length > 50
+        ? `${effectiveSelectedSensors.value.length} Sensors`
+        : sensorLabels,
+    nameLocation: "middle",
+    nameGap: 50,
+  };
 };
 
 const getSensorValuesSeries = () => {

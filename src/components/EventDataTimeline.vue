@@ -1,9 +1,10 @@
 <template>
   <!-- Event Data Line Chart -->
   <div class="bg-white p-4 rounded-lg shadow-sm">
-    <div class="flex justify-between items-center mb-4">
-      <h3 class="text-lg font-medium text-gray-900">Event Data Timeline</h3>
-      <div class="text-sm text-gray-500">
+    <h3 class="text-lg font-medium text-gray-900 text-center">
+      Sensors over time
+    </h3>
+    <!-- <h3 class="text-sm text-gray-500">
         {{
           selectedEventType === "all"
             ? "All sensors"
@@ -11,9 +12,7 @@
                 ?.label
         }}
         over time
-      </div>
-    </div>
-
+      </h3> -->
     <!-- ECharts Line Chart -->
     <div v-if="eventTimeline && eventTimeline.length > 0" class="h-96">
       <v-chart
@@ -65,13 +64,13 @@ const props = defineProps({
 // Computed properties for ECharts options
 const eventTimelineChartOption = computed(() => ({
   title: {
-    text: `Event Data Timeline (${
+    text: `${
       props.selectedEventType === "all"
-        ? "All Sensors"
+        ? ""
         : props.eventTypeOptions.find(
             (opt) => opt.value === props.selectedEventType
           )?.label
-    })`,
+    }`,
     left: "center",
     textStyle: {
       fontSize: 16,

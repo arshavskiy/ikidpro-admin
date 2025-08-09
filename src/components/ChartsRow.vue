@@ -93,13 +93,13 @@ const props = defineProps({
 // Computed properties for ECharts options
 const dailyTrendChartOption = computed(() => ({
   title: {
-    text: `Daily Events Trend (${
+    text: `${
       props.selectedEventType === "all"
-        ? "All Events"
+        ? ""
         : props.eventTypeOptions.find(
             (opt) => opt.value === props.selectedEventType
           )?.label
-    })`,
+    }`,
     left: "center",
     textStyle: {
       fontSize: 16,
@@ -174,13 +174,13 @@ const dailyTrendChartOption = computed(() => ({
 
 const hourlyDistributionChartOption = computed(() => ({
   title: {
-    text: `Hourly Activity Distribution (${
+    text: `${
       props.selectedEventType === "all"
-        ? "All Events"
+        ? ""
         : props.eventTypeOptions.find(
             (opt) => opt.value === props.selectedEventType
           )?.label
-    })`,
+    }`,
     left: "center",
     textStyle: {
       fontSize: 16,
