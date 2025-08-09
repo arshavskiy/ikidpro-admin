@@ -51,6 +51,11 @@ const props = defineProps({
     type: String,
     default: "all",
   },
+  // New: multi-selection of event types to show many series
+  selectedEventTypes: {
+    type: Array,
+    default: () => [],
+  },
   selectedTimeRange: {
     type: Number,
     default: 30,
@@ -61,21 +66,47 @@ const props = defineProps({
   },
 });
 
+// Map event types to timeline fields and nice labels
+const typeToTimeline = {
+  HeartRate: { field: "heartRate", label: "Heart Rate", color: "#ef4444" },
+  HRV: { field: "hrv", label: "HRV", color: "#f59e0b" },
+  Temperature: {
+    field: "temperature",
+    label: "Temperature",
+    color: "#3b82f6",
+  },
+  SoundLevel: {
+    field: "soundLevel",
+    label: "Sound Level",
+    color: "#8b5cf6",
+  },
+  gps: { field: "gpsCount", label: "GPS Points", color: "#10b981" },
+  motion: { field: "motionCount", label: "Motion Events", color: "#14b8a6" },
+};
+
+// Effective selection for this chart: prefer multi-select when provided
+const effectiveSelectedTypes = computed(() =>
+  Array.isArray(props.selectedEventTypes)
+    ? props.selectedEventTypes.filter((t) => !!typeToTimeline[t])
+    : []
+);
+
 // Computed properties for ECharts options
 const eventTimelineChartOption = computed(() => ({
   title: {
-    text: `${
-      props.selectedEventType === "all"
-        ? ""
-        : props.eventTypeOptions.find(
-            (opt) => opt.value === props.selectedEventType
-          )?.label
-    }`,
-    left: "center",
-    textStyle: {
-      fontSize: 16,
-      fontWeight: "bold",
-    },
+    // text:
+    //   effectiveSelectedTypes.value.length > 0
+    //     ? "Sensors over time"
+    //     : props.selectedEventType === "all"
+    //     ? ""
+    //     : props.eventTypeOptions.find(
+    //         (opt) => opt.value === props.selectedEventType
+    //       )?.label || "",
+    // left: "center",
+    // textStyle: {
+    //   fontSize: 16,
+    //   fontWeight: "bold",
+    // },
   },
   tooltip: {
     trigger: "axis",
@@ -116,7 +147,7 @@ const eventTimelineChartOption = computed(() => ({
   },
   yAxis: {
     type: "value",
-    name: getYAxisLabel(),
+    name: effectiveSelectedTypes.value.length > 1 ? "Values" : getYAxisLabel(),
     nameLocation: "middle",
     nameGap: 50,
   },
@@ -136,6 +167,11 @@ const eventTimelineChartOption = computed(() => ({
 
 // Helper functions for timeline chart
 const getTimelineSeriesNames = () => {
+  if (effectiveSelectedTypes.value.length > 0) {
+    return effectiveSelectedTypes.value.map((t) => typeToTimeline[t].label);
+  }
+
+  debugger;
   if (props.selectedEventType === "all") {
     return ["Heart Rate", "Temperature", "Sound Level", "Motion Events"];
   } else {
@@ -148,7 +184,11 @@ const getTimelineSeriesNames = () => {
 };
 
 const getYAxisLabel = () => {
-  switch (props.selectedEventType) {
+  if (effectiveSelectedTypes.value.length > 1) return "Values";
+  const t =
+    effectiveSelectedTypes.value[0] ||
+    (props.selectedEventType !== "all" ? props.selectedEventType : null);
+  switch (t) {
     case "HeartRate":
       return "BPM";
     case "HRV":
@@ -171,6 +211,22 @@ const getTimelineSeries = () => {
     return [];
   }
 
+  // Multi-series mode: use selectedEventTypes
+  if (effectiveSelectedTypes.value.length > 0) {
+    return effectiveSelectedTypes.value.map((t) => {
+      const meta = typeToTimeline[t];
+      return {
+        name: meta.label,
+        type: "line",
+        smooth: true,
+        data: props.eventTimeline.map((item) => item[meta.field] || 0),
+        itemStyle: { color: meta.color },
+        lineStyle: { width: 2 },
+      };
+    });
+  }
+
+  // Fallback to previous single/all behavior
   if (props.selectedEventType === "all") {
     return [
       {

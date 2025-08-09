@@ -85,12 +85,12 @@
         </h3>
         <div
           v-if="distributionTiles.length > 0"
-          class="grid grid-cols-6 md:grid-cols-10 gap-2"
+          class="grid sm:grid-cols-6 lg:grid-cols-10 gap-2"
         >
           <div
             v-for="tile in distributionTiles"
             :key="tile.key"
-            class="text-center p-4 rounded-lg transition cursor-pointer"
+            class="text-center p-3 rounded-lg transition cursor-pointer"
             @click="onTileClick(tile)"
             :class="[
               tile.bgClass,
@@ -123,7 +123,6 @@
 
       <!-- Overview Statistics -->
 
-      <!-- Sensor Values Line Chart -->
       <SensorValuesLineChart
         :sensor-values="analytics.sensorValues"
         :selected-event-type="selectedEventType"
@@ -133,13 +132,14 @@
       />
 
       <!-- Event Data Line Chart -->
+      <!-- Sensor Values Line Chart -->
       <EventDataTimeline
         :event-timeline="analytics.eventTimeline"
         :selected-event-type="selectedEventType"
+        :selected-event-types="selectedEventTypes"
         :selected-time-range="selectedTimeRange"
         :event-type-options="eventTypeOptions"
       />
-
       <!-- Charts Row -->
       <ChartsRow
         :analytics="analytics"
