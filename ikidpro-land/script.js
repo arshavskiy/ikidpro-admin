@@ -58,9 +58,9 @@ function initScrollAnimations() {
         entry.target.classList.add("is-visible");
 
         // Trigger counter animations
-        if (entry.target.classList.contains("stat-counter")) {
-          animateCounter(entry.target);
-        }
+        // if (entry.target.classList.contains("stat-counter")) {
+        //   animateCounter(entry.target);
+        // }
 
         // Trigger progress bar animations
         if (entry.target.classList.contains("progress-bar")) {

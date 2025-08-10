@@ -170,11 +170,11 @@
                 :key="param"
                 class="flex items-center space-x-2"
               >
-                <label class="text-sm text-gray-600 w-20">{{ param }}:</label>
+                <label class="text-sm text-gray-700 w-20">{{ param }}:</label>
                 <input
                   v-model="requestParams[param]"
                   type="text"
-                  class="flex-1 px-3 py-1 border border-gray-300 rounded text-sm"
+                  class="flex-1 px-3 py-1 border border-gray-300 rounded text-gray-700 text-sm"
                   :placeholder="`Enter ${param}`"
                 />
               </div>
@@ -241,7 +241,7 @@
               >Request Headers Sent</label
             >
             <pre
-              class="bg-gray-50 p-3 rounded text-xs font-mono overflow-x-auto"
+              class="bg-gray-700 p-3 rounded text-xs font-mono overflow-x-auto"
               >{{ formatJSON(lastRequestHeaders) }}</pre
             >
           </div>
@@ -251,7 +251,7 @@
               >Response Headers</label
             >
             <pre
-              class="bg-gray-50 p-3 rounded text-xs font-mono overflow-x-auto"
+              class="bg-gray-700 p-3 rounded text-xs font-mono overflow-x-auto"
               >{{ formatHeaders(response.headers) }}</pre
             >
           </div>
@@ -261,7 +261,7 @@
               >Response Body</label
             >
             <pre
-              class="bg-gray-50 p-3 rounded text-xs font-mono overflow-x-auto max-h-64 overflow-y-auto"
+              class="bg-gray-700 p-3 rounded text-xs font-mono overflow-x-auto max-h-64 overflow-y-auto"
               >{{ formatJSON(response.data) }}</pre
             >
           </div>
@@ -283,7 +283,7 @@
         <div>
           <h4 class="text-sm font-medium text-gray-700 mb-2">Admin Login</h4>
           <pre
-            class="bg-gray-50 p-3 rounded text-xs font-mono overflow-x-auto"
+            class="bg-gray-700 p-3 rounded text-xs font-mono overflow-x-auto"
             >{{ samples.adminLogin }}</pre
           >
         </div>
@@ -292,21 +292,21 @@
             User Registration
           </h4>
           <pre
-            class="bg-gray-50 p-3 rounded text-xs font-mono overflow-x-auto"
+            class="bg-gray-700 p-3 rounded text-xs font-mono overflow-x-auto"
             >{{ samples.userRegistration }}</pre
           >
         </div>
         <div>
           <h4 class="text-sm font-medium text-gray-700 mb-2">Child User</h4>
           <pre
-            class="bg-gray-50 p-3 rounded text-xs font-mono overflow-x-auto"
+            class="bg-gray-700 p-3 rounded text-xs font-mono overflow-x-auto"
             >{{ samples.childUser }}</pre
           >
         </div>
         <div>
           <h4 class="text-sm font-medium text-gray-700 mb-2">Event Data</h4>
           <pre
-            class="bg-gray-50 p-3 rounded text-xs font-mono overflow-x-auto"
+            class="bg-gray-700 p-3 rounded text-xs font-mono overflow-x-auto"
             >{{ samples.eventData }}</pre
           >
         </div>

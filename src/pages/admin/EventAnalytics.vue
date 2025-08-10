@@ -67,13 +67,13 @@
     </div>
 
     <!-- Loading State -->
-    <div
+    <!-- <div
       v-if="loading"
-      class="text-center py-12 absolute z-10 left-280 top-100 bg-white p-20 rounded-2xl border-1 shadow-lg border-gray-200"
+      class="text-center py-12 z-10 bg-white p-20 rounded-2xl border-1 shadow-lg border-gray-200"
     >
       <i class="fas fa-spinner animate-spin text-4xl text-blue-600 mb-4"></i>
       <p class="text-gray-600">Loading analytics data...</p>
-    </div>
+    </div> -->
 
     <div class="space-y-6">
       <OverviewStatistics :analytics="analytics" />
@@ -298,7 +298,7 @@
               <tr
                 v-for="(child, index) in analytics.topActiveChildren"
                 :key="child.childId"
-                class="hover:bg-gray-50"
+                class="hover:bg-gray-500"
               >
                 <td class="px-4 py-2 text-sm font-medium text-gray-900">
                   <div class="flex items-center">
