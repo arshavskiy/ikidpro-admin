@@ -156,6 +156,7 @@ apiClient.interceptors.response.use(
     const errorMessage =
       error.response?.data?.message || error.message || "An error occurred";
     const status = error.response?.status;
+    const resError = error.response?.data?.error;
 
     let toastMessage = `❌ Error: ${errorMessage}`;
 
@@ -169,7 +170,7 @@ apiClient.interceptors.response.use(
     } else if (status === 500) {
       toastMessage = "🚨 Server error. Please try again later.";
     } else if (status >= 400 && status < 500) {
-      toastMessage = `⚠️ ${errorMessage}`;
+      toastMessage = `⚠️ ${errorMessage}\n ${resError}`;
     } else if (status >= 500) {
       toastMessage = "🚨 Server error. Please contact support.";
     }
