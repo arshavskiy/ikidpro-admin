@@ -528,6 +528,8 @@ const timeRangeOptions = [
 const eventTypeOptions = [
   { value: "all", label: "All Events" },
   { value: "HeartRate", label: "Heart Rate" },
+  { value: "respiratoryRate", label: "Respiratory Rate" },
+  { value: "Temperature", label: "Temperature" },
   { value: "HRV", label: "Heart Rate Variability" },
   { value: "Sp02", label: "SpO2" },
   { value: "AccelX", label: "Accelerometer X" },
@@ -536,13 +538,11 @@ const eventTypeOptions = [
   { value: "GyroX", label: "Gyroscope X" },
   { value: "GyroY", label: "Gyroscope Y" },
   { value: "GyroZ", label: "Gyroscope Z" },
-  { value: "EDA", label: "Electrodermal Activity" },
-  { value: "Temperature", label: "Temperature" },
-  { value: "scl", label: "SCL" },
-  { value: "scr", label: "SCR" },
-  { value: "respiratoryRate", label: "Respiratory Rate" },
-  { value: "humidity", label: "Humidity" },
+  { value: "EDA", label: "Electrodermal activity" },
+  { value: "scl", label: "Conductance Level" },
+  { value: "scr", label: "Conductance Responses" },
   { value: "SoundLevel", label: "Sound Level" },
+  { value: "humidity", label: "Humidity" },
   { value: "latitude", label: "GPS Latitude" },
   { value: "longitude", label: "GPS Longitude" },
   { value: "altitude", label: "GPS Altitude" },
@@ -560,8 +560,20 @@ const eventTypeOptions = [
   { value: "gps", label: "GPS Location" },
   { value: "motion", label: "Motion/Acceleration" },
 ];
+
 // Multi-select options exclude 'all'
-const eventTypeOptionsMulti = eventTypeOptions.filter((o) => o.value !== "all");
+const eventTypeOptionsMulti = eventTypeOptions.filter((o) => {
+  return (
+    o.value !== "all" &&
+    o.value.toLocaleLowerCase() !== "gps" &&
+    !o.value.toLocaleLowerCase().includes("accel") &&
+    !o.value.toLocaleLowerCase().includes("gyro") &&
+    !o.value.toLocaleLowerCase().includes("latitude") &&
+    !o.value.toLocaleLowerCase().includes("longitude") &&
+    !o.value.toLocaleLowerCase().includes("accuracy") &&
+    !o.value.toLocaleLowerCase().includes("magnetic")
+  );
+});
 // Only show selected types to the line chart; when none selected, pass empty list
 const filteredEventTypeOptions = computed(() =>
   selectedEventTypes.value.length
@@ -579,9 +591,14 @@ const dropdownEventTypeOptions = computed(() => {
     "AccelX",
     "AccelY",
     "GyroX",
-    "GyroY",
+    "GyroX",
+    "GyroZ",
     "magneticX",
     "magneticY",
+    "magneticZ",
+    "accuracy",
+    "bearing_deg",
+    "satellites",
   ]);
 
   const visible = eventTypeOptionsMulti.filter((o) => !hiddenKeys.has(o.value));
@@ -753,102 +770,102 @@ const distributionMap = {
     bgClass: "bg-purple-50",
     barClass: "bg-purple-600",
   },
-  gps: {
-    distKey: "gps",
-    label: "GPS Location",
-    icon: "fa-map-marker-alt",
-    iconClass: "text-green-600",
-    bgClass: "bg-green-50",
-    barClass: "bg-green-600",
-  },
-  motion: {
-    distKey: "motion",
-    label: "Motion/Acceleration",
-    icon: "fa-running",
-    iconClass: "text-teal-600",
-    bgClass: "bg-teal-50",
-    barClass: "bg-teal-600",
-  },
-  GyroX: {
-    distKey: "gyro",
-    label: "Gyroscope",
-    icon: "fa-sync",
-    iconClass: "text-indigo-600",
-    bgClass: "bg-indigo-50",
-    barClass: "bg-indigo-600",
-  },
-  GyroY: {
-    distKey: "gyro",
-    label: "Gyroscope",
-    icon: "fa-sync",
-    iconClass: "text-indigo-600",
-    bgClass: "bg-indigo-50",
-    barClass: "bg-indigo-600",
-  },
-  GyroZ: {
-    distKey: "gyro",
-    label: "Gyroscope",
-    icon: "fa-sync",
-    iconClass: "text-indigo-600",
-    bgClass: "bg-indigo-50",
-    barClass: "bg-indigo-600",
-  },
-  AccelX: {
-    distKey: "motion",
-    label: "Accelerometer",
-    icon: "fa-arrows-alt",
-    iconClass: "text-cyan-600",
-    bgClass: "bg-cyan-50",
-    barClass: "bg-cyan-600",
-  },
-  AccelY: {
-    distKey: "motion",
-    label: "Accelerometer",
-    icon: "fa-arrows-alt",
-    iconClass: "text-cyan-600",
-    bgClass: "bg-cyan-50",
-    barClass: "bg-cyan-600",
-  },
-  AccelZ: {
-    distKey: "motion",
-    label: "Accelerometer",
-    icon: "fa-arrows-alt",
-    iconClass: "text-cyan-600",
-    bgClass: "bg-cyan-50",
-    barClass: "bg-cyan-600",
-  },
-  magneticX: {
-    distKey: "magnetic",
-    label: "Magnetometer",
-    icon: "fa-magnet",
-    iconClass: "text-fuchsia-600",
-    bgClass: "bg-fuchsia-50",
-    barClass: "bg-fuchsia-600",
-  },
-  magneticY: {
-    distKey: "magnetic",
-    label: "Magnetometer",
-    icon: "fa-magnet",
-    iconClass: "text-fuchsia-600",
-    bgClass: "bg-fuchsia-50",
-    barClass: "bg-fuchsia-600",
-  },
-  magneticZ: {
-    distKey: "magnetic",
-    label: "Magnetometer",
-    icon: "fa-magnet",
-    iconClass: "text-fuchsia-600",
-    bgClass: "bg-fuchsia-50",
-    barClass: "bg-fuchsia-600",
-  },
-  pressure: {
-    distKey: "pressure",
-    label: "Pressure",
-    icon: "fa-tachometer-alt",
-    iconClass: "text-purple-700",
-    bgClass: "bg-purple-50",
-    barClass: "bg-purple-700",
-  },
+  // gps: {
+  //   distKey: "gps",
+  //   label: "GPS Location",
+  //   icon: "fa-map-marker-alt",
+  //   iconClass: "text-green-600",
+  //   bgClass: "bg-green-50",
+  //   barClass: "bg-green-600",
+  // },
+  // motion: {
+  //   distKey: "motion",
+  //   label: "Motion/Acceleration",
+  //   icon: "fa-running",
+  //   iconClass: "text-teal-600",
+  //   bgClass: "bg-teal-50",
+  //   barClass: "bg-teal-600",
+  // },
+  // GyroX: {
+  //   distKey: "gyro",
+  //   label: "Gyroscope",
+  //   icon: "fa-sync",
+  //   iconClass: "text-indigo-600",
+  //   bgClass: "bg-indigo-50",
+  //   barClass: "bg-indigo-600",
+  // },
+  // GyroY: {
+  //   distKey: "gyro",
+  //   label: "Gyroscope",
+  //   icon: "fa-sync",
+  //   iconClass: "text-indigo-600",
+  //   bgClass: "bg-indigo-50",
+  //   barClass: "bg-indigo-600",
+  // },
+  // GyroZ: {
+  //   distKey: "gyro",
+  //   label: "Gyroscope",
+  //   icon: "fa-sync",
+  //   iconClass: "text-indigo-600",
+  //   bgClass: "bg-indigo-50",
+  //   barClass: "bg-indigo-600",
+  // },
+  // AccelX: {
+  //   distKey: "motion",
+  //   label: "Accelerometer",
+  //   icon: "fa-arrows-alt",
+  //   iconClass: "text-cyan-600",
+  //   bgClass: "bg-cyan-50",
+  //   barClass: "bg-cyan-600",
+  // },
+  // AccelY: {
+  //   distKey: "motion",
+  //   label: "Accelerometer",
+  //   icon: "fa-arrows-alt",
+  //   iconClass: "text-cyan-600",
+  //   bgClass: "bg-cyan-50",
+  //   barClass: "bg-cyan-600",
+  // },
+  // AccelZ: {
+  //   distKey: "motion",
+  //   label: "Accelerometer",
+  //   icon: "fa-arrows-alt",
+  //   iconClass: "text-cyan-600",
+  //   bgClass: "bg-cyan-50",
+  //   barClass: "bg-cyan-600",
+  // },
+  // magneticX: {
+  //   distKey: "magnetic",
+  //   label: "Magnetometer",
+  //   icon: "fa-magnet",
+  //   iconClass: "text-fuchsia-600",
+  //   bgClass: "bg-fuchsia-50",
+  //   barClass: "bg-fuchsia-600",
+  // },
+  // magneticY: {
+  //   distKey: "magnetic",
+  //   label: "Magnetometer",
+  //   icon: "fa-magnet",
+  //   iconClass: "text-fuchsia-600",
+  //   bgClass: "bg-fuchsia-50",
+  //   barClass: "bg-fuchsia-600",
+  // },
+  // magneticZ: {
+  //   distKey: "magnetic",
+  //   label: "Magnetometer",
+  //   icon: "fa-magnet",
+  //   iconClass: "text-fuchsia-600",
+  //   bgClass: "bg-fuchsia-50",
+  //   barClass: "bg-fuchsia-600",
+  // },
+  // pressure: {
+  //   distKey: "pressure",
+  //   label: "Pressure",
+  //   icon: "fa-tachometer-alt",
+  //   iconClass: "text-purple-700",
+  //   bgClass: "bg-purple-50",
+  //   barClass: "bg-purple-700",
+  // },
   light: {
     distKey: "light",
     label: "Light",
@@ -873,14 +890,14 @@ const distributionMap = {
     bgClass: "bg-orange-50",
     barClass: "bg-orange-600",
   },
-  altitude: {
-    distKey: "altitude",
-    label: "Altitude",
-    icon: "fa-mountain",
-    iconClass: "text-teal-700",
-    bgClass: "bg-teal-50",
-    barClass: "bg-teal-700",
-  },
+  // altitude: {
+  //   distKey: "altitude",
+  //   label: "Altitude",
+  //   icon: "fa-mountain",
+  //   iconClass: "text-teal-700",
+  //   bgClass: "bg-teal-50",
+  //   barClass: "bg-teal-700",
+  // },
   speed_mps: {
     distKey: "speed",
     label: "Speed",
@@ -889,38 +906,38 @@ const distributionMap = {
     bgClass: "bg-rose-50",
     barClass: "bg-rose-600",
   },
-  speed: {
-    distKey: "speed",
-    label: "Speed",
-    icon: "fa-tachometer-alt",
-    iconClass: "text-rose-600",
-    bgClass: "bg-rose-50",
-    barClass: "bg-rose-600",
-  },
-  bearing_deg: {
-    distKey: "bearing",
-    label: "Bearing",
-    icon: "fa-compass",
-    iconClass: "text-pink-600",
-    bgClass: "bg-pink-50",
-    barClass: "bg-pink-600",
-  },
-  accuracy_m: {
-    distKey: "accuracy",
-    label: "Accuracy",
-    icon: "fa-bullseye",
-    iconClass: "text-indigo-700",
-    bgClass: "bg-indigo-50",
-    barClass: "bg-indigo-700",
-  },
-  satellites: {
-    distKey: "satellites",
-    label: "Satellites",
-    icon: "fa-satellite",
-    iconClass: "text-slate-600",
-    bgClass: "bg-slate-50",
-    barClass: "bg-slate-600",
-  },
+  // speed: {
+  //   distKey: "speed",
+  //   label: "Speed",
+  //   icon: "fa-tachometer-alt",
+  //   iconClass: "text-rose-600",
+  //   bgClass: "bg-rose-50",
+  //   barClass: "bg-rose-600",
+  // },
+  // bearing_deg: {
+  //   distKey: "bearing",
+  //   label: "Bearing",
+  //   icon: "fa-compass",
+  //   iconClass: "text-pink-600",
+  //   bgClass: "bg-pink-50",
+  //   barClass: "bg-pink-600",
+  // },
+  // accuracy_m: {
+  //   distKey: "accuracy",
+  //   label: "Accuracy",
+  //   icon: "fa-bullseye",
+  //   iconClass: "text-indigo-700",
+  //   bgClass: "bg-indigo-50",
+  //   barClass: "bg-indigo-700",
+  // },
+  // satellites: {
+  //   distKey: "satellites",
+  //   label: "Satellites",
+  //   icon: "fa-satellite",
+  //   iconClass: "text-slate-600",
+  //   bgClass: "bg-slate-50",
+  //   barClass: "bg-slate-600",
+  // },
 };
 
 // Build distribution tiles from available analytics distribution (always visible)
@@ -944,6 +961,9 @@ const distributionTiles = computed(() => {
   for (const opt of eventTypeOptions) {
     if (opt.value === "all") continue;
     const conf = distributionMap[opt.value];
+
+    console.log("distributionMap", conf);
+
     if (!conf) continue;
     const dk = conf.distKey;
     if (!availableKeys.includes(dk)) continue;
