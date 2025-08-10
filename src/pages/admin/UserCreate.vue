@@ -156,6 +156,7 @@ const createUser = async () => {
       lastName: form.value.lastName,
       email: form.value.email,
       password: form.value.password,
+      mobile: form.value.mobile,
     };
 
     await userApi.register(userData);
