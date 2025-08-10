@@ -19,13 +19,13 @@
       <form @submit.prevent="createEvent" class="space-y-6">
         <!-- Basic Information -->
         <div>
-          <h3 class="text-lg font-medium text-gray-900 mb-4">
+          <h3 class="text-lg font-medium text-gray-900 mb-1">
             Basic Information
           </h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Child ID -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">
                 Child ID <span class="text-red-500">*</span>
               </label>
               <select
@@ -46,7 +46,7 @@
 
             <!-- Timestamp -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">
                 Timestamp <span class="text-red-500">*</span>
               </label>
               <input
@@ -61,13 +61,13 @@
 
         <!-- Physiological Data -->
         <div>
-          <h3 class="text-lg font-medium text-gray-900 mb-4">
+          <h3 class="text-lg font-medium text-gray-900 mb-1">
             Physiological Sensors
           </h3>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <!-- Heart Rate -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">
                 Heart Rate (BPM)
               </label>
               <input
@@ -83,7 +83,7 @@
 
             <!-- HRV -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">
                 Heart Rate Variability (HRV)
               </label>
               <input
@@ -95,9 +95,25 @@
               />
             </div>
 
+            <!-- SpO2 -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                SpO2 (%)
+              </label>
+              <input
+                v-model.number="form.Sp02"
+                type="number"
+                min="0"
+                max="100"
+                step="any"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter SpO2"
+              />
+            </div>
+
             <!-- Temperature -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">
                 Temperature
               </label>
               <input
@@ -111,7 +127,7 @@
 
             <!-- EDA -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">
                 Electrodermal Activity (EDA)
               </label>
               <input
@@ -123,9 +139,52 @@
               />
             </div>
 
+            <!-- SCL -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                SCL (µS)
+              </label>
+              <input
+                v-model.number="form.scl"
+                type="number"
+                step="any"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter SCL"
+              />
+            </div>
+
+            <!-- SCR -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                SCR (µS)
+              </label>
+              <input
+                v-model.number="form.scr"
+                type="number"
+                step="any"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter SCR"
+              />
+            </div>
+
+            <!-- Respiratory Rate -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                Respiratory Rate (br/min)
+              </label>
+              <input
+                v-model.number="form.respiratoryRate"
+                type="number"
+                min="0"
+                step="any"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter respiratory rate"
+              />
+            </div>
+
             <!-- Sound Level -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">
                 Sound Level (dB)
               </label>
               <input
@@ -141,7 +200,7 @@
 
         <!-- Motion Sensors -->
         <div>
-          <h3 class="text-lg font-medium text-gray-900 mb-4">Motion Sensors</h3>
+          <h3 class="text-lg font-medium text-gray-900 mb-1">Motion Sensors</h3>
           <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
             <!-- Accelerometer -->
             <div class="col-span-2 md:col-span-3">
@@ -223,13 +282,126 @@
           </div>
         </div>
 
+        <!-- Magnetometer -->
+        <div>
+          <h3 class="text-lg font-medium text-gray-900 mb-1">Magnetometer</h3>
+          <div class="grid grid-cols-3 gap-4">
+            <div>
+              <label class="block text-xs text-gray-500 mb-1">X-Axis</label>
+              <input
+                v-model.number="form.magneticX"
+                type="number"
+                step="any"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="0.000"
+              />
+            </div>
+            <div>
+              <label class="block text-xs text-gray-500 mb-1">Y-Axis</label>
+              <input
+                v-model.number="form.magneticY"
+                type="number"
+                step="any"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="0.000"
+              />
+            </div>
+            <div>
+              <label class="block text-xs text-gray-500 mb-1">Z-Axis</label>
+              <input
+                v-model.number="form.magneticZ"
+                type="number"
+                step="any"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="0.000"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Environmental Sensors -->
+        <div>
+          <h3 class="text-lg font-medium text-gray-900 mb-1">Environmental Sensors</h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                Humidity (%)
+              </label>
+              <input
+                v-model.number="form.humidity"
+                type="number"
+                min="0"
+                max="100"
+                step="any"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter humidity"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                Pressure (hPa)
+              </label>
+              <input
+                v-model.number="form.pressure"
+                type="number"
+                step="any"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter pressure"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                Light (lux)
+              </label>
+              <input
+                v-model.number="form.light"
+                type="number"
+                step="any"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter light level"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Activity Metrics -->
+        <div>
+          <h3 class="text-lg font-medium text-gray-900 mb-1">Activity Metrics</h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                Steps
+              </label>
+              <input
+                v-model.number="form.steps"
+                type="number"
+                step="1"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter steps"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                Calories
+              </label>
+              <input
+                v-model.number="form.calories"
+                type="number"
+                step="any"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter calories"
+              />
+            </div>
+          </div>
+        </div>
+
         <!-- GPS Location -->
         <div>
-          <h3 class="text-lg font-medium text-gray-900 mb-4">GPS Location</h3>
+          <h3 class="text-lg font-medium text-gray-900 mb-1">GPS Location</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <!-- Latitude -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">
                 Latitude
               </label>
               <input
@@ -243,7 +415,7 @@
 
             <!-- Longitude -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">
                 Longitude
               </label>
               <input
@@ -257,7 +429,7 @@
 
             <!-- Altitude -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">
                 Altitude (m)
               </label>
               <input
@@ -271,7 +443,7 @@
 
             <!-- Speed -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">
                 Speed (m/s)
               </label>
               <input
@@ -285,7 +457,7 @@
 
             <!-- Additional GPS Data -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">
                 Bearing (degrees)
               </label>
               <input
@@ -298,7 +470,7 @@
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">
                 Accuracy (m)
               </label>
               <input
@@ -311,7 +483,7 @@
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">
                 Satellites
               </label>
               <input
@@ -326,7 +498,7 @@
 
         <!-- Quick Fill Options -->
         <div>
-          <h3 class="text-lg font-medium text-gray-900 mb-4">
+          <h3 class="text-lg font-medium text-gray-900 mb-1">
             Quick Fill Options
           </h3>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -335,7 +507,7 @@
               @click="fillSampleData('resting')"
               class="flex flex-col items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
             >
-              <i class="fas fa-bed text-blue-600 text-2xl mb-2"></i>
+              <i class="fas fa-bed text-blue-600 text-2xl mb-1"></i>
               <span class="text-sm font-medium text-blue-700"
                 >Resting Data</span
               >
@@ -346,7 +518,7 @@
               @click="fillSampleData('active')"
               class="flex flex-col items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors"
             >
-              <i class="fas fa-running text-green-600 text-2xl mb-2"></i>
+              <i class="fas fa-running text-green-600 text-2xl mb-1"></i>
               <span class="text-sm font-medium text-green-700"
                 >Active Data</span
               >
@@ -358,7 +530,7 @@
               class="flex flex-col items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors"
             >
               <i
-                class="fas fa-map-marker-alt text-purple-600 text-2xl mb-2"
+                class="fas fa-map-marker-alt text-purple-600 text-2xl mb-1"
               ></i>
               <span class="text-sm font-medium text-purple-700"
                 >Sample GPS</span
@@ -423,6 +595,7 @@ const form = ref({
   Timestamp: "",
   HeartRate: null,
   HRV: null,
+  Sp02: null,
   AccelX: null,
   AccelY: null,
   AccelZ: null,
@@ -430,8 +603,19 @@ const form = ref({
   GyroY: null,
   GyroZ: null,
   EDA: null,
+  scl: null,
+  scr: null,
+  respiratoryRate: null,
   Temperature: null,
   SoundLevel: null,
+  humidity: null,
+  pressure: null,
+  light: null,
+  steps: null,
+  calories: null,
+  magneticX: null,
+  magneticY: null,
+  magneticZ: null,
   latitude: null,
   longitude: null,
   altitude: null,
@@ -477,6 +661,15 @@ const fillSampleData = (type) => {
       form.value.HeartRate = Math.floor(Math.random() * 20) + 60; // 60-80 BPM
       form.value.HRV = Math.random() * 20 + 30; // 30-50
       form.value.Temperature = Math.random() * 2 + 36.5; // 36.5-38.5°C
+  form.value.Sp02 = Math.floor(Math.random() * 3) + 97; // 97-99%
+  form.value.respiratoryRate = Math.floor(Math.random() * 4) + 12; // 12-15
+  form.value.scl = Number((Math.random() * 2 + 2).toFixed(2));
+  form.value.scr = Number((Math.random() * 0.5 + 0.1).toFixed(2));
+  form.value.humidity = Math.floor(Math.random() * 20) + 40; // 40-59%
+  form.value.pressure = Number((1000 + Math.random() * 20).toFixed(2));
+  form.value.light = Math.floor(Math.random() * 100) + 200; // 200-299 lux
+  form.value.steps = 0;
+  form.value.calories = 0;
       form.value.SoundLevel = Math.random() * 20 + 30; // 30-50 dB
       form.value.AccelX = (Math.random() - 0.5) * 0.2; // Small movements
       form.value.AccelY = (Math.random() - 0.5) * 0.2;
@@ -487,6 +680,15 @@ const fillSampleData = (type) => {
       form.value.HeartRate = Math.floor(Math.random() * 40) + 120; // 120-160 BPM
       form.value.HRV = Math.random() * 15 + 15; // 15-30
       form.value.Temperature = Math.random() * 1.5 + 37; // 37-38.5°C
+  form.value.Sp02 = Math.floor(Math.random() * 5) + 95; // 95-99%
+  form.value.respiratoryRate = Math.floor(Math.random() * 10) + 18; // 18-27
+  form.value.scl = Number((Math.random() * 3 + 3).toFixed(2));
+  form.value.scr = Number((Math.random() * 1 + 0.2).toFixed(2));
+  form.value.humidity = Math.floor(Math.random() * 20) + 30; // 30-49%
+  form.value.pressure = Number((1005 + Math.random() * 25).toFixed(2));
+  form.value.light = Math.floor(Math.random() * 500) + 500; // 500-999 lux
+  form.value.steps = Math.floor(Math.random() * 200 + 50);
+  form.value.calories = Math.floor(Math.random() * 30 + 10);
       form.value.SoundLevel = Math.random() * 30 + 50; // 50-80 dB
       form.value.AccelX = (Math.random() - 0.5) * 2; // Larger movements
       form.value.AccelY = (Math.random() - 0.5) * 2;
@@ -561,6 +763,7 @@ const resetForm = () => {
     Timestamp: "",
     HeartRate: null,
     HRV: null,
+  Sp02: null,
     AccelX: null,
     AccelY: null,
     AccelZ: null,
@@ -568,8 +771,19 @@ const resetForm = () => {
     GyroY: null,
     GyroZ: null,
     EDA: null,
+  scl: null,
+  scr: null,
+  respiratoryRate: null,
     Temperature: null,
     SoundLevel: null,
+  humidity: null,
+  pressure: null,
+  light: null,
+  steps: null,
+  calories: null,
+  magneticX: null,
+  magneticY: null,
+  magneticZ: null,
     latitude: null,
     longitude: null,
     altitude: null,
