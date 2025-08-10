@@ -18,21 +18,6 @@
           :style="{ minWidth: '200px' }"
         />
 
-        <!-- event types (multi) dropdown -->
-        <n-dropdown
-          trigger="click"
-          :options="dropdownEventTypeOptions"
-          @select="onEventTypeSelect"
-        >
-          <n-button secondary>
-            {{
-              selectedEventTypes.length > (0).length > 0
-                ? `Event Types (${selectedEventTypes.length})`
-                : "Event Types"
-            }}
-          </n-button>
-        </n-dropdown>
-
         <!-- child filter -->
         <n-select
           v-model:value="selectedChildId"
@@ -121,7 +106,47 @@
         </div>
       </n-card>
 
+      <!-- Quick View: Single Sensor Line Chart from Tile Click -->
+      <n-card v-if="quickViewSelectedEventTypes.length > 0" class="mt-4">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-lg font-medium text-gray-900">
+            Quick View: {{ quickViewTitle }}
+          </h3>
+          <n-button size="small" tertiary @click="clearQuickView">
+            Close
+          </n-button>
+        </div>
+        <SensorValuesLineChart
+          :chart-height="276"
+          :sensor-values="analytics.sensorValues"
+          :selected-event-types="quickViewSelectedEventTypes"
+          :selected-time-range="selectedTimeRange"
+          :event-type-options="eventTypeOptions"
+        />
+      </n-card>
+
       <!-- Overview Statistics -->
+
+      <div
+        class="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0"
+      >
+        <h3 class="text-lg font-medium text-gray-900">Multy selector:</h3>
+
+        <!-- event types (multi) dropdown -->
+        <n-dropdown
+          trigger="click"
+          :options="dropdownEventTypeOptions"
+          @select="onEventTypeSelect"
+        >
+          <n-button secondary>
+            {{
+              selectedEventTypes.length > (0).length > 0
+                ? `Event Types list(${selectedEventTypes.length})`
+                : "Event Types list"
+            }}
+          </n-button>
+        </n-dropdown>
+      </div>
 
       <SensorValuesLineChart
         :sensor-values="analytics.sensorValues"
@@ -488,6 +513,14 @@ const childParentMap = ref({});
 const parentsById = ref({});
 const childrenById = ref({});
 
+// Quick view state (single sensor chart opened via tile click)
+const quickViewSelectedEventTypes = ref([]); // e.g., ["HeartRate"]
+const quickViewTitle = ref("");
+const clearQuickView = () => {
+  quickViewSelectedEventTypes.value = [];
+  quickViewTitle.value = "";
+};
+
 // Parent options
 const parentOptions = computed(() => {
   const opts = availableParents.value.map((parent) => ({
@@ -561,22 +594,28 @@ const eventTypeOptions = [
   { value: "motion", label: "Motion/Acceleration" },
 ];
 
-// Multi-select options exclude 'all'
-const eventTypeOptionsMulti = eventTypeOptions.filter((o) => {
+// Centralized predicate to decide which event types are hidden from multi-select dropdown
+const shouldHideEventType = (val) => {
+  const v = String(val || "").toLowerCase();
   return (
-    o.value !== "all" &&
-    o.value.toLocaleLowerCase() !== "gps" &&
-    !o.value.toLocaleLowerCase().includes("accel") &&
-    !o.value.toLocaleLowerCase().includes("gyro") &&
-    !o.value.toLocaleLowerCase().includes("latitude") &&
-    !o.value.toLocaleLowerCase().includes("longitude") &&
-    !o.value.toLocaleLowerCase().includes("altitude") &&
-    !o.value.toLocaleLowerCase().includes("accuracy") &&
-    !o.value.toLocaleLowerCase().includes("magnetic") &&
-    !o.value.toLocaleLowerCase().includes("pressure") &&
-    !o.value.toLocaleLowerCase().includes("bearing_deg")
+    v === "gps" ||
+    v === "latitude" ||
+    v === "longitude" ||
+    v === "altitude" ||
+    v === "satellites" ||
+    v.includes("accel") ||
+    v.includes("gyro") ||
+    v.includes("magnetic") ||
+    v.includes("pressure") ||
+    v.includes("bearing_deg") ||
+    v.includes("accuracy")
   );
-});
+};
+
+// Multi-select options exclude 'all' and any hidden by predicate
+const eventTypeOptionsMulti = eventTypeOptions.filter(
+  (o) => o.value !== "all" && !shouldHideEventType(o.value)
+);
 // Only show selected types to the line chart; when none selected, pass empty list
 const filteredEventTypeOptions = computed(() =>
   selectedEventTypes.value.length
@@ -585,27 +624,11 @@ const filteredEventTypeOptions = computed(() =>
       )
     : []
 );
-// Dropdown options: include 'All' and 'Select None' and hide gps + X/Y axis items
+// Dropdown options: include 'All' and 'Select None' and hide using unified predicate
 const dropdownEventTypeOptions = computed(() => {
-  const hiddenKeys = new Set([
-    "gps",
-    "latitude",
-    "longitude",
-    "altitude",
-    "AccelX",
-    "AccelY",
-    "GyroX",
-    "GyroX",
-    "GyroZ",
-    "magneticX",
-    "magneticY",
-    "magneticZ",
-    "accuracy",
-    "bearing_deg",
-    "satellites",
-  ]);
-
-  const visible = eventTypeOptionsMulti.filter((o) => !hiddenKeys.has(o.value));
+  const visible = eventTypeOptions.filter(
+    (o) => o.value !== "all" && !shouldHideEventType(o.value)
+  );
   const allKeys = visible.map((o) => o.value);
 
   const areAllSelected =
@@ -666,16 +689,22 @@ const analytics = ref({
     scr: 0,
     respiratoryRate: 0,
     humidity: 0,
+    gps: 0,
     sound: 0,
     motion: 0,
     eda: 0,
     hrv: 0,
     gyro: 0,
+    magnetic: 0,
     pressure: 0,
     light: 0,
     steps: 0,
     calories: 0,
+    altitude: 0,
     speed: 0,
+    bearing: 0,
+    accuracy: 0,
+    satellites: 0,
   },
   topActiveChildren: [],
   healthInsights: [],
@@ -776,14 +805,14 @@ const distributionMap = {
   //   bgClass: "bg-green-50",
   //   barClass: "bg-green-600",
   // },
-  // motion: {
-  //   distKey: "motion",
-  //   label: "Motion/Acceleration",
-  //   icon: "fa-running",
-  //   iconClass: "text-teal-600",
-  //   bgClass: "bg-teal-50",
-  //   barClass: "bg-teal-600",
-  // },
+  motion: {
+    distKey: "motion",
+    label: "Motion/Acceleration",
+    icon: "fa-running",
+    iconClass: "text-teal-600",
+    bgClass: "bg-teal-50",
+    barClass: "bg-teal-600",
+  },
   // GyroX: {
   //   distKey: "gyro",
   //   label: "Gyroscope",
@@ -856,14 +885,14 @@ const distributionMap = {
   //   bgClass: "bg-fuchsia-50",
   //   barClass: "bg-fuchsia-600",
   // },
-  // pressure: {
-  //   distKey: "pressure",
-  //   label: "Pressure",
-  //   icon: "fa-tachometer-alt",
-  //   iconClass: "text-purple-700",
-  //   bgClass: "bg-purple-50",
-  //   barClass: "bg-purple-700",
-  // },
+  pressure: {
+    distKey: "pressure",
+    label: "Pressure",
+    icon: "fa-tachometer-alt",
+    iconClass: "text-purple-700",
+    bgClass: "bg-purple-50",
+    barClass: "bg-purple-700",
+  },
   light: {
     distKey: "light",
     label: "Light",
@@ -920,22 +949,22 @@ const distributionMap = {
   //   bgClass: "bg-pink-50",
   //   barClass: "bg-pink-600",
   // },
-  // accuracy_m: {
-  //   distKey: "accuracy",
-  //   label: "Accuracy",
-  //   icon: "fa-bullseye",
-  //   iconClass: "text-indigo-700",
-  //   bgClass: "bg-indigo-50",
-  //   barClass: "bg-indigo-700",
-  // },
-  // satellites: {
-  //   distKey: "satellites",
-  //   label: "Satellites",
-  //   icon: "fa-satellite",
-  //   iconClass: "text-slate-600",
-  //   bgClass: "bg-slate-50",
-  //   barClass: "bg-slate-600",
-  // },
+  accuracy_m: {
+    distKey: "accuracy",
+    label: "Accuracy",
+    icon: "fa-bullseye",
+    iconClass: "text-indigo-700",
+    bgClass: "bg-indigo-50",
+    barClass: "bg-indigo-700",
+  },
+  satellites: {
+    distKey: "satellites",
+    label: "Satellites",
+    icon: "fa-satellite",
+    iconClass: "text-slate-600",
+    bgClass: "bg-slate-50",
+    barClass: "bg-slate-600",
+  },
 };
 
 // Build distribution tiles from available analytics distribution (always visible)
@@ -957,10 +986,9 @@ const distributionTiles = computed(() => {
   const added = new Set();
   const tiles = [];
   for (const opt of eventTypeOptions) {
-    if (opt.value === "all") continue;
     const conf = distributionMap[opt.value];
 
-    console.log("distributionMap", conf);
+    console.log("distributionMap", opt.value, conf);
 
     if (!conf) continue;
     const dk = conf.distKey;
@@ -1008,11 +1036,12 @@ const distKeyToEventTypes = {
   satellites: ["satellites"],
 };
 
-// Highlight tile if any of its event types are selected in the dropdown
+// Highlight tile if it's the one currently shown in Quick View (independent of dropdown)
 const isTileSelected = (tile) => {
   const related = distKeyToEventTypes[tile.key] || [];
   if (!related.length) return false;
-  return related.some((k) => selectedEventTypes.value.includes(k));
+  if (!quickViewSelectedEventTypes.value.length) return false;
+  return quickViewSelectedEventTypes.value.some((k) => related.includes(k));
 };
 
 // Clicking a tile toggles all its related event types through onEventTypeSelect
@@ -1021,21 +1050,23 @@ const onTileClick = (tile) => {
     const related = distKeyToEventTypes[tile.key] || [];
     if (!related.length) return;
 
-    const allSelected = related.every((k) =>
-      selectedEventTypes.value.includes(k)
-    );
-
-    if (allSelected) {
-      // remove all
-      related.forEach((k) => onEventTypeSelect(k));
-    } else {
-      // add any missing
-      related.forEach((k) => {
-        if (!selectedEventTypes.value.includes(k)) onEventTypeSelect(k);
-      });
+    // Toggle behavior: clicking the same tile (same set) closes the quick view
+    const curr = quickViewSelectedEventTypes.value;
+    const sameSet =
+      Array.isArray(curr) &&
+      curr.length === related.length &&
+      related.every((k) => curr.includes(k));
+    if (sameSet) {
+      clearQuickView();
+      return;
     }
+
+    // Open quick view with all related event types
+    quickViewSelectedEventTypes.value = [...related];
+    // Use the tile label as the quick view title
+    quickViewTitle.value = tile?.label || "Selected Sensors";
   } catch (error) {
-    console.error("Error toggling tile selection:", error);
+    console.error("Error opening quick view from tile:", error);
   }
 };
 
@@ -1378,7 +1409,9 @@ const calculateAnalytics = (events) => {
   const sclEvents = events.filter((e) => e.scl).length;
   const scrEvents = events.filter((e) => e.scr).length;
   const respiratoryRateEvents = events.filter((e) => e.respiratoryRate).length;
-  const humidityEvents = events.filter((e) => e.humidity).length;
+  const humidityEvents = events.filter(
+    (e) => e.humidity !== null && e.humidity !== undefined
+  ).length;
   const motionEvents = events.filter(
     (e) => e.AccelX || e.AccelY || e.AccelZ
   ).length;
@@ -1582,7 +1615,9 @@ const calculateEventTimeline = (events, days) => {
     const sclEvents = periodEvents.filter((e) => e.scl);
     const scrEvents = periodEvents.filter((e) => e.scr);
     const respiratoryEvents = periodEvents.filter((e) => e.respiratoryRate);
-    const humidityEvents = periodEvents.filter((e) => e.humidity);
+    const humidityEvents = periodEvents.filter(
+      (e) => e.humidity !== null && e.humidity !== undefined
+    );
     const gpsEvents = periodEvents.filter((e) => e.latitude && e.longitude);
     const motionEvents = periodEvents.filter(
       (e) => e.AccelX || e.AccelY || e.AccelZ

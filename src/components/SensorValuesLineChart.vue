@@ -45,10 +45,13 @@
     </div> -->
 
     <!-- ECharts Line Chart for Values -->
-    <h3 class="text-lg font-medium text-gray-900 text-center">
+    <!-- <h3 class="text-lg font-medium text-gray-900 text-center">
       Sensor Values Over Time
-    </h3>
-    <div v-if="filteredChartData && filteredChartData.length > 0" class="h-106">
+    </h3> -->
+    <div
+      v-if="filteredChartData && filteredChartData.length > 0"
+      :style="{ height: chartHeight + 'px' }"
+    >
       <v-chart :option="sensorValuesChartOption" :autoresize="true" />
     </div>
 
@@ -92,6 +95,10 @@ const props = defineProps({
   eventTypeOptions: {
     type: Array,
     default: () => [],
+  },
+  chartHeight: {
+    type: Number,
+    default: 400, // Default height for the chart
   },
 });
 
