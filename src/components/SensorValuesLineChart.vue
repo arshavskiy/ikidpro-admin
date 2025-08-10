@@ -102,14 +102,9 @@ const emit = defineEmits(["sensorSelectionChanged"]);
 const availableSensorOptions = ref([
   { value: "HeartRate", label: "Heart Rate" },
   { value: "HRV", label: "HRV" },
-  { value: "Sp02", label: "SpO2" },
   { value: "Temperature", label: "Temperature" },
   { value: "SoundLevel", label: "Sound Level" },
   { value: "EDA", label: "EDA" },
-  { value: "scl", label: "SCL" },
-  { value: "scr", label: "SCR" },
-  { value: "respiratoryRate", label: "Respiratory Rate" },
-  { value: "humidity", label: "Humidity" },
   { value: "Altitude", label: "Altitude" },
   { value: "Speed_spm", label: "Speed" },
   { value: "Bearing", label: "Bearing" },
@@ -127,11 +122,6 @@ const selectedSensors = ref([
   "Temperature",
   "SoundLevel",
   "EDA",
-  "Sp02",
-  "scl",
-  "scr",
-  "respiratoryRate",
-  "humidity",
   "Speed_spm",
   "HRV",
   "Accuracy",
@@ -164,7 +154,6 @@ const clearAllSensors = () => {
 const sensorConfig = {
   HeartRate: { field: "heartRate", color: "#ef4444", yAxisIndex: 0 },
   HRV: { field: "hrv", color: "#f59e0b", yAxisIndex: 0 },
-  Sp02: { field: "spo2", color: "#06b6d4", yAxisIndex: 0 },
   Temperature: {
     field: ["temperatureC", "temperature"],
     color: "#3b82f6",
@@ -172,14 +161,6 @@ const sensorConfig = {
   },
   SoundLevel: { field: "soundLevel", color: "#8b5cf6", yAxisIndex: 0 },
   EDA: { field: "eda", color: "#7c3aed", yAxisIndex: 0 },
-  scl: { field: "scl", color: "#059669", yAxisIndex: 0 },
-  scr: { field: "scr", color: "#0ea5e9", yAxisIndex: 0 },
-  respiratoryRate: {
-    field: "respiratoryRate",
-    color: "#14b8a6",
-    yAxisIndex: 0,
-  },
-  humidity: { field: "humidity", color: "#3b82f6", yAxisIndex: 0 },
   Altitude: { field: "altitude", color: "#0f766e", yAxisIndex: 1 },
   // Support both "Speed" and legacy "Speed_spm" option values
   Speed: { field: ["speed_mps", "speed"], color: "#be123c", yAxisIndex: 0 },
@@ -200,14 +181,9 @@ const sensorConfig = {
 const eventTypeToSensorKey = {
   HeartRate: "HeartRate",
   HRV: "HRV",
-  Sp02: "Sp02",
   Temperature: "Temperature",
   TemperatureC: "Temperature",
   SoundLevel: "SoundLevel",
-  scl: "scl",
-  scr: "scr",
-  respiratoryRate: "respiratoryRate",
-  humidity: "humidity",
   altitude: "Altitude",
   bearing_deg: "Bearing",
   accuracy_m: "Accuracy",
@@ -270,30 +246,30 @@ const filteredChartData = computed(() => {
 
 // Computed properties for ECharts options
 const sensorValuesChartOption = computed(() => ({
-  title: {
-    text: `${
-      effectiveSelectedSensors.value.length === 0
-        ? "No Sensors Selected"
-        : effectiveSelectedSensors.value.length ===
-          availableSensorOptions.value.length
-        ? "All Sensors"
-        : effectiveSelectedSensors.value.length > 3
-        ? ``
-        : effectiveSelectedSensors.value
-            .map((sensorValue) => {
-              const sensor = availableSensorOptions.value.find(
-                (s) => s.value === sensorValue
-              );
-              return sensor ? sensor.label : sensorValue;
-            })
-            .join(", ")
-    }`,
-    left: "center",
-    textStyle: {
-      fontSize: 16,
-      fontWeight: "bold",
-    },
-  },
+  // title: {
+  //   text: `${
+  //     effectiveSelectedSensors.value.length === 0
+  //       ? "No Sensors Selected"
+  //       : effectiveSelectedSensors.value.length ===
+  //         availableSensorOptions.value.length
+  //       ? "All Sensors"
+  //       : effectiveSelectedSensors.value.length > 3
+  //       ? ``
+  //       : effectiveSelectedSensors.value
+  //           .map((sensorValue) => {
+  //             const sensor = availableSensorOptions.value.find(
+  //               (s) => s.value === sensorValue
+  //             );
+  //             return sensor ? sensor.label : sensorValue;
+  //           })
+  //           .join(", ")
+  //   }`,
+  //   left: "center",
+  //   textStyle: {
+  //     fontSize: 16,
+  //     fontWeight: "bold",
+  //   },
+  // },
   tooltip: {
     trigger: "axis",
     axisPointer: {
@@ -372,19 +348,10 @@ const getSensorUnit = (seriesName) => {
       return " BPM";
     case "HRV":
       return " ms";
-    case "SpO2":
-      return " %";
     case "Temperature":
       return "°C";
     case "Sound Level":
       return " dB";
-    case "SCL":
-    case "SCR":
-      return " µS";
-    case "Respiratory Rate":
-      return " br/min";
-    case "Humidity":
-      return " %";
     case "Accel X":
     case "Accel Y":
     case "Accel Z":

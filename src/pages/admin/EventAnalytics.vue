@@ -570,6 +570,7 @@ const eventTypeOptionsMulti = eventTypeOptions.filter((o) => {
     !o.value.toLocaleLowerCase().includes("gyro") &&
     !o.value.toLocaleLowerCase().includes("latitude") &&
     !o.value.toLocaleLowerCase().includes("longitude") &&
+    !o.value.toLocaleLowerCase().includes("altitude") &&
     !o.value.toLocaleLowerCase().includes("accuracy") &&
     !o.value.toLocaleLowerCase().includes("magnetic")
   );
@@ -588,6 +589,7 @@ const dropdownEventTypeOptions = computed(() => {
     "gps",
     "latitude",
     "longitude",
+    "altitude",
     "AccelX",
     "AccelY",
     "GyroX",
@@ -662,22 +664,16 @@ const analytics = ref({
     scr: 0,
     respiratoryRate: 0,
     humidity: 0,
-    gps: 0,
     sound: 0,
     motion: 0,
     eda: 0,
     hrv: 0,
     gyro: 0,
-    magnetic: 0,
     pressure: 0,
     light: 0,
     steps: 0,
     calories: 0,
-    altitude: 0,
     speed: 0,
-    bearing: 0,
-    accuracy: 0,
-    satellites: 0,
   },
   topActiveChildren: [],
   healthInsights: [],

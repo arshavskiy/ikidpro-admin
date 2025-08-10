@@ -2,7 +2,7 @@
   <div class="bg-white p-4 rounded-lg shadow-sm">
     <div class="flex justify-between items-center mb-4">
       <h3 class="text-lg font-medium text-gray-900">GPS Activity Map</h3>
-      <div class="flex items-center space-x-2">
+      <!-- <div class="flex items-center space-x-2">
         <select
           v-model="mapViewMode"
           class="px-3 py-1 text-smborder-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -32,7 +32,7 @@
           <i class="fas fa-fire mr-1"></i>
           {{ showHeatmap ? "Hide" : "Show" }} Heatmap
         </button>
-      </div>
+      </div> -->
     </div>
 
     <!-- Map Statistics -->
@@ -86,7 +86,6 @@
     <!-- Map Container -->
     <div class="relative">
       <div
-        v-if="mapStats.totalGpsPoints > 0"
         ref="mapContainer"
         class="w-full h-96 rounded-lgborder-gray-200"
         style="min-height: 400px"
