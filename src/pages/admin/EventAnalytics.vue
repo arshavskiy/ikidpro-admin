@@ -929,6 +929,15 @@ const distributionTiles = computed(() => {
   const availableKeys = Object.keys(dist).filter((k) => (dist[k] ?? 0) > 0);
   if (availableKeys.length === 0) return [];
 
+  console.log(
+    "🔄 Building distribution tiles from analytics data... dist",
+    dist
+  );
+  console.log(
+    "🔄 Building distribution tiles from analytics data... availableKeys",
+    availableKeys
+  );
+
   // Preserve a stable order using eventTypeOptions while deduping by distKey
   const added = new Set();
   const tiles = [];
@@ -1047,7 +1056,7 @@ const loadAnalytics = async () => {
           : u?.name || u?.email || u?.mobile || String(id);
         map[id] = { id, label: name, raw: u };
       });
-      console.log("✅ Parents map built", map);
+      // console.log("✅ Parents map built");
       parentsById.value = map;
     }
 
@@ -1691,7 +1700,6 @@ const calculateSensorValues = (events, days) => {
       childId: event.aid,
       batteryLevel: event.BatteryLevel || null,
       signalStrength: event.SignalStrength || null,
-      deviceId: event.DeviceId || null,
     });
   });
 

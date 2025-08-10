@@ -226,9 +226,6 @@
               <n-descriptions-item label="Parent ID">
                 {{ selectedEvent.parentId || "N/A" }}
               </n-descriptions-item>
-              <n-descriptions-item label="Device ID">
-                {{ selectedEvent.deviceId || "N/A" }}
-              </n-descriptions-item>
             </n-descriptions>
           </n-card>
 
@@ -574,7 +571,6 @@ const availableColumns = [
   { key: "gyroY", title: "Gyro Y", default: false },
   { key: "gyroZ", title: "Gyro Z", default: false },
   { key: "parentId", title: "Parent ID", default: false },
-  { key: "deviceId", title: "Device ID", default: false },
   { key: "batteryLevel", title: "Battery Level", default: false },
   { key: "signalStrength", title: "Signal Strength", default: false },
   { key: "actions", title: "Actions", default: true },
@@ -845,14 +841,6 @@ const allColumns = [
     width: 50,
     render(row) {
       return h("div", { class: "text-sm" }, row.parentId || "N/A");
-    },
-  },
-  {
-    title: "Device ID",
-    key: "deviceId",
-    width: 50,
-    render(row) {
-      return h("div", { class: "text-sm" }, row.deviceId || "N/A");
     },
   },
   {

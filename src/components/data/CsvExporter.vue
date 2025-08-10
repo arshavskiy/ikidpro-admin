@@ -281,7 +281,6 @@ const fieldDefinitions = {
     // Device Information
     { key: "BatteryLevel", label: "Battery Level (%)" },
     { key: "SignalStrength", label: "Signal Strength" },
-    { key: "DeviceId", label: "Device ID" },
   ],
 };
 
