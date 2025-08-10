@@ -19,7 +19,7 @@
       <form @submit.prevent="createEvent" class="space-y-6">
         <!-- Basic Information -->
         <div>
-          <h3 class="text-lg font-medium text-gray-900 mb-1">
+          <h3 class="text-m font-medium text-gray-900 mb-1">
             Basic Information
           </h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -61,7 +61,7 @@
 
         <!-- Physiological Data -->
         <div>
-          <h3 class="text-lg font-medium text-gray-900 mb-1">
+          <h3 class="text-m font-medium text-gray-900 mb-1">
             Physiological Sensors
           </h3>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -200,7 +200,7 @@
 
         <!-- Motion Sensors -->
         <div>
-          <h3 class="text-lg font-medium text-gray-900 mb-1">Motion Sensors</h3>
+          <h3 class="text-m font-medium text-gray-900 mb-1">Motion Sensors</h3>
           <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
             <!-- Accelerometer -->
             <div class="col-span-2 md:col-span-3">
@@ -284,7 +284,7 @@
 
         <!-- Magnetometer -->
         <div>
-          <h3 class="text-lg font-medium text-gray-900 mb-1">Magnetometer</h3>
+          <h3 class="text-m font-medium text-gray-900 mb-1">Magnetometer</h3>
           <div class="grid grid-cols-3 gap-4">
             <div>
               <label class="block text-xs text-gray-500 mb-1">X-Axis</label>
@@ -321,7 +321,9 @@
 
         <!-- Environmental Sensors -->
         <div>
-          <h3 class="text-lg font-medium text-gray-900 mb-1">Environmental Sensors</h3>
+          <h3 class="text-m font-medium text-gray-900 mb-1">
+            Environmental Sensors
+          </h3>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">
@@ -366,7 +368,9 @@
 
         <!-- Activity Metrics -->
         <div>
-          <h3 class="text-lg font-medium text-gray-900 mb-1">Activity Metrics</h3>
+          <h3 class="text-m font-medium text-gray-900 mb-1">
+            Activity Metrics
+          </h3>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">
@@ -397,7 +401,7 @@
 
         <!-- GPS Location -->
         <div>
-          <h3 class="text-lg font-medium text-gray-900 mb-1">GPS Location</h3>
+          <h3 class="text-m font-medium text-gray-900 mb-1">GPS Location</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <!-- Latitude -->
             <div>
@@ -498,7 +502,7 @@
 
         <!-- Quick Fill Options -->
         <div>
-          <h3 class="text-lg font-medium text-gray-900 mb-1">
+          <h3 class="text-m font-medium text-gray-900 mb-1">
             Quick Fill Options
           </h3>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -661,15 +665,15 @@ const fillSampleData = (type) => {
       form.value.HeartRate = Math.floor(Math.random() * 20) + 60; // 60-80 BPM
       form.value.HRV = Math.random() * 20 + 30; // 30-50
       form.value.Temperature = Math.random() * 2 + 36.5; // 36.5-38.5°C
-  form.value.Sp02 = Math.floor(Math.random() * 3) + 97; // 97-99%
-  form.value.respiratoryRate = Math.floor(Math.random() * 4) + 12; // 12-15
-  form.value.scl = Number((Math.random() * 2 + 2).toFixed(2));
-  form.value.scr = Number((Math.random() * 0.5 + 0.1).toFixed(2));
-  form.value.humidity = Math.floor(Math.random() * 20) + 40; // 40-59%
-  form.value.pressure = Number((1000 + Math.random() * 20).toFixed(2));
-  form.value.light = Math.floor(Math.random() * 100) + 200; // 200-299 lux
-  form.value.steps = 0;
-  form.value.calories = 0;
+      form.value.Sp02 = Math.floor(Math.random() * 3) + 97; // 97-99%
+      form.value.respiratoryRate = Math.floor(Math.random() * 4) + 12; // 12-15
+      form.value.scl = Number((Math.random() * 2 + 2).toFixed(2));
+      form.value.scr = Number((Math.random() * 0.5 + 0.1).toFixed(2));
+      form.value.humidity = Math.floor(Math.random() * 20) + 40; // 40-59%
+      form.value.pressure = Number((1000 + Math.random() * 20).toFixed(2));
+      form.value.light = Math.floor(Math.random() * 100) + 200; // 200-299 lux
+      form.value.steps = 0;
+      form.value.calories = 0;
       form.value.SoundLevel = Math.random() * 20 + 30; // 30-50 dB
       form.value.AccelX = (Math.random() - 0.5) * 0.2; // Small movements
       form.value.AccelY = (Math.random() - 0.5) * 0.2;
@@ -680,15 +684,15 @@ const fillSampleData = (type) => {
       form.value.HeartRate = Math.floor(Math.random() * 40) + 120; // 120-160 BPM
       form.value.HRV = Math.random() * 15 + 15; // 15-30
       form.value.Temperature = Math.random() * 1.5 + 37; // 37-38.5°C
-  form.value.Sp02 = Math.floor(Math.random() * 5) + 95; // 95-99%
-  form.value.respiratoryRate = Math.floor(Math.random() * 10) + 18; // 18-27
-  form.value.scl = Number((Math.random() * 3 + 3).toFixed(2));
-  form.value.scr = Number((Math.random() * 1 + 0.2).toFixed(2));
-  form.value.humidity = Math.floor(Math.random() * 20) + 30; // 30-49%
-  form.value.pressure = Number((1005 + Math.random() * 25).toFixed(2));
-  form.value.light = Math.floor(Math.random() * 500) + 500; // 500-999 lux
-  form.value.steps = Math.floor(Math.random() * 200 + 50);
-  form.value.calories = Math.floor(Math.random() * 30 + 10);
+      form.value.Sp02 = Math.floor(Math.random() * 5) + 95; // 95-99%
+      form.value.respiratoryRate = Math.floor(Math.random() * 10) + 18; // 18-27
+      form.value.scl = Number((Math.random() * 3 + 3).toFixed(2));
+      form.value.scr = Number((Math.random() * 1 + 0.2).toFixed(2));
+      form.value.humidity = Math.floor(Math.random() * 20) + 30; // 30-49%
+      form.value.pressure = Number((1005 + Math.random() * 25).toFixed(2));
+      form.value.light = Math.floor(Math.random() * 500) + 500; // 500-999 lux
+      form.value.steps = Math.floor(Math.random() * 200 + 50);
+      form.value.calories = Math.floor(Math.random() * 30 + 10);
       form.value.SoundLevel = Math.random() * 30 + 50; // 50-80 dB
       form.value.AccelX = (Math.random() - 0.5) * 2; // Larger movements
       form.value.AccelY = (Math.random() - 0.5) * 2;
@@ -763,7 +767,7 @@ const resetForm = () => {
     Timestamp: "",
     HeartRate: null,
     HRV: null,
-  Sp02: null,
+    Sp02: null,
     AccelX: null,
     AccelY: null,
     AccelZ: null,
@@ -771,19 +775,19 @@ const resetForm = () => {
     GyroY: null,
     GyroZ: null,
     EDA: null,
-  scl: null,
-  scr: null,
-  respiratoryRate: null,
+    scl: null,
+    scr: null,
+    respiratoryRate: null,
     Temperature: null,
     SoundLevel: null,
-  humidity: null,
-  pressure: null,
-  light: null,
-  steps: null,
-  calories: null,
-  magneticX: null,
-  magneticY: null,
-  magneticZ: null,
+    humidity: null,
+    pressure: null,
+    light: null,
+    steps: null,
+    calories: null,
+    magneticX: null,
+    magneticY: null,
+    magneticZ: null,
     latitude: null,
     longitude: null,
     altitude: null,
