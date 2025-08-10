@@ -572,7 +572,9 @@ const eventTypeOptionsMulti = eventTypeOptions.filter((o) => {
     !o.value.toLocaleLowerCase().includes("longitude") &&
     !o.value.toLocaleLowerCase().includes("altitude") &&
     !o.value.toLocaleLowerCase().includes("accuracy") &&
-    !o.value.toLocaleLowerCase().includes("magnetic")
+    !o.value.toLocaleLowerCase().includes("magnetic") &&
+    !o.value.toLocaleLowerCase().includes("pressure") &&
+    !o.value.toLocaleLowerCase().includes("bearing_deg")
   );
 });
 // Only show selected types to the line chart; when none selected, pass empty list
