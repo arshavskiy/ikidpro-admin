@@ -529,6 +529,7 @@ const eventTypeOptions = [
   { value: "all", label: "All Events" },
   { value: "HeartRate", label: "Heart Rate" },
   { value: "HRV", label: "Heart Rate Variability" },
+  { value: "Sp02", label: "SpO2" },
   { value: "AccelX", label: "Accelerometer X" },
   { value: "AccelY", label: "Accelerometer Y" },
   { value: "AccelZ", label: "Accelerometer Z" },
@@ -537,6 +538,10 @@ const eventTypeOptions = [
   { value: "GyroZ", label: "Gyroscope Z" },
   { value: "EDA", label: "Electrodermal Activity" },
   { value: "Temperature", label: "Temperature" },
+  { value: "scl", label: "SCL" },
+  { value: "scr", label: "SCR" },
+  { value: "respiratoryRate", label: "Respiratory Rate" },
+  { value: "humidity", label: "Humidity" },
   { value: "SoundLevel", label: "Sound Level" },
   { value: "latitude", label: "GPS Latitude" },
   { value: "longitude", label: "GPS Longitude" },
@@ -635,6 +640,11 @@ const analytics = ref({
   sensorDistribution: {
     heartRate: 0,
     temperature: 0,
+    spo2: 0,
+    scl: 0,
+    scr: 0,
+    respiratoryRate: 0,
+    humidity: 0,
     gps: 0,
     sound: 0,
     motion: 0,
@@ -679,6 +689,14 @@ const distributionMap = {
     bgClass: "bg-amber-50",
     barClass: "bg-amber-600",
   },
+  Sp02: {
+    distKey: "spo2",
+    label: "SpO2",
+    icon: "fa-percentage",
+    iconClass: "text-sky-600",
+    bgClass: "bg-sky-50",
+    barClass: "bg-sky-600",
+  },
   EDA: {
     distKey: "eda",
     label: "EDA",
@@ -694,6 +712,38 @@ const distributionMap = {
     iconClass: "text-blue-600",
     bgClass: "bg-blue-50",
     barClass: "bg-blue-600",
+  },
+  scl: {
+    distKey: "scl",
+    label: "SCL",
+    icon: "fa-wave-square",
+    iconClass: "text-emerald-600",
+    bgClass: "bg-emerald-50",
+    barClass: "bg-emerald-600",
+  },
+  scr: {
+    distKey: "scr",
+    label: "SCR",
+    icon: "fa-wave-square",
+    iconClass: "text-teal-600",
+    bgClass: "bg-teal-50",
+    barClass: "bg-teal-600",
+  },
+  respiratoryRate: {
+    distKey: "respiratoryRate",
+    label: "Respiratory Rate",
+    icon: "fa-lungs",
+    iconClass: "text-cyan-600",
+    bgClass: "bg-cyan-50",
+    barClass: "bg-cyan-600",
+  },
+  humidity: {
+    distKey: "humidity",
+    label: "Humidity",
+    icon: "fa-water",
+    iconClass: "text-blue-700",
+    bgClass: "bg-blue-50",
+    barClass: "bg-blue-700",
   },
   SoundLevel: {
     distKey: "sound",
@@ -908,8 +958,13 @@ const distributionTiles = computed(() => {
 const distKeyToEventTypes = {
   heartRate: ["HeartRate"],
   hrv: ["HRV"],
+  spo2: ["Sp02"],
   eda: ["EDA"],
   temperature: ["Temperature"],
+  scl: ["scl"],
+  scr: ["scr"],
+  respiratoryRate: ["respiratoryRate"],
+  humidity: ["humidity"],
   sound: ["SoundLevel"],
   gps: ["gps", "latitude", "longitude"],
   motion: ["AccelX", "AccelY", "AccelZ", "motion"],
@@ -1153,6 +1208,8 @@ const eventHasType = (event, type) => {
       return event.HeartRate !== null && event.HeartRate !== undefined;
     case "HRV":
       return event.HRV !== null && event.HRV !== undefined;
+    case "Sp02":
+      return event.Sp02 !== null && event.Sp02 !== undefined;
     case "AccelX":
       return event.AccelX !== null && event.AccelX !== undefined;
     case "AccelY":
@@ -1175,6 +1232,16 @@ const eventHasType = (event, type) => {
       );
     case "SoundLevel":
       return event.SoundLevel !== null && event.SoundLevel !== undefined;
+    case "scl":
+      return event.scl !== null && event.scl !== undefined;
+    case "scr":
+      return event.scr !== null && event.scr !== undefined;
+    case "respiratoryRate":
+      return (
+        event.respiratoryRate !== null && event.respiratoryRate !== undefined
+      );
+    case "humidity":
+      return event.humidity !== null && event.humidity !== undefined;
     case "latitude":
       return event.latitude !== null && event.latitude !== undefined;
     case "longitude":
@@ -1280,6 +1347,11 @@ const calculateAnalytics = (events) => {
   // Calculate sensor distribution
   const gpsEvents = events.filter((e) => e.latitude && e.longitude).length;
   const soundEvents = events.filter((e) => e.SoundLevel).length;
+  const spo2Events = events.filter((e) => e.Sp02).length;
+  const sclEvents = events.filter((e) => e.scl).length;
+  const scrEvents = events.filter((e) => e.scr).length;
+  const respiratoryRateEvents = events.filter((e) => e.respiratoryRate).length;
+  const humidityEvents = events.filter((e) => e.humidity).length;
   const motionEvents = events.filter(
     (e) => e.AccelX || e.AccelY || e.AccelZ
   ).length;
@@ -1394,6 +1466,15 @@ const calculateAnalytics = (events) => {
         totalEvents > 0
           ? Math.round((temperatureEvents.length / totalEvents) * 100)
           : 0,
+      spo2: totalEvents > 0 ? Math.round((spo2Events / totalEvents) * 100) : 0,
+      scl: totalEvents > 0 ? Math.round((sclEvents / totalEvents) * 100) : 0,
+      scr: totalEvents > 0 ? Math.round((scrEvents / totalEvents) * 100) : 0,
+      respiratoryRate:
+        totalEvents > 0
+          ? Math.round((respiratoryRateEvents / totalEvents) * 100)
+          : 0,
+      humidity:
+        totalEvents > 0 ? Math.round((humidityEvents / totalEvents) * 100) : 0,
       gps: totalEvents > 0 ? Math.round((gpsEvents / totalEvents) * 100) : 0,
       sound:
         totalEvents > 0 ? Math.round((soundEvents / totalEvents) * 100) : 0,
@@ -1470,6 +1551,11 @@ const calculateEventTimeline = (events, days) => {
     const heartRateEvents = periodEvents.filter((e) => e.HeartRate);
     const temperatureEvents = periodEvents.filter((e) => e.Temperature);
     const soundEvents = periodEvents.filter((e) => e.SoundLevel);
+    const spo2Events = periodEvents.filter((e) => e.Sp02);
+    const sclEvents = periodEvents.filter((e) => e.scl);
+    const scrEvents = periodEvents.filter((e) => e.scr);
+    const respiratoryEvents = periodEvents.filter((e) => e.respiratoryRate);
+    const humidityEvents = periodEvents.filter((e) => e.humidity);
     const gpsEvents = periodEvents.filter((e) => e.latitude && e.longitude);
     const motionEvents = periodEvents.filter(
       (e) => e.AccelX || e.AccelY || e.AccelZ
@@ -1500,6 +1586,49 @@ const calculateEventTimeline = (events, days) => {
                 soundEvents.length
             )
           : 0,
+      spo2:
+        spo2Events.length > 0
+          ? Math.round(
+              (spo2Events.reduce((sum, e) => sum + e.Sp02, 0) /
+                spo2Events.length) *
+                10
+            ) / 10
+          : 0,
+      scl:
+        sclEvents.length > 0
+          ? Math.round(
+              (sclEvents.reduce((sum, e) => sum + e.scl, 0) /
+                sclEvents.length) *
+                10
+            ) / 10
+          : 0,
+      scr:
+        scrEvents.length > 0
+          ? Math.round(
+              (scrEvents.reduce((sum, e) => sum + e.scr, 0) /
+                scrEvents.length) *
+                10
+            ) / 10
+          : 0,
+      respiratoryRate:
+        respiratoryEvents.length > 0
+          ? Math.round(
+              (respiratoryEvents.reduce(
+                (sum, e) => sum + e.respiratoryRate,
+                0
+              ) /
+                respiratoryEvents.length) *
+                10
+            ) / 10
+          : 0,
+      humidity:
+        humidityEvents.length > 0
+          ? Math.round(
+              (humidityEvents.reduce((sum, e) => sum + e.humidity, 0) /
+                humidityEvents.length) *
+                10
+            ) / 10
+          : 0,
       gpsCount: gpsEvents.length,
       motionCount: motionEvents.length,
     });
@@ -1524,6 +1653,11 @@ const calculateSensorValues = (events, days) => {
       timestamp: timestamp.toISOString(),
       heartRate: event.HeartRate || null,
       hrv: event.HRV || null,
+      spo2: event.Sp02 || null,
+      scl: event.scl || null,
+      scr: event.scr || null,
+      respiratoryRate: event.respiratoryRate || null,
+      humidity: event.humidity || null,
       accelX: event.AccelX || null,
       accelY: event.AccelY || null,
       accelZ: event.AccelZ || null,
@@ -1664,6 +1798,11 @@ const getDefaultAnalytics = () => ({
   sensorDistribution: {
     heartRate: 0,
     temperature: 0,
+    spo2: 0,
+    scl: 0,
+    scr: 0,
+    respiratoryRate: 0,
+    humidity: 0,
     gps: 0,
     sound: 0,
     motion: 0,

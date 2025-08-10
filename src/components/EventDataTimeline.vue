@@ -70,6 +70,7 @@ const props = defineProps({
 const typeToTimeline = {
   HeartRate: { field: "heartRate", label: "Heart Rate", color: "#ef4444" },
   HRV: { field: "hrv", label: "HRV", color: "#f59e0b" },
+  Sp02: { field: "spo2", label: "SpO2", color: "#06b6d4" },
   Temperature: {
     field: "temperature",
     label: "Temperature",
@@ -80,6 +81,14 @@ const typeToTimeline = {
     label: "Sound Level",
     color: "#8b5cf6",
   },
+  scl: { field: "scl", label: "SCL", color: "#059669" },
+  scr: { field: "scr", label: "SCR", color: "#0ea5e9" },
+  respiratoryRate: {
+    field: "respiratoryRate",
+    label: "Respiratory Rate",
+    color: "#14b8a6",
+  },
+  humidity: { field: "humidity", label: "Humidity", color: "#3b82f6" },
   gps: { field: "gpsCount", label: "GPS Points", color: "#10b981" },
   motion: { field: "motionCount", label: "Motion Events", color: "#14b8a6" },
 };

@@ -245,6 +245,7 @@ const fieldDefinitions = {
     // Vital Signs
     { key: "HeartRate", label: "Heart Rate (BPM)" },
     { key: "HRV", label: "Heart Rate Variability" },
+    { key: "Sp02", label: "SpO2" },
     { key: "Temperature", label: "Temperature" },
     // Motion & Orientation
     { key: "AccelX", label: "Accelerometer X" },
@@ -267,10 +268,14 @@ const fieldDefinitions = {
     { key: "satellites", label: "GPS Satellites" },
     // Environmental
     { key: "SoundLevel", label: "Sound Level (dB)" },
+    { key: "humidity", label: "Humidity" },
     { key: "pressure", label: "Atmospheric Pressure" },
     { key: "light", label: "Light Level" },
     // Health & Activity
     { key: "EDA", label: "Electrodermal Activity" },
+    { key: "scl", label: "SCL" },
+    { key: "scr", label: "SCR" },
+    { key: "respiratoryRate", label: "Respiratory Rate" },
     { key: "steps", label: "Step Count" },
     { key: "calories", label: "Calories Burned" },
     // Device Information

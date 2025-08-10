@@ -169,11 +169,17 @@
     </NCard>
 
     <!-- Success/Error Messages -->
-    <div v-if="successMessage" class="p-3 bg-green-50border-green-200 rounded">
+    <div
+      v-if="successMessage"
+      class="p-3 bg-green-50 border border-green-200 rounded"
+    >
       <p class="text-sm text-green-600">{{ successMessage }}</p>
     </div>
 
-    <div v-if="errorMessage" class="p-3 bg-red-50border-red-200 rounded">
+    <div
+      v-if="errorMessage"
+      class="p-3 bg-red-50 border border-red-200 rounded"
+    >
       <p class="text-sm text-red-600">{{ errorMessage }}</p>
     </div>
 
@@ -498,6 +504,11 @@ const downloadTemplate = (type) => {
         "BatteryLevel",
         "SignalStrength",
         "DeviceId",
+        "Sp02",
+        "scl",
+        "scr",
+        "respiratoryRate",
+        "humidity",
       ],
       [
         "CHILD-001",
@@ -531,6 +542,11 @@ const downloadTemplate = (type) => {
         "75",
         "-65",
         "DEV001",
+        "97",
+        "5.2",
+        "0.8",
+        "22",
+        "48",
       ],
       [
         "CHILD-001",
@@ -564,6 +580,11 @@ const downloadTemplate = (type) => {
         "74",
         "-63",
         "DEV001",
+        "98",
+        "5.6",
+        "0.9",
+        "23",
+        "49",
       ],
       [
         "CHILD-002",
@@ -597,6 +618,11 @@ const downloadTemplate = (type) => {
         "82",
         "-58",
         "DEV002",
+        "96",
+        "4.8",
+        "0.7",
+        "21",
+        "47",
       ],
       [
         "CHILD-002",
@@ -630,6 +656,11 @@ const downloadTemplate = (type) => {
         "81",
         "-56",
         "DEV002",
+        "97",
+        "5.0",
+        "0.8",
+        "22",
+        "46",
       ],
       [
         "CHILD-003",
@@ -663,6 +694,11 @@ const downloadTemplate = (type) => {
         "68",
         "-72",
         "DEV003",
+        "99",
+        "6.1",
+        "1.2",
+        "24",
+        "50",
       ],
       [
         "CHILD-003",
@@ -696,6 +732,11 @@ const downloadTemplate = (type) => {
         "67",
         "-70",
         "DEV003",
+        "98",
+        "6.4",
+        "1.3",
+        "25",
+        "51",
       ],
     ],
   };
