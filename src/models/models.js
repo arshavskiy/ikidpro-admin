@@ -283,7 +283,7 @@ export const getDefaultAnalytics = () => ({
 });
 
 // API endpoint definitions
-const userEndpoints = [
+export const userEndpoints = [
   // Auth
   { name: "Register User", method: "POST", url: "/auth/register" },
   { name: "Login User", method: "POST", url: "/auth/login" },
