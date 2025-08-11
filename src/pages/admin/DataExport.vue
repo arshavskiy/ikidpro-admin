@@ -278,7 +278,7 @@ const getStatusColor = (status) => {
 
 // Lifecycle
 onMounted(() => {
-  loadStats();
   loadExportHistory();
+  loadStats();
 });
 </script>

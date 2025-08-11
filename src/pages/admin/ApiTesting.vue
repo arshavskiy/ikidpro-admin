@@ -52,7 +52,7 @@
         </div>
         <div class="space-y-2">
           <button
-            v-for="endpoint in userEndpoints"
+            v-for="endpoint in UserEndpoints"
             :key="endpoint.name"
             @click="testEndpoint(endpoint)"
             class="w-full text-left px-3 py-2 text-sm rounded border hover:bg-gray-50"
@@ -72,7 +72,7 @@
         </div>
         <div class="space-y-2">
           <button
-            v-for="endpoint in childEndpoints"
+            v-for="endpoint in ChildEndpoints"
             :key="endpoint.name"
             @click="testEndpoint(endpoint)"
             class="w-full text-left px-3 py-2 text-sm rounded border hover:bg-gray-50"
@@ -92,7 +92,7 @@
         </div>
         <div class="space-y-2">
           <button
-            v-for="endpoint in eventEndpoints"
+            v-for="endpoint in EventEndpoints"
             :key="endpoint.name"
             @click="testEndpoint(endpoint)"
             class="w-full text-left px-3 py-2 text-sm rounded border hover:bg-gray-50"
@@ -284,7 +284,7 @@
           <h4 class="text-sm font-medium text-gray-700 mb-2">Admin Login</h4>
           <pre
             class="bg-gray-700 p-3 rounded text-xs font-mono overflow-x-auto"
-            >{{ samples.adminLogin }}</pre
+            >{{ Samples.adminLogin }}</pre
           >
         </div>
         <div>
@@ -293,21 +293,21 @@
           </h4>
           <pre
             class="bg-gray-700 p-3 rounded text-xs font-mono overflow-x-auto"
-            >{{ samples.userRegistration }}</pre
+            >{{ Samples.userRegistration }}</pre
           >
         </div>
         <div>
           <h4 class="text-sm font-medium text-gray-700 mb-2">Child User</h4>
           <pre
             class="bg-gray-700 p-3 rounded text-xs font-mono overflow-x-auto"
-            >{{ samples.childUser }}</pre
+            >{{ Samples.childUser }}</pre
           >
         </div>
         <div>
           <h4 class="text-sm font-medium text-gray-700 mb-2">Event Data</h4>
           <pre
             class="bg-gray-700 p-3 rounded text-xs font-mono overflow-x-auto"
-            >{{ samples.eventData }}</pre
+            >{{ Samples.eventData }}</pre
           >
         </div>
       </div>
@@ -328,6 +328,19 @@ const error = ref("");
 const loading = ref(false);
 const lastRequestHeaders = ref({});
 
+// Sample request bodies
+import {
+  samples,
+  userEndpoints,
+  childEndpoints,
+  eventEndpoints,
+} from "@/models/models.js";
+
+const Samples = ref(samples);
+const UserEndpoints = ref(userEndpoints);
+const ChildEndpoints = ref(childEndpoints);
+const EventEndpoints = ref(eventEndpoints);
+
 // Computed properties
 const hasToken = computed(() => {
   return !!sessionStorage.getItem("userToken");
@@ -339,188 +352,11 @@ const tokenPreview = computed(() => {
   return token.substring(0, 20) + "..." + token.substring(token.length - 10);
 });
 
-// API endpoint definitions
-const userEndpoints = [
-  // Auth
-  { name: "Register User", method: "POST", url: "/auth/register" },
-  { name: "Login User", method: "POST", url: "/auth/login" },
-  { name: "Logout User", method: "POST", url: "/auth/logout" },
-  { name: "Get Current User (me)", method: "GET", url: "/auth/me" },
-  { name: "Refresh Token", method: "POST", url: "/auth/refresh" },
-  { name: "User Stats", method: "GET", url: "/auth/stats" },
-  // Admin user management
-  { name: "Get All Users", method: "GET", url: "/users" },
-  { name: "Get User Count", method: "GET", url: "/users/count" },
-  {
-    name: "Get User by ID",
-    method: "GET",
-    url: "/user/id/:id",
-    params: ["id"],
-  },
-  { name: "Create User", method: "POST", url: "/users" },
-  {
-    name: "Update User",
-    method: "PUT",
-    url: "/user/id/:id",
-    params: ["id"],
-  },
-  {
-    name: "Delete User",
-    method: "DELETE",
-    url: "/user/id/:id",
-    params: ["id"],
-  },
-];
-
-const childEndpoints = [
-  { name: "Create Child", method: "POST", url: "/child-users" },
-  { name: "Get All Children", method: "GET", url: "/child-users" },
-  { name: "Get Child Count", method: "GET", url: "/child-users/count" },
-  {
-    name: "Get Child by ID",
-    method: "GET",
-    url: "/child-users/id/:id",
-    params: ["id"],
-  },
-  {
-    name: "Update Child",
-    method: "PUT",
-    url: "/child-users/id/:id",
-    params: ["id"],
-  },
-  {
-    name: "Delete Child",
-    method: "DELETE",
-    url: "/child-users/id/:id",
-    params: ["id"],
-  },
-  {
-    name: "Get Children by Parent",
-    method: "GET",
-    url: "/child-users/parent/:parentId/children",
-    params: ["parentId"],
-  },
-  { name: "Children Stats", method: "GET", url: "/child-users/stats" },
-  {
-    name: "Search Children",
-    method: "GET",
-    url: "/child-users/search?q=:query",
-    params: ["query"],
-  },
-];
-
-const eventEndpoints = [
-  { name: "Create Event", method: "POST", url: "/event" },
-  { name: "Get All Events", method: "GET", url: "/event" },
-  { name: "Get Event Count", method: "GET", url: "/event/count" },
-  { name: "Get Collections", method: "GET", url: "/event/dbs" },
-  { name: "Get DB Stats", method: "GET", url: "/admin/database-stats" },
-  {
-    name: "Get Event by ID",
-    method: "GET",
-    url: "/event/:id",
-    params: ["id"],
-  },
-  {
-    name: "Get Events by Child",
-    method: "GET",
-    url: "/event/child/:childId",
-    params: ["childId"],
-  },
-  {
-    name: "Update Event",
-    method: "PUT",
-    url: "/event/:id",
-    params: ["id"],
-  },
-  {
-    name: "Delete Event",
-    method: "DELETE",
-    url: "/event/:id",
-    params: ["id"],
-  },
-];
-
 // Registration-specific endpoints
 const registrationEndpoints = [
   { name: "Register Parent", method: "POST", url: "/user/register" },
   { name: "Register Child", method: "POST", url: "/child-users" },
 ];
-
-// Sample request bodies
-const samples = ref({
-  adminLogin: JSON.stringify(
-    {
-      email: "admin@watchforme.com",
-      password: "adminPassword123",
-    },
-    null,
-    2
-  ),
-
-  userRegistration: JSON.stringify(
-    {
-      firstName: "John",
-      lastName: "Doe",
-      email: "john.doe@example.com",
-      password: "securePassword123",
-      mobile: 1234567890,
-    },
-    null,
-    2
-  ),
-
-  childUser: JSON.stringify(
-    {
-      firstName: "Emma",
-      lastName: "Smith",
-      gender: "Female",
-      dateOfBirth: "2015-05-15",
-      age: 8,
-      height: 125,
-      weight: 25,
-      medicalCondition: ["Asthma"],
-      limitations: [],
-      emergencyContact: {
-        name: "Jane Smith",
-        phone: "1234567890",
-        relationship: "Mother",
-      },
-      parentId: "6883f6ffaec95a456a7ea119",
-      aid: "child123",
-    },
-    null,
-    2
-  ),
-
-  eventData: JSON.stringify(
-    {
-      Timestamp: new Date().toISOString(),
-      HeartRate: 85,
-      HRV: 42,
-      AccelX: 0.2,
-      AccelY: 0.1,
-      AccelZ: 9.8,
-      GyroX: 0.1,
-      GyroY: 0.0,
-      GyroZ: 0.05,
-      EDA: 2.5,
-      Temperature: 36.7,
-      SoundLevel: 45,
-      latitude: 40.7128,
-      longitude: -74.006,
-      altitude: 10,
-      speed_mps: 0,
-      bearing_deg: 0,
-      accuracy_m: 5,
-      satellites: 8,
-      aid: "child123",
-      parentId: "6883f6ffaec95a456a7ea119",
-    },
-    null,
-    2
-  ),
-});
 
 // Methods
 const testEndpoint = (endpoint) => {
@@ -533,17 +369,17 @@ const testEndpoint = (endpoint) => {
   // Set sample request body for POST/PUT requests
   if (["POST", "PUT"].includes(endpoint.method)) {
     if (endpoint.url.includes("/auth/login")) {
-      requestBody.value = samples.value.adminLogin;
+      requestBody.value = Samples.value.adminLogin;
     } else if (
       endpoint.url.includes("/auth/register") ||
       endpoint.url.includes("/user/register") ||
       endpoint.url === "/users"
     ) {
-      requestBody.value = samples.value.userRegistration;
+      requestBody.value = Samples.value.userRegistration;
     } else if (endpoint.url.includes("/child-users")) {
-      requestBody.value = samples.value.childUser;
+      requestBody.value = Samples.value.childUser;
     } else if (endpoint.url.includes("/event")) {
-      requestBody.value = samples.value.eventData;
+      requestBody.value = Samples.value.eventData;
     }
   }
 };

@@ -497,6 +497,14 @@ import EventDataTimeline from "../../components/EventDataTimeline.vue";
 import OverviewStatistics from "../../components/OverviewStatistics.vue";
 import ChartsRow from "../../components/ChartsRow.vue";
 import GpsActivityMap from "../../components/GpsActivityMap.vue";
+import {
+  timeRangeOptions,
+  eventTypeOptions,
+  shouldHideEventType,
+  distributionMap,
+  distKeyToEventTypes,
+  getDefaultAnalytics,
+} from "../../models/models";
 
 // Reactive data
 const loading = ref(false);
@@ -548,69 +556,6 @@ const childOptions = computed(() => {
     })),
   ];
 });
-
-// Time range options
-const timeRangeOptions = [
-  { label: "Last 7 days", value: "7" },
-  { label: "Last 30 days", value: "30" },
-  { label: "Last 90 days", value: "90" },
-  { label: "Last year", value: "365" },
-];
-
-// Event type options
-const eventTypeOptions = [
-  { value: "all", label: "All Events" },
-  { value: "HeartRate", label: "Heart Rate" },
-  { value: "respiratoryRate", label: "Respiratory Rate" },
-  { value: "Temperature", label: "Temperature" },
-  { value: "HRV", label: "Heart Rate Variability" },
-  { value: "Sp02", label: "SpO2" },
-  { value: "AccelX", label: "Accelerometer X" },
-  { value: "AccelY", label: "Accelerometer Y" },
-  { value: "AccelZ", label: "Accelerometer Z" },
-  { value: "GyroX", label: "Gyroscope X" },
-  { value: "GyroY", label: "Gyroscope Y" },
-  { value: "GyroZ", label: "Gyroscope Z" },
-  { value: "EDA", label: "Electrodermal activity" },
-  { value: "scl", label: "Conductance Level" },
-  { value: "scr", label: "Conductance Responses" },
-  { value: "SoundLevel", label: "Sound Level" },
-  { value: "humidity", label: "Humidity" },
-  { value: "latitude", label: "GPS Latitude" },
-  { value: "longitude", label: "GPS Longitude" },
-  { value: "altitude", label: "GPS Altitude" },
-  { value: "speed_mps", label: "Speed (m/s)" },
-  { value: "bearing_deg", label: "Bearing (degrees)" },
-  { value: "accuracy_m", label: "GPS Accuracy" },
-  { value: "satellites", label: "Satellites" },
-  { value: "steps", label: "Steps" },
-  { value: "calories", label: "Calories" },
-  { value: "magneticX", label: "Magnetometer X" },
-  { value: "magneticY", label: "Magnetometer Y" },
-  { value: "magneticZ", label: "Magnetometer Z" },
-  { value: "pressure", label: "Pressure" },
-  { value: "light", label: "Light Level" },
-  { value: "gps", label: "GPS Location" },
-  { value: "motion", label: "Motion/Acceleration" },
-];
-
-// Centralized predicate to decide which event types are hidden from multi-select dropdown
-const shouldHideEventType = (val) => {
-  const v = String(val || "").toLowerCase();
-  return (
-    v === "gps" ||
-    v === "latitude" ||
-    v === "longitude" ||
-    v === "altitude" ||
-    v === "satellites" ||
-    v.includes("accel") ||
-    v.includes("gyro") ||
-    v.includes("magnetic") ||
-    v.includes("pressure") ||
-    v.includes("bearing_deg") ||
-    v.includes("accuracy")
-  );
-};
 
 // Multi-select options exclude 'all' and any hidden by predicate
 const eventTypeOptionsMulti = eventTypeOptions.filter(
@@ -715,258 +660,6 @@ const analytics = ref({
   },
 });
 
-// Map eventType value to sensorDistribution key and presentation
-const distributionMap = {
-  HeartRate: {
-    distKey: "heartRate",
-    label: "Heart Rate",
-    icon: "fa-heartbeat",
-    iconClass: "text-red-600",
-    bgClass: "bg-red-50",
-    barClass: "bg-red-600",
-  },
-  HRV: {
-    distKey: "hrv",
-    label: "HRV",
-    icon: "fa-wave-square",
-    iconClass: "text-amber-600",
-    bgClass: "bg-amber-50",
-    barClass: "bg-amber-600",
-  },
-  Sp02: {
-    distKey: "spo2",
-    label: "SpO2",
-    icon: "fa-percentage",
-    iconClass: "text-sky-600",
-    bgClass: "bg-sky-50",
-    barClass: "bg-sky-600",
-  },
-  EDA: {
-    distKey: "eda",
-    label: "EDA",
-    icon: "fa-bolt",
-    iconClass: "text-violet-600",
-    bgClass: "bg-violet-50",
-    barClass: "bg-violet-600",
-  },
-  Temperature: {
-    distKey: "temperature",
-    label: "Temperature",
-    icon: "fa-thermometer-half",
-    iconClass: "text-blue-600",
-    bgClass: "bg-blue-50",
-    barClass: "bg-blue-600",
-  },
-  scl: {
-    distKey: "scl",
-    label: "SCL",
-    icon: "fa-wave-square",
-    iconClass: "text-emerald-600",
-    bgClass: "bg-emerald-50",
-    barClass: "bg-emerald-600",
-  },
-  scr: {
-    distKey: "scr",
-    label: "SCR",
-    icon: "fa-wave-square",
-    iconClass: "text-teal-600",
-    bgClass: "bg-teal-50",
-    barClass: "bg-teal-600",
-  },
-  respiratoryRate: {
-    distKey: "respiratoryRate",
-    label: "Respiratory Rate",
-    icon: "fa-lungs",
-    iconClass: "text-cyan-600",
-    bgClass: "bg-cyan-50",
-    barClass: "bg-cyan-600",
-  },
-  humidity: {
-    distKey: "humidity",
-    label: "Humidity",
-    icon: "fa-water",
-    iconClass: "text-blue-700",
-    bgClass: "bg-blue-50",
-    barClass: "bg-blue-700",
-  },
-  SoundLevel: {
-    distKey: "sound",
-    label: "Sound Level",
-    icon: "fa-volume-up",
-    iconClass: "text-purple-600",
-    bgClass: "bg-purple-50",
-    barClass: "bg-purple-600",
-  },
-  // gps: {
-  //   distKey: "gps",
-  //   label: "GPS Location",
-  //   icon: "fa-map-marker-alt",
-  //   iconClass: "text-green-600",
-  //   bgClass: "bg-green-50",
-  //   barClass: "bg-green-600",
-  // },
-  motion: {
-    distKey: "motion",
-    label: "Motion/Acceleration",
-    icon: "fa-running",
-    iconClass: "text-teal-600",
-    bgClass: "bg-teal-50",
-    barClass: "bg-teal-600",
-  },
-  // GyroX: {
-  //   distKey: "gyro",
-  //   label: "Gyroscope",
-  //   icon: "fa-sync",
-  //   iconClass: "text-indigo-600",
-  //   bgClass: "bg-indigo-50",
-  //   barClass: "bg-indigo-600",
-  // },
-  // GyroY: {
-  //   distKey: "gyro",
-  //   label: "Gyroscope",
-  //   icon: "fa-sync",
-  //   iconClass: "text-indigo-600",
-  //   bgClass: "bg-indigo-50",
-  //   barClass: "bg-indigo-600",
-  // },
-  // GyroZ: {
-  //   distKey: "gyro",
-  //   label: "Gyroscope",
-  //   icon: "fa-sync",
-  //   iconClass: "text-indigo-600",
-  //   bgClass: "bg-indigo-50",
-  //   barClass: "bg-indigo-600",
-  // },
-  // AccelX: {
-  //   distKey: "motion",
-  //   label: "Accelerometer",
-  //   icon: "fa-arrows-alt",
-  //   iconClass: "text-cyan-600",
-  //   bgClass: "bg-cyan-50",
-  //   barClass: "bg-cyan-600",
-  // },
-  // AccelY: {
-  //   distKey: "motion",
-  //   label: "Accelerometer",
-  //   icon: "fa-arrows-alt",
-  //   iconClass: "text-cyan-600",
-  //   bgClass: "bg-cyan-50",
-  //   barClass: "bg-cyan-600",
-  // },
-  // AccelZ: {
-  //   distKey: "motion",
-  //   label: "Accelerometer",
-  //   icon: "fa-arrows-alt",
-  //   iconClass: "text-cyan-600",
-  //   bgClass: "bg-cyan-50",
-  //   barClass: "bg-cyan-600",
-  // },
-  // magneticX: {
-  //   distKey: "magnetic",
-  //   label: "Magnetometer",
-  //   icon: "fa-magnet",
-  //   iconClass: "text-fuchsia-600",
-  //   bgClass: "bg-fuchsia-50",
-  //   barClass: "bg-fuchsia-600",
-  // },
-  // magneticY: {
-  //   distKey: "magnetic",
-  //   label: "Magnetometer",
-  //   icon: "fa-magnet",
-  //   iconClass: "text-fuchsia-600",
-  //   bgClass: "bg-fuchsia-50",
-  //   barClass: "bg-fuchsia-600",
-  // },
-  // magneticZ: {
-  //   distKey: "magnetic",
-  //   label: "Magnetometer",
-  //   icon: "fa-magnet",
-  //   iconClass: "text-fuchsia-600",
-  //   bgClass: "bg-fuchsia-50",
-  //   barClass: "bg-fuchsia-600",
-  // },
-  pressure: {
-    distKey: "pressure",
-    label: "Pressure",
-    icon: "fa-tachometer-alt",
-    iconClass: "text-purple-700",
-    bgClass: "bg-purple-50",
-    barClass: "bg-purple-700",
-  },
-  light: {
-    distKey: "light",
-    label: "Light",
-    icon: "fa-lightbulb",
-    iconClass: "text-yellow-600",
-    bgClass: "bg-yellow-50",
-    barClass: "bg-yellow-600",
-  },
-  steps: {
-    distKey: "steps",
-    label: "Steps",
-    icon: "fa-shoe-prints",
-    iconClass: "text-emerald-600",
-    bgClass: "bg-emerald-50",
-    barClass: "bg-emerald-600",
-  },
-  calories: {
-    distKey: "calories",
-    label: "Calories",
-    icon: "fa-fire",
-    iconClass: "text-orange-600",
-    bgClass: "bg-orange-50",
-    barClass: "bg-orange-600",
-  },
-  // altitude: {
-  //   distKey: "altitude",
-  //   label: "Altitude",
-  //   icon: "fa-mountain",
-  //   iconClass: "text-teal-700",
-  //   bgClass: "bg-teal-50",
-  //   barClass: "bg-teal-700",
-  // },
-  speed_mps: {
-    distKey: "speed",
-    label: "Speed",
-    icon: "fa-tachometer-alt",
-    iconClass: "text-rose-600",
-    bgClass: "bg-rose-50",
-    barClass: "bg-rose-600",
-  },
-  // speed: {
-  //   distKey: "speed",
-  //   label: "Speed",
-  //   icon: "fa-tachometer-alt",
-  //   iconClass: "text-rose-600",
-  //   bgClass: "bg-rose-50",
-  //   barClass: "bg-rose-600",
-  // },
-  // bearing_deg: {
-  //   distKey: "bearing",
-  //   label: "Bearing",
-  //   icon: "fa-compass",
-  //   iconClass: "text-pink-600",
-  //   bgClass: "bg-pink-50",
-  //   barClass: "bg-pink-600",
-  // },
-  accuracy_m: {
-    distKey: "accuracy",
-    label: "Accuracy",
-    icon: "fa-bullseye",
-    iconClass: "text-indigo-700",
-    bgClass: "bg-indigo-50",
-    barClass: "bg-indigo-700",
-  },
-  satellites: {
-    distKey: "satellites",
-    label: "Satellites",
-    icon: "fa-satellite",
-    iconClass: "text-slate-600",
-    bgClass: "bg-slate-50",
-    barClass: "bg-slate-600",
-  },
-};
-
 // Build distribution tiles from available analytics distribution (always visible)
 const distributionTiles = computed(() => {
   const dist = analytics.value.sensorDistribution || {};
@@ -1008,33 +701,6 @@ const distributionTiles = computed(() => {
   }
   return tiles;
 });
-
-// Map distribution category (distKey) back to event type keys for selection highlighting
-const distKeyToEventTypes = {
-  heartRate: ["HeartRate"],
-  hrv: ["HRV"],
-  spo2: ["Sp02"],
-  eda: ["EDA"],
-  temperature: ["Temperature"],
-  scl: ["scl"],
-  scr: ["scr"],
-  respiratoryRate: ["respiratoryRate"],
-  humidity: ["humidity"],
-  sound: ["SoundLevel"],
-  gps: ["gps", "latitude", "longitude"],
-  motion: ["AccelX", "AccelY", "AccelZ", "motion"],
-  gyro: ["GyroX", "GyroY", "GyroZ"],
-  magnetic: ["magneticX", "magneticY", "magneticZ"],
-  pressure: ["pressure"],
-  light: ["light"],
-  steps: ["steps"],
-  calories: ["calories"],
-  altitude: ["altitude"],
-  speed: ["speed_mps", "speed"],
-  bearing: ["bearing_deg"],
-  accuracy: ["accuracy_m"],
-  satellites: ["satellites"],
-};
 
 // Highlight tile if it's the one currently shown in Quick View (independent of dropdown)
 const isTileSelected = (tile) => {
@@ -1843,48 +1509,6 @@ const generateHealthInsights = (events, heartRates, temperatures) => {
 
   return insights;
 };
-
-const getDefaultAnalytics = () => ({
-  totalEvents: 0,
-  activeChildren: 0,
-  avgDailyEvents: 0,
-  peakHour: 0,
-  heartRate: { average: 0, max: 0, min: 0, count: 0 },
-  temperature: { average: 0, max: 0, min: 0, count: 0 },
-  activity: { gpsCount: 0, soundCount: 0, motionCount: 0, avgSoundLevel: 0 },
-  dailyTrend: [],
-  hourlyDistribution: [],
-  eventTimeline: [],
-  sensorValues: [],
-  sensorDistribution: {
-    heartRate: 0,
-    temperature: 0,
-    spo2: 0,
-    scl: 0,
-    scr: 0,
-    respiratoryRate: 0,
-    humidity: 0,
-    gps: 0,
-    sound: 0,
-    motion: 0,
-    eda: 0,
-    hrv: 0,
-    gyro: 0,
-    magnetic: 0,
-    pressure: 0,
-    light: 0,
-    steps: 0,
-    calories: 0,
-    altitude: 0,
-    speed: 0,
-    bearing: 0,
-    accuracy: 0,
-    satellites: 0,
-  },
-  topActiveChildren: [],
-  healthInsights: [],
-  trends: { increasedActivity: 0, stableHeartRate: 0, normalTemperature: 0 },
-});
 
 // Lifecycle
 onMounted(() => {

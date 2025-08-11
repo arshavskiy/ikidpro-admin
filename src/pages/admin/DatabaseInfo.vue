@@ -41,21 +41,21 @@
         <!-- <StatisticsCard 
           label="Database Host" 
           :value="dbStatus.version" 
-          icon="fas fa-server" 
+          icon="fas fas fa-server" 
           variant="blue" 
         /> -->
 
         <StatisticsCard
           label="Total Storage"
           :value="dbStatus.storageUsed"
-          icon="fas fa-hdd"
+          icon="fas fas fa-hdd"
           variant="purple"
         />
 
         <StatisticsCard
           label="Uptime"
           :value="dbStatus.uptime"
-          icon="fas fa-clock"
+          icon="fas fas fa-clock"
           variant="yellow"
         />
       </div>
@@ -70,25 +70,25 @@
           <StatisticsCard
             :value="dbData.summary.totalDocuments"
             label="Total Documents"
-            icon="fa-file-alt"
+            icon="fas fa-file-alt"
             variant="blue"
           />
           <StatisticsCard
             :value="dbData.database.collections"
             label="Collections"
-            icon="fa-layer-group"
+            icon="fas fa-layer-group"
             variant="green"
           />
           <StatisticsCard
             :value="dbData.database.avgObjSize"
             label="Avg Object Size"
-            icon="fa-cube"
+            icon="fas fa-cube"
             variant="purple"
           />
           <StatisticsCard
             :value="dbData.database.indexSize"
             label="Index Size"
-            icon="fa-sitemap"
+            icon="fas fa-sitemap"
             variant="yellow"
           />
         </div>
@@ -654,7 +654,7 @@ const refreshCollections = async () => {
     console.log("🔄 Loading database statistics...");
     const response = await eventApi.getDBStats();
 
-    if (response.data && response.data.success) {
+    if (response.data && response.data.data) {
       dbData.value = response.data.data;
       console.log("✅ Database statistics loaded successfully");
       console.log("Database Info:", dbData.value);

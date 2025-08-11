@@ -40,6 +40,7 @@
 import { computed } from "vue";
 import VChart from "vue-echarts";
 import * as echarts from "echarts";
+import { typeToTimeline } from "../models/models";
 
 // Props
 const props = defineProps({
@@ -66,32 +67,7 @@ const props = defineProps({
   },
 });
 
-// Map event types to timeline fields and nice labels
-const typeToTimeline = {
-  HeartRate: { field: "heartRate", label: "Heart Rate", color: "#ef4444" },
-  HRV: { field: "hrv", label: "HRV", color: "#f59e0b" },
-  Sp02: { field: "spo2", label: "SpO2", color: "#06b6d4" },
-  Temperature: {
-    field: "temperature",
-    label: "Temperature",
-    color: "#3b82f6",
-  },
-  SoundLevel: {
-    field: "soundLevel",
-    label: "Sound Level",
-    color: "#8b5cf6",
-  },
-  scl: { field: "scl", label: "SCL", color: "#059669" },
-  scr: { field: "scr", label: "SCR", color: "#0ea5e9" },
-  respiratoryRate: {
-    field: "respiratoryRate",
-    label: "Respiratory Rate",
-    color: "#14b8a6",
-  },
-  humidity: { field: "humidity", label: "Humidity", color: "#3b82f6" },
-  gps: { field: "gpsCount", label: "GPS Points", color: "#10b981" },
-  motion: { field: "motionCount", label: "Motion Events", color: "#14b8a6" },
-};
+// typeToTimeline mapping imported from shared module
 
 // Effective selection for this chart: prefer multi-select when provided
 const effectiveSelectedTypes = computed(() =>
@@ -180,7 +156,6 @@ const getTimelineSeriesNames = () => {
     return effectiveSelectedTypes.value.map((t) => typeToTimeline[t].label);
   }
 
-  debugger;
   if (props.selectedEventType === "all") {
     return ["Heart Rate", "Temperature", "Sound Level", "Motion Events"];
   } else {

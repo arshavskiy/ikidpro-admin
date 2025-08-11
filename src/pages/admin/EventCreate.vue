@@ -590,44 +590,12 @@ import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import * as eventApi from "../../services/eventApi";
 import * as childUserApi from "../../services/childUserApi";
+import { defaultEventForm } from "../../models/models";
 
 const router = useRouter();
 
 // Reactive data
-const form = ref({
-  aid: "",
-  Timestamp: "",
-  HeartRate: null,
-  HRV: null,
-  Sp02: null,
-  AccelX: null,
-  AccelY: null,
-  AccelZ: null,
-  GyroX: null,
-  GyroY: null,
-  GyroZ: null,
-  EDA: null,
-  scl: null,
-  scr: null,
-  respiratoryRate: null,
-  Temperature: null,
-  SoundLevel: null,
-  humidity: null,
-  pressure: null,
-  light: null,
-  steps: null,
-  calories: null,
-  magneticX: null,
-  magneticY: null,
-  magneticZ: null,
-  latitude: null,
-  longitude: null,
-  altitude: null,
-  speed_mps: null,
-  bearing_deg: null,
-  accuracy_m: null,
-  satellites: null,
-});
+const form = ref({ ...defaultEventForm });
 
 const availableChildren = ref([]);
 const loading = ref(false);
@@ -762,40 +730,7 @@ const createEvent = async () => {
 };
 
 const resetForm = () => {
-  form.value = {
-    aid: "",
-    Timestamp: "",
-    HeartRate: null,
-    HRV: null,
-    Sp02: null,
-    AccelX: null,
-    AccelY: null,
-    AccelZ: null,
-    GyroX: null,
-    GyroY: null,
-    GyroZ: null,
-    EDA: null,
-    scl: null,
-    scr: null,
-    respiratoryRate: null,
-    Temperature: null,
-    SoundLevel: null,
-    humidity: null,
-    pressure: null,
-    light: null,
-    steps: null,
-    calories: null,
-    magneticX: null,
-    magneticY: null,
-    magneticZ: null,
-    latitude: null,
-    longitude: null,
-    altitude: null,
-    speed_mps: null,
-    bearing_deg: null,
-    accuracy_m: null,
-    satellites: null,
-  };
+  form.value = { ...defaultEventForm };
   error.value = "";
   success.value = "";
 };

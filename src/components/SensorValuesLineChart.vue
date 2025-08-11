@@ -73,6 +73,11 @@
 import { computed, ref, watch } from "vue";
 import VChart from "vue-echarts";
 import * as echarts from "echarts";
+import {
+  availableSensorOptions as AVAILABLE_SENSOR_OPTIONS,
+  sensorConfig as SENSOR_CONFIG,
+  eventTypeToSensorKey as EVENTTYPE_TO_SENSORKEY,
+} from "../models/models";
 
 // Props
 const props = defineProps({
@@ -106,22 +111,7 @@ const props = defineProps({
 const emit = defineEmits(["sensorSelectionChanged"]);
 
 // Available sensor options for multi-checkbox selection
-const availableSensorOptions = ref([
-  { value: "HeartRate", label: "Heart Rate" },
-  { value: "HRV", label: "HRV" },
-  { value: "Temperature", label: "Temperature" },
-  { value: "SoundLevel", label: "Sound Level" },
-  { value: "EDA", label: "EDA" },
-  { value: "Altitude", label: "Altitude" },
-  { value: "Speed_spm", label: "Speed" },
-  { value: "Bearing", label: "Bearing" },
-  { value: "Accuracy", label: "Accuracy" },
-  { value: "Steps", label: "Steps" },
-  { value: "Calories", label: "Calories" },
-  { value: "Pressure", label: "Pressure" },
-  { value: "Light", label: "Light Level" },
-  { value: "altitude", label: "GPS Altitude" },
-]);
+const availableSensorOptions = ref([...AVAILABLE_SENSOR_OPTIONS]);
 
 // Selected sensors (reactive)
 const selectedSensors = ref([
@@ -158,50 +148,10 @@ const clearAllSensors = () => {
 };
 
 // Sensor configuration map (shared by helpers and series builder)
-const sensorConfig = {
-  HeartRate: { field: "heartRate", color: "#ef4444", yAxisIndex: 0 },
-  HRV: { field: "hrv", color: "#f59e0b", yAxisIndex: 0 },
-  Temperature: {
-    field: ["temperatureC", "temperature"],
-    color: "#3b82f6",
-    yAxisIndex: 1,
-  },
-  SoundLevel: { field: "soundLevel", color: "#8b5cf6", yAxisIndex: 0 },
-  EDA: { field: "eda", color: "#7c3aed", yAxisIndex: 0 },
-  Altitude: { field: "altitude", color: "#0f766e", yAxisIndex: 1 },
-  // Support both "Speed" and legacy "Speed_spm" option values
-  Speed: { field: ["speed_mps", "speed"], color: "#be123c", yAxisIndex: 0 },
-  Speed_spm: {
-    field: ["speed_mps", "speed"],
-    color: "#be123c",
-    yAxisIndex: 0,
-  },
-  Bearing: { field: "bearing_deg", color: "#a21caf", yAxisIndex: 1 },
-  Accuracy: { field: "accuracy_m", color: "#9333ea", yAxisIndex: 0 },
-  Steps: { field: "steps", color: "#365314", yAxisIndex: 0 },
-  Calories: { field: "calories", color: "#92400e", yAxisIndex: 0 },
-  Pressure: { field: "pressure", color: "#581c87", yAxisIndex: 0 },
-  Light: { field: "light", color: "#fbbf24", yAxisIndex: 0 },
-};
+const sensorConfig = SENSOR_CONFIG;
 
 // Map external event type keys to our sensor keys (only those we chart)
-const eventTypeToSensorKey = {
-  HeartRate: "HeartRate",
-  HRV: "HRV",
-  Temperature: "Temperature",
-  TemperatureC: "Temperature",
-  SoundLevel: "SoundLevel",
-  altitude: "Altitude",
-  bearing_deg: "Bearing",
-  accuracy_m: "Accuracy",
-  steps: "Steps",
-  calories: "Calories",
-  pressure: "Pressure",
-  light: "Light",
-  speed_mps: "Speed_spm",
-  speed: "Speed_spm",
-  // Unsupported in this chart: Accel*, Gyro*, gps, motion, magnetic*, latitude/longitude
-};
+const eventTypeToSensorKey = EVENTTYPE_TO_SENSORKEY;
 
 // Helper: get a single sensor's value from an event item
 const getSensorValue = (sensorKey, item) => {
