@@ -119,6 +119,7 @@
         <SensorValuesLineChart
           :chart-height="276"
           :sensor-values="analytics.sensorValues"
+          :event-timeline="analytics.eventTimeline"
           :selected-event-types="quickViewSelectedEventTypes"
           :selected-time-range="selectedTimeRange"
           :event-type-options="eventTypeOptions"
@@ -150,6 +151,7 @@
 
       <SensorValuesLineChart
         :sensor-values="analytics.sensorValues"
+        :event-timeline="analytics.eventTimeline"
         :selected-event-type="selectedEventType"
         :selected-event-types="selectedEventTypes"
         :selected-time-range="selectedTimeRange"
@@ -599,66 +601,7 @@ const dropdownEventTypeOptions = computed(() => {
 
   return [allOption, noneOption, ...items];
 });
-const analytics = ref({
-  totalEvents: 0,
-  activeChildren: 0,
-  avgDailyEvents: 0,
-  peakHour: 0,
-  heartRate: {
-    average: 0,
-    max: 0,
-    min: 0,
-    count: 0,
-  },
-  temperature: {
-    average: 0,
-    max: 0,
-    min: 0,
-    count: 0,
-  },
-  activity: {
-    gpsCount: 0,
-    soundCount: 0,
-    motionCount: 0,
-    avgSoundLevel: 0,
-  },
-  dailyTrend: [],
-  hourlyDistribution: [],
-  eventTimeline: [],
-  sensorValues: [],
-  sensorDistribution: {
-    heartRate: 0,
-    temperature: 0,
-    spo2: 0,
-    scl: 0,
-    scr: 0,
-    respiratoryRate: 0,
-    humidity: 0,
-    gps: 0,
-    sound: 0,
-    motion: 0,
-    eda: 0,
-    hrv: 0,
-    gyro: 0,
-    magnetic: 0,
-    pressure: 0,
-    light: 0,
-    steps: 0,
-    calories: 0,
-    altitude: 0,
-    speed: 0,
-    bearing: 0,
-    accuracy: 0,
-    satellites: 0,
-  },
-  topActiveChildren: [],
-  healthInsights: [],
-  trends: {
-    increasedActivity: 0,
-    stableHeartRate: 0,
-    normalTemperature: 0,
-  },
-});
+const analytics = ref(getDefaultAnalytics);
 
 // Build distribution tiles from available analytics distribution (always visible)
 const distributionTiles = computed(() => {
@@ -984,8 +927,8 @@ const eventHasType = (event, type) => {
       return event.steps !== null && event.steps !== undefined;
     case "calories":
       return event.calories !== null && event.calories !== undefined;
-    case "speed":
-      return event.speed !== null && event.speed !== undefined;
+    case "speed_mps":
+      return event.speed_mps !== null && event.speed_mps !== undefined;
     case "magneticX":
       return event.magneticX !== null && event.magneticX !== undefined;
     case "magneticY":
@@ -1000,6 +943,10 @@ const eventHasType = (event, type) => {
       return event.latitude && event.longitude;
     case "motion":
       return event.AccelX || event.AccelY || event.AccelZ;
+    case "mood":
+      return (
+        event.mood !== null && event.mood !== undefined && event.mood !== ""
+      );
     default:
       return true;
   }
@@ -1093,6 +1040,7 @@ const calculateAnalytics = (events) => {
   const caloriesEvents = events.filter((e) => e.calories).length;
   const altitudeEvents = events.filter((e) => e.altitude).length;
   const speedEvents = events.filter((e) => e.speed_mps || e.speed).length;
+  const moodEvents = events.filter((e) => e.mood || e.mood).length;
   const bearingEvents = events.filter((e) => e.bearing_deg).length;
   const accuracyEvents = events.filter((e) => e.accuracy_m).length;
   const satellitesEvents = events.filter((e) => e.satellites).length;
@@ -1137,6 +1085,14 @@ const calculateAnalytics = (events) => {
     heartRates,
     temperatures
   );
+
+  // Calculate moodCount summary for sensorDistribution (per mood label)
+  let moodCountEnum = {};
+  for (const event of events) {
+    if (event.mood && event.mood !== "") {
+      moodCountEnum[event.mood] = (moodCountEnum[event.mood] || 0) + 1;
+    }
+  }
 
   return {
     totalEvents,
@@ -1231,6 +1187,7 @@ const calculateAnalytics = (events) => {
         totalEvents > 0
           ? Math.round((satellitesEvents / totalEvents) * 100)
           : 0,
+      mood: moodEvents,
     },
     topActiveChildren: childrenActivity,
     healthInsights,
@@ -1288,6 +1245,15 @@ const calculateEventTimeline = (events, days) => {
     const motionEvents = periodEvents.filter(
       (e) => e.AccelX || e.AccelY || e.AccelZ
     );
+
+    // Calculate mood count as an object of mood label counts (enum)
+    const moodEvents = periodEvents.filter((e) => e.mood && e.mood !== "");
+    const moodCount = {};
+    for (const e of moodEvents) {
+      if (e.mood) {
+        moodCount[e.mood] = (moodCount[e.mood] || 0) + 1;
+      }
+    }
 
     timeline.push({
       timestamp: endTime.toISOString(),
@@ -1359,6 +1325,7 @@ const calculateEventTimeline = (events, days) => {
           : 0,
       gpsCount: gpsEvents.length,
       motionCount: motionEvents.length,
+      moodCount,
     });
   }
 

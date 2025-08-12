@@ -49,7 +49,10 @@
       Sensor Values Over Time
     </h3> -->
     <div
-      v-if="filteredChartData && filteredChartData.length > 0"
+      v-if="
+        (isMoodMode && eventTimeline && eventTimeline.length > 0) ||
+        (!isMoodMode && filteredChartData && filteredChartData.length > 0)
+      "
       :style="{ height: chartHeight + 'px' }"
     >
       <v-chart :option="sensorValuesChartOption" :autoresize="true" />
@@ -98,6 +101,11 @@ const props = defineProps({
     default: 30,
   },
   eventTypeOptions: {
+    type: Array,
+    default: () => [],
+  },
+  // Use pre-aggregated timeline buckets for categorical series like mood
+  eventTimeline: {
     type: Array,
     default: () => [],
   },
@@ -201,92 +209,173 @@ const filteredChartData = computed(() => {
   );
 });
 
+// Mood mode: when only "mood" is selected, render a categorical count series using timeline buckets
+const isMoodMode = computed(() =>
+  Array.isArray(effectiveSelectedSensors.value)
+    ? effectiveSelectedSensors.value.length === 1 &&
+      effectiveSelectedSensors.value.includes("mood")
+    : false
+);
+const moodTimeline = computed(() =>
+  Array.isArray(props.eventTimeline) ? props.eventTimeline : []
+);
+const moodXAxis = computed(() =>
+  moodTimeline.value.map((item) =>
+    new Date(item.timestamp).toLocaleTimeString("en-US", {
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    })
+  )
+);
+const moodSeries = computed(() => {
+  const labelSet = new Set();
+  for (const pt of moodTimeline.value) {
+    const mc = pt?.moodCount || {};
+    for (const k of Object.keys(mc)) labelSet.add(k);
+  }
+  const labels = Array.from(labelSet);
+  return labels.map((label) => ({
+    name: label,
+    type: "line",
+    smooth: true,
+    data: moodTimeline.value.map((pt) => pt?.moodCount?.[label] ?? 0),
+    connectNulls: true,
+    lineStyle: { width: 2 },
+  }));
+});
+
 // Computed properties for ECharts options
-const sensorValuesChartOption = computed(() => ({
-  // title: {
-  //   text: `${
-  //     effectiveSelectedSensors.value.length === 0
-  //       ? "No Sensors Selected"
-  //       : effectiveSelectedSensors.value.length ===
-  //         availableSensorOptions.value.length
-  //       ? "All Sensors"
-  //       : effectiveSelectedSensors.value.length > 3
-  //       ? ``
-  //       : effectiveSelectedSensors.value
-  //           .map((sensorValue) => {
-  //             const sensor = availableSensorOptions.value.find(
-  //               (s) => s.value === sensorValue
-  //             );
-  //             return sensor ? sensor.label : sensorValue;
-  //           })
-  //           .join(", ")
-  //   }`,
-  //   left: "center",
-  //   textStyle: {
-  //     fontSize: 16,
-  //     fontWeight: "bold",
-  //   },
-  // },
-  tooltip: {
-    trigger: "axis",
-    axisPointer: {
-      type: "cross",
-      label: {
-        backgroundColor: "#6a7985",
-      },
-    },
-    formatter: (params) => {
-      let result = `${params?.[0]?.axisValue || ""}<br/>`;
-      params
-        .filter((p) => p.value !== null && p.value !== undefined)
-        .forEach((param) => {
-          const unit = getSensorUnit(param.seriesName);
-          result += `${param.seriesName}: ${param.value}${unit}<br/>`;
-        });
-      return result;
-    },
-  },
-  legend: {
-    data: getSensorValuesSeriesNames(),
-    top: 30,
-  },
-  grid: {
-    left: "3%",
-    right: "4%",
-    bottom: "3%",
-    top: "15%",
-    containLabel: true,
-  },
-  xAxis: {
-    type: "category",
-    boundaryGap: false,
-    data: filteredChartData.value.map((item) =>
-      new Date(item.timestamp).toLocaleTimeString("en-US", {
-        month: "short",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      })
-    ),
-    axisLabel: {
-      rotate: props.selectedTimeRange > 30 ? 45 : 0,
-      fontSize: 12,
-    },
-  },
-  yAxis: getSensorValuesYAxis(),
-  series: getSensorValuesSeries(),
-  dataZoom:
-    filteredChartData.value.length > 50
-      ? [
-          {
-            type: "slider",
-            show: true,
-            start: 70,
-            end: 100,
+const sensorValuesChartOption = computed(() =>
+  isMoodMode.value
+    ? {
+        tooltip: {
+          trigger: "axis",
+          axisPointer: {
+            type: "cross",
+            label: { backgroundColor: "#6a7985" },
           },
-        ]
-      : [],
-}));
+          formatter: (params) => {
+            let result = `${params?.[0]?.axisValue || ""}<br/>`;
+            params
+              .filter((p) => p.value !== null && p.value !== undefined)
+              .forEach((param) => {
+                result += `${param.seriesName}: ${param.value}<br/>`;
+              });
+            return result;
+          },
+        },
+        legend: { data: moodSeries.value.map((s) => s.name), top: 30 },
+        grid: {
+          left: "3%",
+          right: "4%",
+          bottom: "3%",
+          top: "15%",
+          containLabel: true,
+        },
+        xAxis: {
+          type: "category",
+          boundaryGap: false,
+          data: moodXAxis.value,
+          axisLabel: {
+            rotate: props.selectedTimeRange > 30 ? 45 : 0,
+            fontSize: 12,
+          },
+        },
+        yAxis: { type: "value", name: "Mood Count" },
+        series: moodSeries.value,
+        dataZoom:
+          moodTimeline.value.length > 50
+            ? [{ type: "slider", show: true, start: 70, end: 100 }]
+            : [],
+      }
+    : {
+        // title: {
+        //   text: `${
+        //     effectiveSelectedSensors.value.length === 0
+        //       ? "No Sensors Selected"
+        //       : effectiveSelectedSensors.value.length ===
+        //         availableSensorOptions.value.length
+        //       ? "All Sensors"
+        //       : effectiveSelectedSensors.value.length > 3
+        //       ? ``
+        //       : effectiveSelectedSensors.value
+        //           .map((sensorValue) => {
+        //             const sensor = availableSensorOptions.value.find(
+        //               (s) => s.value === sensorValue
+        //             );
+        //             return sensor ? sensor.label : sensorValue;
+        //           })
+        //           .join(", ")
+        //   }`,
+        //   left: "center",
+        //   textStyle: {
+        //     fontSize: 16,
+        //     fontWeight: "bold",
+        //   },
+        // },
+        tooltip: {
+          trigger: "axis",
+          axisPointer: {
+            type: "cross",
+            label: {
+              backgroundColor: "#6a7985",
+            },
+          },
+          formatter: (params) => {
+            let result = `${params?.[0]?.axisValue || ""}<br/>`;
+            params
+              .filter((p) => p.value !== null && p.value !== undefined)
+              .forEach((param) => {
+                const unit = getSensorUnit(param.seriesName);
+                result += `${param.seriesName}: ${param.value}${unit}<br/>`;
+              });
+            return result;
+          },
+        },
+        legend: {
+          data: getSensorValuesSeriesNames(),
+          top: 30,
+        },
+        grid: {
+          left: "3%",
+          right: "4%",
+          bottom: "3%",
+          top: "15%",
+          containLabel: true,
+        },
+        xAxis: {
+          type: "category",
+          boundaryGap: false,
+          data: filteredChartData.value.map((item) =>
+            new Date(item.timestamp).toLocaleTimeString("en-US", {
+              month: "short",
+              day: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            })
+          ),
+          axisLabel: {
+            rotate: props.selectedTimeRange > 30 ? 45 : 0,
+            fontSize: 12,
+          },
+        },
+        yAxis: getSensorValuesYAxis(),
+        series: getSensorValuesSeries(),
+        dataZoom:
+          filteredChartData.value.length > 50
+            ? [
+                {
+                  type: "slider",
+                  show: true,
+                  start: 70,
+                  end: 100,
+                },
+              ]
+            : [],
+      }
+);
 
 // Helper functions for sensor values chart
 const getSensorValuesSeriesNames = () => {
@@ -422,6 +511,8 @@ const getSensorValuesSeries = () => {
 
   return effectiveSelectedSensors.value
     .map((sensorValue) => {
+      // Skip mood in default numeric series; mood uses a separate categorical mode
+      if (sensorValue === "mood") return null;
       const config = sensorConfig[sensorValue];
       if (!config) return null;
 

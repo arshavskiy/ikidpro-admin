@@ -42,6 +42,7 @@ export const eventTypeOptions = [
   { value: "magneticZ", label: "Magnetometer Z" },
   { value: "pressure", label: "Pressure" },
   { value: "light", label: "Light Level" },
+  { value: "mood", label: "Mood" },
   { value: "gps", label: "GPS Location" },
   { value: "motion", label: "Motion/Acceleration" },
 ];
@@ -170,6 +171,14 @@ export const distributionMap = {
     bgClass: "bg-yellow-50",
     barClass: "bg-yellow-600",
   },
+  mood: {
+    distKey: "mood",
+    label: "Mood",
+    icon: "fa-smile",
+    iconClass: "text-pink-600",
+    bgClass: "bg-pink-50",
+    barClass: "bg-pink-600",
+  },
   steps: {
     distKey: "steps",
     label: "Steps",
@@ -230,6 +239,7 @@ export const distKeyToEventTypes = {
   magnetic: ["magneticX", "magneticY", "magneticZ"],
   pressure: ["pressure"],
   light: ["light"],
+  mood: ["mood"],
   steps: ["steps"],
   calories: ["calories"],
   altitude: ["altitude"],
@@ -240,14 +250,29 @@ export const distKeyToEventTypes = {
 };
 
 // Default analytics shape
-export const getDefaultAnalytics = () => ({
+export const getDefaultAnalytics = {
   totalEvents: 0,
   activeChildren: 0,
   avgDailyEvents: 0,
   peakHour: 0,
-  heartRate: { average: 0, max: 0, min: 0, count: 0 },
-  temperature: { average: 0, max: 0, min: 0, count: 0 },
-  activity: { gpsCount: 0, soundCount: 0, motionCount: 0, avgSoundLevel: 0 },
+  heartRate: {
+    average: 0,
+    max: 0,
+    min: 0,
+    count: 0,
+  },
+  temperature: {
+    average: 0,
+    max: 0,
+    min: 0,
+    count: 0,
+  },
+  activity: {
+    gpsCount: 0,
+    soundCount: 0,
+    motionCount: 0,
+    avgSoundLevel: 0,
+  },
   dailyTrend: [],
   hourlyDistribution: [],
   eventTimeline: [],
@@ -263,6 +288,7 @@ export const getDefaultAnalytics = () => ({
     gps: 0,
     sound: 0,
     motion: 0,
+    mood: {},
     eda: 0,
     hrv: 0,
     gyro: 0,
@@ -279,8 +305,12 @@ export const getDefaultAnalytics = () => ({
   },
   topActiveChildren: [],
   healthInsights: [],
-  trends: { increasedActivity: 0, stableHeartRate: 0, normalTemperature: 0 },
-});
+  trends: {
+    increasedActivity: 0,
+    stableHeartRate: 0,
+    normalTemperature: 0,
+  },
+};
 
 // API endpoint definitions
 export const userEndpoints = [
@@ -443,6 +473,7 @@ export const samples = ref({
       EDA: 2.5,
       Temperature: 36.7,
       SoundLevel: 45,
+      mood: "active",
       latitude: 40.7128,
       longitude: -74.006,
       altitude: 10,
@@ -480,6 +511,7 @@ export const defaultEventForm = {
   humidity: null,
   pressure: null,
   light: null,
+  mood: null,
   steps: null,
   calories: null,
   magneticX: null,
@@ -863,6 +895,7 @@ export const availableSensorOptions = [
   { value: "Calories", label: "Calories" },
   { value: "Pressure", label: "Pressure" },
   { value: "Light", label: "Light Level" },
+  { value: "mood", label: "Mood" },
   { value: "altitude", label: "GPS Altitude" },
 ];
 
@@ -885,6 +918,7 @@ export const sensorConfig = {
   Calories: { field: "calories", color: "#92400e", yAxisIndex: 0 },
   Pressure: { field: "pressure", color: "#581c87", yAxisIndex: 0 },
   Light: { field: "light", color: "#fbbf24", yAxisIndex: 0 },
+  mood: { field: "mood", color: "#ec4899", yAxisIndex: 0 },
 };
 
 export const eventTypeToSensorKey = {
@@ -900,8 +934,8 @@ export const eventTypeToSensorKey = {
   calories: "Calories",
   pressure: "Pressure",
   light: "Light",
+  mood: "mood",
   speed_mps: "Speed_spm",
-  speed: "Speed_spm",
 };
 
 // EventDataTimeline mapping
@@ -919,6 +953,7 @@ export const typeToTimeline = {
     color: "#14b8a6",
   },
   humidity: { field: "humidity", label: "Humidity", color: "#3b82f6" },
+  mood: { field: "mood", label: "Mood", color: "#ec4899" },
   gps: { field: "gpsCount", label: "GPS Points", color: "#10b981" },
   motion: { field: "motionCount", label: "Motion Events", color: "#14b8a6" },
 };
@@ -972,6 +1007,7 @@ export const csvTemplates = {
       "magneticZ",
       "pressure",
       "light",
+      "mood",
       "steps",
       "calories",
       "latitude",
@@ -1006,6 +1042,7 @@ export const csvTemplates = {
       "0.03",
       "1013.2",
       "250",
+      "active",
       "1200",
       "80",
       "40.7128",
