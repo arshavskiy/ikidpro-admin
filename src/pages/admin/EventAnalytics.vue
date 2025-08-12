@@ -9,22 +9,24 @@
         </p> -->
       </div>
       <div class="flex items-center space-x-2">
-        <!-- parent filter -->
+        <!-- parent filter (multi-select) -->
         <n-select
-          v-model:value="selectedParentId"
+          multiple
+          v-model:value="selectedParentIds"
           @update:value="onParentChange"
           :options="parentOptions"
-          placeholder="Select Parent"
-          :style="{ minWidth: '200px' }"
+          placeholder="Select Parents"
+          :style="{ minWidth: '240px' }"
         />
 
-        <!-- child filter -->
+        <!-- child filter (multi-select) -->
         <n-select
-          v-model:value="selectedChildId"
-          @update:value="loadAnalytics"
+          multiple
+          v-model:value="selectedChildIds"
+          @update:value="onChildChange"
           :options="childOptions"
-          placeholder="Select Child"
-          :style="{ minWidth: '200px' }"
+          placeholder="Select Children"
+          :style="{ minWidth: '240px' }"
         />
         <!-- date range filter -->
         <n-date-picker
@@ -178,7 +180,7 @@
       <!-- GPS Activity Map -->
       <GpsActivityMap
         :gps-events="gpsEventsForMap"
-        :selected-child-id="selectedChildId"
+        :selected-child-id="selectedChildIds"
       />
 
       <!-- Health Metrics Overview -->
@@ -513,8 +515,10 @@ const loading = ref(false);
 const selectedTimeRange = ref("30");
 const selectedEventType = ref("all");
 const selectedEventTypes = ref([]);
-const selectedChildId = ref("all");
-const selectedParentId = ref("all");
+// Support selecting multiple children; 'all' sentinel means no child filter
+const selectedChildIds = ref(["all"]);
+// Support selecting multiple parents; 'all' sentinel means no parent filter
+const selectedParentIds = ref(["all"]);
 // [start, end] timestamps in ms for custom date range
 const selectedDateRange = ref(null);
 const availableChildren = ref([]);
@@ -542,12 +546,14 @@ const parentOptions = computed(() => {
 
 // Child options computed from available children and selected parent
 const childOptions = computed(() => {
-  const source =
-    selectedParentId.value === "all"
-      ? availableChildren.value
-      : availableChildren.value.filter(
-          (cid) => childParentMap.value[cid] === selectedParentId.value
-        );
+  const sel = selectedParentIds.value || [];
+  const useAll = sel.length === 0 || sel.includes("all");
+  const selectedSet = new Set(sel);
+  const source = useAll
+    ? availableChildren.value
+    : availableChildren.value.filter((cid) =>
+        selectedSet.has(childParentMap.value[cid])
+      );
   return [
     { label: "All Children", value: "all" },
     ...source.map((childId) => ({
@@ -739,11 +745,11 @@ const loadAnalytics = async () => {
     }
     let allEvents = response.data || [];
 
-    // Apply parent filter to events if a parent is selected
-    if (selectedParentId.value !== "all") {
-      allEvents = allEvents.filter(
-        (e) => e.parentId && e.parentId === selectedParentId.value
-      );
+    // Apply parent filter to events if specific parents are selected
+    const selParents = selectedParentIds.value || [];
+    if (selParents.length > 0 && !selParents.includes("all")) {
+      const pset = new Set(selParents);
+      allEvents = allEvents.filter((e) => e.parentId && pset.has(e.parentId));
     }
 
     // Get unique children for selector
@@ -800,10 +806,10 @@ const loadAnalytics = async () => {
     }
 
     // Filter by child ID
-    if (selectedChildId.value !== "all") {
-      filteredEvents = filteredEvents.filter(
-        (event) => event.aid === selectedChildId.value
-      );
+    const selChildren = selectedChildIds.value || [];
+    if (selChildren.length > 0 && !selChildren.includes("all")) {
+      const cset = new Set(selChildren);
+      filteredEvents = filteredEvents.filter((event) => cset.has(event.aid));
     }
 
     // Store GPS events for the map (include all GPS events regardless of other filters)
@@ -839,9 +845,10 @@ const loadAnalytics = async () => {
     }
 
     // Apply child filter to GPS events if selected
-    if (selectedChildId.value !== "all") {
-      allEventsWithGps.value = allEventsWithGps.value.filter(
-        (event) => event.aid === selectedChildId.value
+    if (selChildren.length > 0 && !selChildren.includes("all")) {
+      const cset = new Set(selChildren);
+      allEventsWithGps.value = allEventsWithGps.value.filter((event) =>
+        cset.has(event.aid)
       );
     }
 
@@ -954,7 +961,29 @@ const eventHasType = (event, type) => {
 
 // When parent changes, reset child to 'all' and reload analytics
 const onParentChange = () => {
-  selectedChildId.value = "all";
+  // Normalize selection: if 'all' is selected alongside others, drop 'all'
+  if (
+    Array.isArray(selectedParentIds.value) &&
+    selectedParentIds.value.includes("all") &&
+    selectedParentIds.value.length > 1
+  ) {
+    selectedParentIds.value = selectedParentIds.value.filter(
+      (v) => v !== "all"
+    );
+  }
+  selectedChildIds.value = ["all"];
+  loadAnalytics();
+};
+
+// When child selection changes, normalize 'all' and reload
+const onChildChange = () => {
+  if (
+    Array.isArray(selectedChildIds.value) &&
+    selectedChildIds.value.includes("all") &&
+    selectedChildIds.value.length > 1
+  ) {
+    selectedChildIds.value = selectedChildIds.value.filter((v) => v !== "all");
+  }
   loadAnalytics();
 };
 

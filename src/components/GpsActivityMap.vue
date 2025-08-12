@@ -165,7 +165,7 @@ const props = defineProps({
     default: () => [],
   },
   selectedChildId: {
-    type: String,
+    type: [String, Array],
     default: "all",
   },
 });

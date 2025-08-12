@@ -136,6 +136,7 @@ const selectedSensors = ref([
   "Pressure",
   "Calories",
   "Bearing",
+  "Sp02",
 ]);
 
 // Methods for sensor selection
@@ -408,6 +409,13 @@ const getSensorUnit = (seriesName) => {
       return " °/s";
     case "EDA":
       return " μS";
+    case "SpO2":
+    case "Sp02":
+      return " %";
+    case "SCL":
+      return " μS";
+    case "SCR":
+      return " μS";
     case "GPS Latitude":
     case "GPS Longitude":
       return "°";
@@ -433,6 +441,8 @@ const getSensorUnit = (seriesName) => {
       return " hPa";
     case "Light Level":
       return " lux";
+    case "Motion/Acceleration":
+      return " g";
     default:
       return "";
   }
@@ -532,12 +542,24 @@ const getSensorValuesSeries = () => {
         yAxisIndex = 1;
       }
 
+      // Build data array with optional transform for motion magnitude
+      let dataArr = chartData.map((item) => getSensorValue(sensorValue, item));
+      if (sensorValue === "motion") {
+        dataArr = chartData.map((item) => {
+          const ax = item?.accelX ?? item?.AccelX ?? 0;
+          const ay = item?.accelY ?? item?.AccelY ?? 0;
+          const az = item?.accelZ ?? item?.AccelZ ?? 0;
+          const mag = Math.sqrt(ax * ax + ay * ay + az * az);
+          return mag || null;
+        });
+      }
+
       return {
         name: seriesName,
         type: "line",
         yAxisIndex,
         smooth: true,
-        data: chartData.map((item) => getSensorValue(sensorValue, item)),
+        data: dataArr,
         itemStyle: { color: config.color },
         lineStyle: { width: 2 },
         connectNulls: false,
