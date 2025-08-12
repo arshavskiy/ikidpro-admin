@@ -137,6 +137,7 @@ const selectedSensors = ref([
   "Calories",
   "Bearing",
   "Sp02",
+  "Humidity",
 ]);
 
 // Methods for sensor selection
@@ -399,6 +400,8 @@ const getSensorUnit = (seriesName) => {
       return "°C";
     case "Sound Level":
       return " dB";
+    case "Humidity":
+      return " %";
     case "Accel X":
     case "Accel Y":
     case "Accel Z":

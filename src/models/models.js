@@ -891,6 +891,7 @@ export const availableSensorOptions = [
   { value: "scr", label: "SCR" },
   { value: "motion", label: "Motion/Acceleration" },
   { value: "Sp02", label: "Sp02" },
+  { value: "Humidity", label: "Humidity" },
   { value: "Altitude", label: "Altitude" },
   { value: "Speed_spm", label: "Speed" },
   { value: "Bearing", label: "Bearing" },
@@ -914,6 +915,7 @@ export const sensorConfig = {
   SoundLevel: { field: "soundLevel", color: "#8b5cf6", yAxisIndex: 0 },
   EDA: { field: "eda", color: "#7c3aed", yAxisIndex: 0 },
   Sp02: { field: ["spo2", "Sp02"], color: "#7c3aed", yAxisIndex: 0 },
+  Humidity: { field: "humidity", color: "#06b6d4", yAxisIndex: 0 },
   scl: { field: "scl", color: "#059669", yAxisIndex: 0 },
   scr: { field: "scr", color: "#0ea5e9", yAxisIndex: 0 },
   motion: {
@@ -941,6 +943,7 @@ export const eventTypeToSensorKey = {
   TemperatureC: "Temperature",
   SoundLevel: "SoundLevel",
   EDA: "EDA",
+  humidity: "Humidity",
   scl: "scl",
   scr: "scr",
   motion: "motion",
