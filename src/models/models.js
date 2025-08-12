@@ -622,6 +622,11 @@ export const menuOptions = [
         icon: () => h("i", { class: "fas fa-file-download" }),
       },
       {
+        label: "Rules Engine",
+        key: "/admin/data/rules",
+        icon: () => h("i", { class: "fas fa-project-diagram" }),
+      },
+      {
         label: "Waitlist Management",
         key: "/admin/waitlist",
         icon: () => h("i", { class: "fas fa-clipboard-list" }),
@@ -849,6 +854,11 @@ export const appRoutes = [
         path: "data/export",
         name: "DataExport",
         component: () => import("../pages/admin/DataExport.vue"),
+      },
+      {
+        path: "data/rules",
+        name: "RulesEngine",
+        component: () => import("../pages/admin/rules/RulesEngine.vue"),
       },
       {
         path: "waitlist",

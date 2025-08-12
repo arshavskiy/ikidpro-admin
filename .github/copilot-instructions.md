@@ -1,82 +1,117 @@
-# Javascript"
+# Copilot Instructions – Vue 3 Composition API + NaiveUI + Vite
 
-This project uses JavaScript with the following styles:
+These guidelines tell GitHub Copilot how to suggest code in this project.
 
-- All models will be classes with singular naming (i.e. `User` for the `users` table)
-- All code files will be lower case with underscores.
-- Markdown files will be lower case with hyphens.
-- All application logic will go in the `lib` directory
-- All configuration will be done with environment variables, using a `.env` file.
-- Do not export a class directly, use module method instead to create the instance you need (aka \"factory\")
+## General Rules
 
-## Sequelize"
+- Use **Vue 3 Composition API** (`<script setup>`).
+- Always import UI components from **NaiveUI** (https://www.naiveui.com).
+- Follow the **Vite** project structure:
+  src/
+  components/
+  pages/
+  composables/
+  services/
+  assets/
+  styles/
 
-All model code should adhere to the following:
+php-template
+Copy
+Edit
 
-- All database models will go in a `db/models` directory.
-- Every model will have a `tableName` setting"
-- The models will have an `index.js` module that instantiates Sequelize, using SQLite for testing and development, Postgres for production.
-- The `index.js` module will export each model, as well as the database instance.
+- Use **TypeScript** for all `.vue` and `.ts` files.
+- Use **PascalCase** for component filenames and names.
+- Use **camelCase** for variables and functions.
 
-Every model will follow the pattern:
+---
 
-- js
-- const { DataTypes, Model } = require('sequelize');",
-- class User extends Model
+## Components
 
-exports.init = function(sequelize)
+- Components go in `src/components`.
+- Must use `<script setup lang="ts">`.
+- Props are typed using `defineProps<{ ... }>()`.
+- Events use `defineEmits<{ (e: 'update', payload: Type): void }>()`.
+- Style components with **Tailwind CSS** classes when possible; otherwise use scoped CSS.
 
-# KidPro API - AI Coding Agent Instructions
+Example:
 
-## Database"
+```vue
+<template>
+  <n-card class="p-4">
+    <n-input v-model:value="username" placeholder="Enter name" />
+  </n-card>
+</template>
 
-- Database tables will be lower cased using underscores.
-- Every table will have an integer primary key called `id`.
-- `users` will not store passwords, only social login information as well as magic email links.
-- `char`, `varchar` and `nvarchar` are never to be used for string fields, only `text`.
-- Every table should have `created_at` and `updated_at` timestamps.",
-- Many to Many relationships will have compound primary keys, never a single ID with compound unique.
+<script setup lang="ts">
+import { ref } from "vue";
+import { NCard, NInput } from "naive-ui";
 
-## Architecture Overview
+const username = ref("");
+</script>
+```
 
-**KidPro API** is a comprehensive Node.js/Express REST API for child monitoring and safety tracking, deployed in production with nginx reverse proxy and SSL termination.
+# NaiveUI Usage
 
-### Core Components
+-Import only the components needed in each file:
+-import { NButton, NModal } from 'naive-ui'
+-Prefer NaiveUI layouts over raw HTML for consistent styling.
 
-- **Event Data System**: Biometric sensor data collection via `/api/event/*` (MongoDB: `child_events_db`)
-- **User Management**: Parent authentication via `/api/user/*` + `/api/auth/*` (MongoDB: `user_reg_db`)
-- **Child Profiles**: Child user management via `/api/child-users/*` (MongoDB: `child_info_db`)
-- **Admin Panel**: Role-based admin system via `/api/admin/*` (MongoDB: `admin`)
-- **Waitlist System**: Email collection for product updates via `/api/waitlist` (MongoDB: `emailing_list`)
+- Use n-grid and n-gi for responsive layouts.
 
-### Production Environment
+# State Management
 
-- **Domain**: `https://api.watchforme.com` (primary API) + `https://admin.watchforme.com` (admin panel)
-- **Reverse Proxy**: nginx with Let's Encrypt SSL certificates (`/etc/letsencrypt/live/watchforme.com/`)
-- **Database**: MongoDB Atlas cluster with replica set configuration
-- **Server**: DigitalOcean droplet with PM2 process management
+- Use Pinia for global state.
+- Store files go in src/stores/ with useXStore naming.
+- Persist state with pinia-plugin-persistedstate when needed.
 
-## Development Patterns
+# API Calls
 
-### ES Modules Architecture
+- All API requests go in src/services/.
+- Use fetch or axios wrapped in reusable functions.
+- Always return typed responses.
 
-- **Import style**: `import { router } from "./routes/event.js"` (never CommonJS)
-- **File extensions**: Always use `.js` extensions in imports
-- **Package.json**: `"type": "module"` - entire project uses ES modules
+# Best Practices
 
-### Authentication Flow
+- DRY: Extract repeated logic into composables or components.
+- Keep components small and focused (max ~150 lines).
+- Avoid in-template business logic; compute values in <script setup> or computed properties.
+- Use v-for keys that are unique and stable.
+- Use defineExpose only when absolutely necessary.
 
-```javascript
-// Standard pattern for protected routes
-import auth from "../middleware/auth.js";
-router.get("/protected", auth, controller.method);
+# Copilot Hints
 
-// Admin routes use separate auth
-import { adminAuth, superAdminOnly } from "../middleware/adminAuth.js";
-router.get("/admin-only", adminAuth, superAdminOnly, controller.method);
+- When asking Copilot for help:
+- Specify Vue 3 Composition API explicitly.
+- Mention NaiveUI components you want.
+- Tell Copilot to "generate DRY reusable composables" for shared logic.
+- Give it sample data formats when generating forms or tables.
+- If generating forms, request NaiveUI <n-form> + validation rules.
 
-// Public routes (like waitlist) don't require auth
-router.post("/public", controller.method);
+# Composable for fetching data
+
+- Place reusable logic in src/composables.
+- Naming: useThing.ts (e.g., useFetch.ts).
+- Always type function return values.
+
+```
+// src/composables/useFetch.ts
+import { ref } from 'vue'
+
+export function useFetch<T>(url: string) {
+  const data = ref<T | null>(null)
+  const error = ref<string | null>(null)
+
+  async function fetchData() {
+    try {
+      const res = await fetch(url)
+      data.value = await res.json()
+    } catch (err) {
+      error.value = String(err)
+    }
+  }
+
+  return { data, error, fetchData }
+}
 ```
 
 ### MongoDB Schema Patterns
