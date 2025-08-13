@@ -15,11 +15,11 @@ These guidelines tell GitHub Copilot how to suggest code in this project.
   assets/
   styles/
 
-php-template
-Copy
-Edit
+  - create alway a vue file for each component in `src/components/`.\
+  - create composables in `src/composables/` for reusable logic.
+  - create services in `src/services/` for API calls.
+  - cereate pages in `src/pages/` for route components.
 
-- Use **TypeScript** for all `.vue` and `.ts` files.
 - Use **PascalCase** for component filenames and names.
 - Use **camelCase** for variables and functions.
 
@@ -28,9 +28,9 @@ Edit
 ## Components
 
 - Components go in `src/components`.
-- Must use `<script setup lang="ts">`.
-- Props are typed using `defineProps<{ ... }>()`.
-- Events use `defineEmits<{ (e: 'update', payload: Type): void }>()`.
+- Must use `<script setup>`.
+- Use **NaiveUI** components (e.g., `<n-button>`, `<n-card>`).
+  - create controllers in `src/controllers/` for handling business logic.
 - Style components with **Tailwind CSS** classes when possible; otherwise use scoped CSS.
 
 Example:

@@ -65,6 +65,37 @@ export const shouldHideEventType = (val) => {
   );
 };
 
+// Body metrics suitable for rules engine and thresholds
+export const bodyMetricOptions = [
+  { label: "Heart Rate (bpm)", value: "HeartRate" },
+  { label: "Heart Rate Variability", value: "HRV" },
+  { label: "SpO2 (%)", value: "Sp02" },
+  { label: "Temperature (°C)", value: "Temperature" },
+  { label: "Electrodermal Activity (μS)", value: "EDA" },
+  { label: "Skin Conductance Level", value: "scl" },
+  { label: "Skin Conductance Response", value: "scr" },
+  { label: "Respiratory Rate (breaths/min)", value: "respiratoryRate" },
+  { label: "Sound Level (dB)", value: "SoundLevel" },
+  { label: "Humidity (%)", value: "humidity" },
+  { label: "Pressure (hPa)", value: "pressure" },
+  { label: "Light Level (lux)", value: "light" },
+  { label: "Steps", value: "steps" },
+  { label: "Calories", value: "calories" },
+  { label: "Accelerometer X (g)", value: "AccelX" },
+  { label: "Accelerometer Y (g)", value: "AccelY" },
+  { label: "Accelerometer Z (g)", value: "AccelZ" },
+  { label: "Gyroscope X (°/s)", value: "GyroX" },
+  { label: "Gyroscope Y (°/s)", value: "GyroY" },
+  { label: "Gyroscope Z (°/s)", value: "GyroZ" },
+  { label: "Magnetometer X (μT)", value: "magneticX" },
+  { label: "Magnetometer Y (μT)", value: "magneticY" },
+  { label: "Magnetometer Z (μT)", value: "magneticZ" },
+  { label: "GPS Altitude (m)", value: "altitude" },
+  { label: "Speed (m/s)", value: "speed_mps" },
+  { label: "GPS Accuracy (m)", value: "accuracy_m" },
+  { label: "Satellites Count", value: "satellites" },
+];
+
 // Mapping from event type to distribution category and presentation
 export const distributionMap = {
   HeartRate: {
@@ -541,24 +572,14 @@ export const menuOptions = [
     ],
   },
   {
-    label: "Parent Management",
+    label: "Parents",
     key: "users",
     icon: () => h("i", { class: "fas fa-users" }),
     children: [
       {
-        label: "All Parents",
+        label: "Parents Profiles",
         key: "/admin/users",
         icon: () => h("i", { class: "fas fa-list" }),
-      },
-      {
-        label: "Add Parent User",
-        key: "/admin/users/create",
-        icon: () => h("i", { class: "fas fa-plus" }),
-      },
-      {
-        label: "User Profiles",
-        key: "/admin/users/profiles",
-        icon: () => h("i", { class: "fas fa-id-card" }),
       },
     ],
   },
@@ -568,41 +589,21 @@ export const menuOptions = [
     icon: () => h("i", { class: "fas fa-child" }),
     children: [
       {
-        label: "All Children",
+        label: "Children Profiles",
         key: "/admin/children",
         icon: () => h("i", { class: "fas fa-list" }),
-      },
-      {
-        label: "Add Child",
-        key: "/admin/children/create",
-        icon: () => h("i", { class: "fas fa-plus" }),
-      },
-      {
-        label: "By Parent",
-        key: "/admin/children/by-parent",
-        icon: () => h("i", { class: "fas fa-family" }),
       },
     ],
   },
   {
-    label: "Event Management",
+    label: "Events",
     key: "events",
     icon: () => h("i", { class: "fas fa-chart-line" }),
     children: [
       {
-        label: "All Events",
+        label: "Events Profiles",
         key: "/admin/events",
         icon: () => h("i", { class: "fas fa-list" }),
-      },
-      {
-        label: "Add Event",
-        key: "/admin/events/create",
-        icon: () => h("i", { class: "fas fa-plus" }),
-      },
-      {
-        label: "By Child",
-        key: "/admin/events/by-child",
-        icon: () => h("i", { class: "fas fa-child" }),
       },
     ],
   },
@@ -627,7 +628,7 @@ export const menuOptions = [
         icon: () => h("i", { class: "fas fa-project-diagram" }),
       },
       {
-        label: "Waitlist Management",
+        label: "Waitlist",
         key: "/admin/waitlist",
         icon: () => h("i", { class: "fas fa-clipboard-list" }),
       },
