@@ -343,6 +343,32 @@ export const getDefaultAnalytics = {
   },
 };
 
+export const availableEventColumns = [
+  { key: "timestamp", title: "Timestamp", default: true },
+  { key: "childId", title: "Child ID", default: true },
+  { key: "heartRate", title: "Heart Rate", default: true },
+  { key: "location", title: "Location", default: true },
+  { key: "temperature", title: "Temperature", default: true },
+  { key: "soundLevel", title: "Sound Level", default: true },
+  { key: "hrv", title: "HRV", default: false },
+  { key: "eda", title: "EDA", default: false },
+  { key: "altitude", title: "Altitude", default: false },
+  { key: "speed", title: "Speed", default: false },
+  { key: "accelerometer", title: "Accelerometer", default: false },
+  { key: "gyroscope", title: "Gyroscope", default: false },
+  { key: "accelX", title: "Accel X", default: false },
+  { key: "accelY", title: "Accel Y", default: false },
+  { key: "accelZ", title: "Accel Z", default: false },
+  { key: "gyroX", title: "Gyro X", default: false },
+  { key: "gyroY", title: "Gyro Y", default: false },
+  { key: "gyroZ", title: "Gyro Z", default: false },
+  { key: "parentId", title: "Parent ID", default: false },
+  { key: "batteryLevel", title: "Battery Level", default: false },
+  { key: "signalStrength", title: "Signal Strength", default: false },
+  { key: "actions", title: "Actions", default: true },
+  { key: "mood", title: "Mood", default: true },
+];
+
 // API endpoint definitions
 export const userEndpoints = [
   // Auth

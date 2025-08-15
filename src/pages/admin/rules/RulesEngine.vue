@@ -132,7 +132,7 @@
                 type="primary"
                 :loading="saving"
                 :disabled="!formValidation.isValid"
-                @click="saveRule"
+                @click="saveRule(form._id)"
               >
                 Save
               </n-button>
@@ -339,11 +339,13 @@ const onMetricChange = () => {
     form.value.name = `${metricLabel} Alert`;
   }
 };
+
 const editRule = (row) => {
   editing.value = true;
   form.value = { ...row };
   showEditor.value = true;
 };
+
 const removeRule = async (row) => {
   try {
     await store.deleteRule(row._id);
@@ -353,7 +355,7 @@ const removeRule = async (row) => {
   }
 };
 
-const saveRule = async () => {
+const saveRule = async (id) => {
   // Validate the rule before saving
   const validation = validateRule(form.value);
   if (!validation.isValid) {
@@ -366,7 +368,6 @@ const saveRule = async () => {
 
   try {
     if (editing.value) {
-      const id = store.rules.pop()?._id;
       await store.updateRule(id, form.value);
     } else {
       await store.createRule(form.value);

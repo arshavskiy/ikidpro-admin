@@ -35,8 +35,9 @@ export const useRulesStore = defineStore("rules", {
       try {
         const res = await apiClient.put(`/rules/${id}`, payload);
         const updated = res.data?.data || res.data;
-        // const idx = this.rules.findIndex((r) => r._id === id);
-        // if (idx !== -1) this.rules[idx] = updated;
+        const idx = this.rules.findIndex((r) => r._id === id);
+        if (idx !== -1) this.rules[idx] = updated;
+        fetchRules();
 
         console.log("Updated rule:", updated);
       } finally {

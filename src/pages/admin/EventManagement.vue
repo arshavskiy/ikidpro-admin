@@ -113,7 +113,7 @@
                   <i class="fas fa-columns"></i>
                 </template>
                 Show Columns ({{ visibleColumns.length }}/{{
-                  availableColumns.length
+                  availableEventColumns.length
                 }})
               </n-button>
             </n-dropdown>
@@ -500,6 +500,8 @@ import {
 import * as eventApi from "../../services/eventApi";
 import StatisticsCard from "../../components/StatisticsCard.vue";
 
+import { availableEventColumns } from "../../models/models";
+
 const router = useRouter();
 const message = useMessage();
 const dialog = useDialog();
@@ -550,31 +552,6 @@ const visibleColumns = ref([
   "soundLevel",
   "actions",
 ]);
-
-const availableColumns = [
-  { key: "timestamp", title: "Timestamp", default: true },
-  { key: "childId", title: "Child ID", default: true },
-  { key: "heartRate", title: "Heart Rate", default: true },
-  { key: "location", title: "Location", default: true },
-  { key: "temperature", title: "Temperature", default: true },
-  { key: "soundLevel", title: "Sound Level", default: true },
-  { key: "hrv", title: "HRV", default: false },
-  { key: "eda", title: "EDA", default: false },
-  { key: "altitude", title: "Altitude", default: false },
-  { key: "speed", title: "Speed", default: false },
-  { key: "accelerometer", title: "Accelerometer", default: false },
-  { key: "gyroscope", title: "Gyroscope", default: false },
-  { key: "accelX", title: "Accel X", default: false },
-  { key: "accelY", title: "Accel Y", default: false },
-  { key: "accelZ", title: "Accel Z", default: false },
-  { key: "gyroX", title: "Gyro X", default: false },
-  { key: "gyroY", title: "Gyro Y", default: false },
-  { key: "gyroZ", title: "Gyro Z", default: false },
-  { key: "parentId", title: "Parent ID", default: false },
-  { key: "batteryLevel", title: "Battery Level", default: false },
-  { key: "signalStrength", title: "Signal Strength", default: false },
-  { key: "actions", title: "Actions", default: true },
-];
 
 // Table configuration
 const rowKey = (row) => row._id;
@@ -1059,7 +1036,7 @@ const columnOptions = computed(() => [
   {
     type: "divider",
   },
-  ...availableColumns.map((col) => ({
+  ...availableEventColumns.map((col) => ({
     key: col.key,
     label: col.title,
     disabled: false,
@@ -1104,11 +1081,11 @@ const handleColumnSelect = (key) => {
 };
 
 const showAllColumns = () => {
-  visibleColumns.value = availableColumns.map((col) => col.key);
+  visibleColumns.value = availableEventColumns.map((col) => col.key);
 };
 
 const showDefaultColumns = () => {
-  visibleColumns.value = availableColumns
+  visibleColumns.value = availableEventColumns
     .filter((col) => col.default)
     .map((col) => col.key);
 };
