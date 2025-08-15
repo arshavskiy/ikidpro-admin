@@ -156,7 +156,6 @@
         size="medium"
         flex-height
         style="min-height: 600px"
-        :scroll-x="1200"
       />
     </n-card>
 

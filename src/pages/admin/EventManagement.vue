@@ -155,7 +155,6 @@
         size="medium"
         flex-height
         style="min-height: 600px"
-        :scroll-x="2000"
       />
     </n-card>
 
@@ -543,13 +542,10 @@ const showEventModal = computed({
 
 // Column visibility state
 const visibleColumns = ref([
-  "timestamp",
   "childId",
   "heartRate",
-  "location",
-  "altitude",
   "temperature",
-  "soundLevel",
+  "rules",
   "actions",
 ]);
 
@@ -594,6 +590,22 @@ const allColumns = [
           "div",
           { class: "text-xs text-gray-500" },
           `Parent: ${row.parentId || "N/A"}`
+        ),
+      ]);
+    },
+  },
+  {
+    title: "Rules",
+    key: "rules",
+    width: 60,
+    render(row) {
+      return h("div", {}, [
+        h(
+          "div",
+          { class: "text-sm" },
+          row.rules
+            ? `${Object.keys(row.rules)} : ${row.rules[Object.keys(row.rules)]}`
+            : "N/A"
         ),
       ]);
     },
@@ -930,6 +942,8 @@ const columns = computed(() => {
 const filteredEvents = computed(() => {
   let filtered = events.value;
 
+  debugger;
+
   // Search filter
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase();
@@ -1214,7 +1228,7 @@ onMounted(async () => {
 });
 
 // Watch for filter changes and reset pagination
-// watch([searchQuery, selectedSensorFilter], () => {
+// watch([searchQuery], () => {
 //   pagination.value.page = 1;
 //   checkedRowKeys.value = [];
 // });

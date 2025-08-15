@@ -367,6 +367,7 @@ export const availableEventColumns = [
   { key: "signalStrength", title: "Signal Strength", default: false },
   { key: "actions", title: "Actions", default: true },
   { key: "mood", title: "Mood", default: true },
+  { key: "rules", title: "Mood", default: true },
 ];
 
 // API endpoint definitions

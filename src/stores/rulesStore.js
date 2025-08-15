@@ -23,6 +23,7 @@ export const useRulesStore = defineStore("rules", {
     async createRule(payload) {
       this.saving = true;
       try {
+        debugger;
         const res = await apiClient.post("/rules", payload);
         const created = res.data?.data || res.data;
         if (created) this.rules.unshift(created);
@@ -37,7 +38,7 @@ export const useRulesStore = defineStore("rules", {
         const updated = res.data?.data || res.data;
         const idx = this.rules.findIndex((r) => r._id === id);
         if (idx !== -1) this.rules[idx] = updated;
-        fetchRules();
+        this.fetchRules();
 
         console.log("Updated rule:", updated);
       } finally {

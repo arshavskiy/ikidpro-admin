@@ -2,7 +2,7 @@ import axios from "axios";
 
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
-  timeout: 5 * 60 * 1000,
+  // timeout: 5 * 60 * 1000,
 });
 
 import { toast } from "vue3-toastify";
@@ -131,7 +131,7 @@ apiClient.interceptors.response.use(
       }
 
       if (response.data?.data.updated) {
-        successMessage =
+        successMessage +=
           "\n" +
           `<strong>${response.data?.data.updated} updated events</strong>`;
       }
