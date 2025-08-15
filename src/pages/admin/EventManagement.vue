@@ -192,7 +192,7 @@
             </div>
             <div>
               <h3 class="text-2xl font-bold text-gray-900">
-                Event #{{ selectedEvent._id?.slice(-8) || "N/A" }}
+                Event #{{ selectedEvent._id || "N/A" }}
               </h3>
               <div class="flex items-center space-x-4 mt-2">
                 <n-tag type="info" size="medium">
@@ -216,6 +216,11 @@
             <n-descriptions :column="1" size="small">
               <n-descriptions-item label="Timestamp">
                 {{ formatDateTime(selectedEvent.Timestamp) }}
+              </n-descriptions-item>
+              <n-descriptions-item label="Event ID">
+                <n-tag type="info" size="small">
+                  {{ selectedEvent._id || "N/A" }}
+                </n-tag>
               </n-descriptions-item>
               <n-descriptions-item label="Child ID">
                 <n-tag type="info" size="small">

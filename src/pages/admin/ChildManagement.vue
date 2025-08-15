@@ -169,22 +169,9 @@
       :bordered="false"
       segmented
     >
-      <template #header-extra>
-        <n-button
-          @click="selectedChild = null"
-          quaternary
-          circle
-          type="default"
-        >
-          <template #icon>
-            <i class="fas fa-times"></i>
-          </template>
-        </n-button>
-      </template>
-
       <div v-if="selectedChild" class="space-y-6">
         <!-- Child Profile Header -->
-        <n-card title="Profile Overview" :bordered="false">
+        <n-card :bordered="false">
           <div class="flex items-center space-x-4">
             <n-avatar
               :size="80"
@@ -203,7 +190,7 @@
               </h3>
               <div class="flex items-center space-x-4 mt-2">
                 <n-tag type="success" size="medium">
-                  ID: {{ selectedChild._id?.slice(-8) || "N/A" }}
+                  ID: {{ selectedChild._id || "N/A" }}
                 </n-tag>
                 <n-tag type="info" size="medium">
                   AID: {{ selectedChild.aid || "N/A" }}
@@ -287,6 +274,16 @@
                 </div>
                 <span v-else class="text-gray-500">Not provided</span>
               </n-descriptions-item>
+              <n-descriptions-item label="Rules">
+                <div v-if="selectedChild.rules" class="space-y-2">
+                  <n-space size="small">
+                    <n-tag>
+                      {{ JSON.stringify(selectedChild.rules) }}
+                    </n-tag>
+                  </n-space>
+                </div>
+                <span v-else class="text-gray-500">None</span>
+              </n-descriptions-item>
             </n-descriptions>
           </n-card>
 
@@ -314,6 +311,7 @@
                 </div>
                 <span v-else class="text-gray-500">None</span>
               </n-descriptions-item>
+
               <n-descriptions-item label="Limitations">
                 <div
                   v-if="selectedChild.limitations?.length > 0"
@@ -472,6 +470,7 @@ const visibleColumns = ref([
   "childInfo",
   "aid",
   "ageGender",
+  "rules",
   "physical",
   "parent",
   "medical",
@@ -644,6 +643,20 @@ const allColumns = [
             style: { color: genderColor },
           },
           `${genderIcon} ${row.gender || "Unknown"}`
+        ),
+      ]);
+    },
+  },
+  {
+    key: "rules",
+    title: "Rules",
+    width: 150,
+    render(row) {
+      return h("div", {}, [
+        h(
+          "div",
+          { class: "text-sm" },
+          `${row.rules}` ? `${JSON.stringify(row.rules)}` : "N/A"
         ),
       ]);
     },

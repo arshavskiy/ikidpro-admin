@@ -217,8 +217,8 @@ const operatorOptions = [
 // Child options for the selector
 const childOptions = computed(() => {
   return children.value.map((child) => ({
-    label: `${child.firstName} ${child.lastName} (${child.aid || child._id})`,
-    value: child._id,
+    label: `${child.firstName} ${child.lastName} (${child.aid})`,
+    value: child.aid,
     parentId: child.parentId,
   }));
 });
@@ -372,6 +372,7 @@ const saveRule = async (id) => {
     } else {
       await store.createRule(form.value);
     }
+
     showEditor.value = false;
     message.success("Rule saved successfully");
   } catch (e) {
