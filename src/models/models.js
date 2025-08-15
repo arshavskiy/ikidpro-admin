@@ -561,51 +561,51 @@ export const defaultEventForm = {
 export const menuOptions = [
   {
     label: "Analytics",
-    key: "analytics",
+    key: "/admin/analytics/events",
     icon: () => h("i", { class: "fas fa-chart-bar" }),
-    children: [
-      {
-        label: "Event Statistics",
-        key: "/admin/analytics/events",
-        icon: () => h("i", { class: "fas fa-chart-bar" }),
-      },
-    ],
+    // children: [
+    //   {
+    //     label: "Event Statistics",
+    //     key: "/admin/analytics/events",
+    //     icon: () => h("i", { class: "fas fa-chart-bar" }),
+    //   },
+    // ],
   },
   {
     label: "Parents",
-    key: "users",
-    icon: () => h("i", { class: "fas fa-users" }),
-    children: [
-      {
-        label: "Parents Profiles",
-        key: "/admin/users",
-        icon: () => h("i", { class: "fas fa-list" }),
-      },
-    ],
+    key: "/admin/users",
+    icon: () => h("i", { class: "fas fa-list" }),
+    // children: [
+    //   {
+    //     label: "Parents Profiles",
+    //     key: "/admin/users",
+    //     icon: () => h("i", { class: "fas fa-list" }),
+    //   },
+    // ],
   },
   {
     label: "Child Management",
-    key: "children",
+    key: "/admin/children",
     icon: () => h("i", { class: "fas fa-child" }),
-    children: [
-      {
-        label: "Children Profiles",
-        key: "/admin/children",
-        icon: () => h("i", { class: "fas fa-list" }),
-      },
-    ],
+    // children: [
+    //   {
+    //     label: "Children Profiles",
+    //     key: "/admin/children",
+    //     icon: () => h("i", { class: "fas fa-list" }),
+    //   },
+    // ],
   },
   {
     label: "Events",
-    key: "events",
+    key: "/admin/events",
     icon: () => h("i", { class: "fas fa-chart-line" }),
-    children: [
-      {
-        label: "Events Profiles",
-        key: "/admin/events",
-        icon: () => h("i", { class: "fas fa-list" }),
-      },
-    ],
+    // children: [
+    //   {
+    //     label: "Events Profiles",
+    //     key: "/admin/events",
+    //     icon: () => h("i", { class: "fas fa-list" }),
+    //   },
+    // ],
   },
   {
     label: "Data Management",

@@ -191,6 +191,7 @@ const form = ref({
   enabled: true,
   aid: null,
   parentId: null,
+  _id: null,
 });
 
 // Watch for metric changes to update suggested thresholds
@@ -365,7 +366,8 @@ const saveRule = async () => {
 
   try {
     if (editing.value) {
-      await store.updateRule(form.value.aid, form.value);
+      const id = store.rules.pop()?._id;
+      await store.updateRule(id, form.value);
     } else {
       await store.createRule(form.value);
     }
