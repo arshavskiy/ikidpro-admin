@@ -599,6 +599,18 @@ export const menuOptions = [
     // ],
   },
   {
+    label: "Events",
+    key: "/admin/events",
+    icon: () => h("i", { class: "fas fa-chart-line" }),
+    // children: [
+    //   {
+    //     label: "Events Profiles",
+    //     key: "/admin/events",
+    //     icon: () => h("i", { class: "fas fa-list" }),
+    //   },
+    // ],
+  },
+  {
     label: "Parents",
     key: "/admin/users",
     icon: () => h("i", { class: "fas fa-list" }),
@@ -622,20 +634,9 @@ export const menuOptions = [
     //   },
     // ],
   },
+
   {
-    label: "Events",
-    key: "/admin/events",
-    icon: () => h("i", { class: "fas fa-chart-line" }),
-    // children: [
-    //   {
-    //     label: "Events Profiles",
-    //     key: "/admin/events",
-    //     icon: () => h("i", { class: "fas fa-list" }),
-    //   },
-    // ],
-  },
-  {
-    label: "Data Management",
+    label: "Admin Management",
     key: "data",
     icon: () => h("i", { class: "fas fa-database" }),
     children: [
