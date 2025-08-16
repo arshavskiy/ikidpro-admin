@@ -3,7 +3,7 @@ import * as api from "../services/eventApi";
 
 export const useEventStore = defineStore("events", {
   state: () => ({
-    items: [],
+    events: [],
     loading: false,
     error: null,
   }),
@@ -12,7 +12,7 @@ export const useEventStore = defineStore("events", {
       this.loading = true;
       try {
         const res = await api.getAll();
-        this.items = res.data;
+        this.events = res.data;
         this.error = null;
       } catch (e) {
         this.error = e.message;

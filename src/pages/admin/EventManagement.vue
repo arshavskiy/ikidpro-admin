@@ -26,21 +26,31 @@
             clearable
           />
         </div>
-        <!-- <n-date-picker
-          v-model:value="startDate"
-          type="date"
-          placeholder="Start Date"
+        <!-- child filter (multi-select) -->
+        <n-select
+          multiple
+          v-model:value="selectedChildIds"
+          @update:value="onChildChange"
+          :options="childOptions"
+          placeholder="Select Children"
+          :style="{ minWidth: '240px' }"
         />
+        <!-- date range filter -->
         <n-date-picker
-          v-model:value="endDate"
-          type="date"
-          placeholder="End Date"
-        /> -->
+          v-model:value="selectedDateRange"
+          type="daterange"
+          clearable
+          :update-value-on-close="true"
+          :actions="['confirm']"
+          @update:value="onDateRangeChange"
+          :style="{ minWidth: '280px' }"
+        />
         <n-select
           v-model:value="selectedSensorFilter"
           :options="sensorFilterOptions"
           placeholder="All Sensors"
         />
+        <!-- date range filter -->
 
         <n-button @click="refreshEvents" type="default">
           <template #icon>
@@ -61,17 +71,17 @@
       />
 
       <StatisticsCard
+        label="Filtered Events"
+        :value="filteredEventsCount"
+        icon="fas fa-list"
+        variant="green"
+      />
+
+      <StatisticsCard
         label="Heart Rate Events"
         :value="heartRateEvents"
         icon="fas fa-heartbeat"
         variant="red"
-      />
-
-      <StatisticsCard
-        label="GPS Events"
-        :value="gpsEvents"
-        icon="fas fa-map-marker-alt"
-        variant="green"
       />
 
       <StatisticsCard
@@ -500,8 +510,9 @@ import {
   NDescriptionsItem,
   NInput,
   NSelect,
+  NDatePicker,
 } from "naive-ui";
-import * as eventApi from "../../services/eventApi";
+import { useEventStore } from "../../stores/eventStore";
 import StatisticsCard from "../../components/StatisticsCard.vue";
 
 import { availableEventColumns } from "../../models/models";
@@ -509,6 +520,7 @@ import { availableEventColumns } from "../../models/models";
 const router = useRouter();
 const message = useMessage();
 const dialog = useDialog();
+const eventStore = useEventStore();
 
 // Sensor filter options
 const sensorFilterOptions = [
@@ -527,8 +539,7 @@ const events = ref([]);
 const loading = ref(false);
 const deleting = ref(false);
 const searchQuery = ref("");
-const startDate = ref("");
-const endDate = ref("");
+const selectedDateRange = ref(null);
 const selectedSensorFilter = ref("");
 const selectedEvent = ref(null);
 const eventToDelete = ref(null);
@@ -536,6 +547,10 @@ const selectedEvents = ref([]);
 const checkedRowKeys = ref([]);
 const currentPage = ref(1);
 const pageSize = ref(50);
+
+// Child filter support
+const selectedChildIds = ref(["all"]);
+const availableChildren = ref([]);
 
 // Modal visibility
 const showEventModal = computed({
@@ -960,15 +975,23 @@ const filteredEvents = computed(() => {
   }
 
   // Date range filter
-  if (startDate.value) {
-    filtered = filtered.filter(
-      (event) => new Date(event.Timestamp) >= new Date(startDate.value)
-    );
+  if (selectedDateRange.value && Array.isArray(selectedDateRange.value)) {
+    const [startMs, endMs] = selectedDateRange.value;
+    const start = startMs ? new Date(startMs) : null;
+    const end = endMs ? new Date(endMs) : null;
+    if (start || end) {
+      filtered = filtered.filter((event) => {
+        const t = new Date(event.Timestamp);
+        return (!start || t >= start) && (!end || t <= end);
+      });
+    }
   }
-  if (endDate.value) {
-    filtered = filtered.filter(
-      (event) => new Date(event.Timestamp) <= new Date(endDate.value)
-    );
+
+  // Child filter
+  const selChildren = selectedChildIds.value || [];
+  if (selChildren.length > 0 && !selChildren.includes("all")) {
+    const cset = new Set(selChildren);
+    filtered = filtered.filter((event) => cset.has(event.aid));
   }
 
   // Sensor filter
@@ -1038,6 +1061,17 @@ const todayEvents = computed(() => {
   return events.value.filter(
     (event) => new Date(event.Timestamp).toDateString() === today
   ).length;
+});
+
+// Child options for the multi-select dropdown
+const childOptions = computed(() => {
+  return [
+    { label: "All Children", value: "all" },
+    ...availableChildren.value.map((childId) => ({
+      label: `Child ${String(childId).slice(0, 8)}`,
+      value: childId,
+    })),
+  ];
 });
 
 // Column options for dropdown
@@ -1125,7 +1159,7 @@ const confirmBulkDelete = async () => {
   try {
     loading.value = true;
     const deletePromises = checkedRowKeys.value.map((id) =>
-      eventApi.remove(id)
+      eventStore.deleteItem(id)
     );
 
     await Promise.all(deletePromises);
@@ -1147,7 +1181,7 @@ const confirmBulkDelete = async () => {
 
 const confirmDeleteSingle = async (event) => {
   try {
-    await eventApi.remove(event._id);
+    await eventStore.deleteItem(event._id);
     events.value = events.value.filter((e) => e._id !== event._id);
     message.success(`Successfully deleted event`);
   } catch (error) {
@@ -1159,8 +1193,14 @@ const confirmDeleteSingle = async (event) => {
 const loadEvents = async () => {
   try {
     loading.value = true;
-    const response = await eventApi.getAll();
-    events.value = response.data;
+    await eventStore.fetchAll();
+    events.value = eventStore.events;
+
+    // Populate available children for the filter
+    const uniqueChildren = [...new Set(events.value.map((e) => e.aid))].filter(
+      Boolean
+    );
+    availableChildren.value = uniqueChildren.sort();
   } catch (error) {
     console.error("Error loading events:", error);
     events.value = [];
@@ -1173,6 +1213,24 @@ const refreshEvents = () => {
   pagination.value.page = 1;
   checkedRowKeys.value = [];
   loadEvents();
+};
+
+// Handle date range changes
+const onDateRangeChange = (val) => {
+  selectedDateRange.value = val;
+  // loadEvents();
+};
+
+// Handle child selection changes
+const onChildChange = () => {
+  // Normalize selection: if 'all' is selected alongside others, drop 'all'
+  if (
+    Array.isArray(selectedChildIds.value) &&
+    selectedChildIds.value.includes("all") &&
+    selectedChildIds.value.length > 1
+  ) {
+    selectedChildIds.value = selectedChildIds.value.filter((v) => v !== "all");
+  }
 };
 
 const viewEvent = (event) => {
@@ -1192,7 +1250,7 @@ const confirmDeleteEvent = async () => {
 
   try {
     deleting.value = true;
-    await eventApi.remove(eventToDelete.value._id);
+    await eventStore.deleteItem(eventToDelete.value._id);
     events.value = events.value.filter(
       (e) => e._id !== eventToDelete.value._id
     );
@@ -1233,8 +1291,8 @@ onMounted(async () => {
 });
 
 // Watch for filter changes and reset pagination
-// watch([searchQuery], () => {
-//   pagination.value.page = 1;
-//   checkedRowKeys.value = [];
-// });
+watch([searchQuery, selectedDateRange, selectedChildIds], () => {
+  pagination.value.page = 1;
+  checkedRowKeys.value = [];
+});
 </script>

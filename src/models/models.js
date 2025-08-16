@@ -611,28 +611,22 @@ export const menuOptions = [
     // ],
   },
   {
-    label: "Parents",
-    key: "/admin/users",
-    icon: () => h("i", { class: "fas fa-list" }),
-    // children: [
-    //   {
-    //     label: "Parents Profiles",
-    //     key: "/admin/users",
-    //     icon: () => h("i", { class: "fas fa-list" }),
-    //   },
-    // ],
-  },
-  {
-    label: "Child Management",
+    label: "Users",
     key: "/admin/children",
     icon: () => h("i", { class: "fas fa-child" }),
-    // children: [
-    //   {
-    //     label: "Children Profiles",
-    //     key: "/admin/children",
-    //     icon: () => h("i", { class: "fas fa-list" }),
-    //   },
-    // ],
+    children: [
+      {
+        label: "Parents",
+        key: "/admin/users",
+        icon: () => h("i", { class: "fas fa-list" }),
+      },
+
+      {
+        label: "Children Profiles",
+        key: "/admin/children",
+        icon: () => h("i", { class: "fas fa-list" }),
+      },
+    ],
   },
 
   {
