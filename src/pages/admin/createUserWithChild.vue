@@ -192,57 +192,6 @@
             Body metrics Analytics Platform
           </div>
         </div>
-
-        <!-- Data-Driven Tagline -->
-        <div
-          class="bg-slate-800/30 backdrop-blur-sm rounded-xl p-4 mb-8 border border-slate-700/50"
-        >
-          <div
-            class="flex items-center justify-center space-x-3 text-slate-300"
-          >
-            <div class="flex items-center space-x-1">
-              <div
-                class="w-2 h-2 bg-green-400 rounded-full animate-pulse"
-              ></div>
-              <span class="text-xs font-mono">LIVE</span>
-            </div>
-            <div class="text-slate-600">|</div>
-            <div class="text-xs font-mono">
-              Real-time BodyMetric Intelligence
-            </div>
-          </div>
-
-          <!-- Mini Data Visualization -->
-          <div class="flex justify-center items-center mt-3 space-x-1">
-            <div
-              class="w-1 h-6 bg-blue-400 rounded-full opacity-60 animate-pulse"
-            ></div>
-            <div
-              class="w-1 h-4 bg-cyan-400 rounded-full opacity-70 animate-pulse"
-              style="animation-delay: 0.1s"
-            ></div>
-            <div
-              class="w-1 h-8 bg-purple-400 rounded-full opacity-60 animate-pulse"
-              style="animation-delay: 0.2s"
-            ></div>
-            <div
-              class="w-1 h-5 bg-green-400 rounded-full opacity-70 animate-pulse"
-              style="animation-delay: 0.3s"
-            ></div>
-            <div
-              class="w-1 h-7 bg-blue-400 rounded-full opacity-60 animate-pulse"
-              style="animation-delay: 0.4s"
-            ></div>
-            <div
-              class="w-1 h-3 bg-cyan-400 rounded-full opacity-70 animate-pulse"
-              style="animation-delay: 0.5s"
-            ></div>
-            <div
-              class="w-1 h-6 bg-purple-400 rounded-full opacity-60 animate-pulse"
-              style="animation-delay: 0.6s"
-            ></div>
-          </div>
-        </div>
       </div>
       <!-- Futuristic Login Form -->
       <form class="space-y-6" @submit.prevent="handleLogin">
