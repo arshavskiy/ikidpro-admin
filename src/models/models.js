@@ -17,33 +17,33 @@ export const eventTypeOptions = [
   { value: "Temperature", label: "Temperature" },
   { value: "HRV", label: "Heart Rate Variability" },
   { value: "Sp02", label: "SpO2" },
-  { value: "AccelX", label: "Accelerometer X" },
-  { value: "AccelY", label: "Accelerometer Y" },
-  { value: "AccelZ", label: "Accelerometer Z" },
-  { value: "GyroX", label: "Gyroscope X" },
-  { value: "GyroY", label: "Gyroscope Y" },
-  { value: "GyroZ", label: "Gyroscope Z" },
+  // { value: "AccelX", label: "Accelerometer X" },
+  // { value: "AccelY", label: "Accelerometer Y" },
+  // { value: "AccelZ", label: "Accelerometer Z" },
+  // { value: "GyroX", label: "Gyroscope X" },
+  // { value: "GyroY", label: "Gyroscope Y" },
+  // { value: "GyroZ", label: "Gyroscope Z" },
   { value: "EDA", label: "Electrodermal activity" },
   { value: "scl", label: "Conductance Level" },
   { value: "scr", label: "Conductance Responses" },
   { value: "SoundLevel", label: "Sound Level" },
   { value: "humidity", label: "Humidity" },
-  { value: "latitude", label: "GPS Latitude" },
-  { value: "longitude", label: "GPS Longitude" },
-  { value: "altitude", label: "GPS Altitude" },
+  // { value: "latitude", label: "GPS Latitude" },
+  // { value: "longitude", label: "GPS Longitude" },
+  // { value: "altitude", label: "GPS Altitude" },
   { value: "speed_mps", label: "Speed (m/s)" },
-  { value: "bearing_deg", label: "Bearing (degrees)" },
+  // { value: "bearing_deg", label: "Bearing (degrees)" },
   { value: "accuracy_m", label: "GPS Accuracy" },
   { value: "satellites", label: "Satellites" },
   { value: "steps", label: "Steps" },
   { value: "calories", label: "Calories" },
-  { value: "magneticX", label: "Magnetometer X" },
-  { value: "magneticY", label: "Magnetometer Y" },
-  { value: "magneticZ", label: "Magnetometer Z" },
+  // { value: "magneticX", label: "Magnetometer X" },
+  // { value: "magneticY", label: "Magnetometer Y" },
+  // { value: "magneticZ", label: "Magnetometer Z" },
   { value: "pressure", label: "Pressure" },
   { value: "light", label: "Light Level" },
   { value: "mood", label: "Mood" },
-  { value: "gps", label: "GPS Location" },
+  // { value: "gps", label: "GPS Location" },
   { value: "motion", label: "Motion/Acceleration" },
 ];
 
@@ -319,7 +319,6 @@ export const getDefaultAnalytics = {
     gps: 0,
     sound: 0,
     motion: 0,
-    mood: {},
     eda: 0,
     hrv: 0,
     gyro: 0,
@@ -628,7 +627,18 @@ export const menuOptions = [
       },
     ],
   },
-
+  {
+    label: "B2B Management",
+    key: "/admin/b2b/registration",
+    icon: () => h("i", { class: "fas fa-database" }),
+    children: [
+      {
+        label: "Registration",
+        key: "/admin/b2b/registration",
+        icon: () => h("i", { class: "fas fa-building" }),
+      },
+    ],
+  },
   {
     label: "Admin Management",
     key: "data",
@@ -672,110 +682,6 @@ export const menuOptions = [
         icon: () => h("i", { class: "fas fa-flask" }),
       },
     ],
-  },
-];
-
-// Grouped routes (optional legacy use in UI)
-export const analyticsRoutes = [
-  {
-    name: "EventStats",
-    path: "/admin/analytics/events",
-    label: "Event Statistics",
-    icon: "fas fa-chart-bar",
-  },
-];
-export const userRoutes = [
-  {
-    name: "UsersList",
-    path: "/admin/users",
-    label: "All Parents",
-    icon: "fas fa-list",
-  },
-  {
-    name: "UserCreate",
-    path: "/admin/users/create",
-    label: "Add Parent User",
-    icon: "fas fa-plus",
-  },
-  {
-    name: "UserProfiles",
-    path: "/admin/users/profiles",
-    label: "User Profiles",
-    icon: "fas fa-id-card",
-  },
-];
-export const childRoutes = [
-  {
-    name: "ChildrenList",
-    path: "/admin/children",
-    label: "All Children",
-    icon: "fas fa-list",
-  },
-  {
-    name: "ChildCreate",
-    path: "/admin/children/create",
-    label: "Add Child",
-    icon: "fas fa-plus",
-  },
-  {
-    name: "ChildByParent",
-    path: "/admin/children/by-parent",
-    label: "By Parent",
-    icon: "fas fa-family",
-  },
-];
-export const eventRoutes = [
-  {
-    name: "EventsList",
-    path: "/admin/events",
-    label: "All Events",
-    icon: "fas fa-list",
-  },
-  {
-    name: "EventCreate",
-    path: "/admin/events/create",
-    label: "Add Event",
-    icon: "fas fa-plus",
-  },
-  {
-    name: "EventsByChild",
-    path: "/admin/events/by-child",
-    label: "By Child",
-    icon: "fas fa-child",
-  },
-];
-export const dataRoutes = [
-  {
-    name: "DataManagement",
-    path: "/admin/data/management",
-    label: "Data Import",
-    icon: "fas fa-file-upload",
-  },
-  {
-    name: "DataExport",
-    path: "/admin/data/export",
-    label: "Data Export",
-    icon: "fas fa-file-download",
-  },
-  {
-    name: "WaitlistManagement",
-    path: "/admin/waitlist",
-    label: "Waitlist Management",
-    icon: "fas fa-clipboard-list",
-  },
-];
-export const systemRoutes = [
-  {
-    name: "DatabaseInfo",
-    path: "/admin/system/database",
-    label: "Database Info",
-    icon: "fas fa-database",
-  },
-  {
-    name: "ApiTesting",
-    path: "/admin/system/api-test",
-    label: "API Testing",
-    icon: "fas fa-flask",
   },
 ];
 
@@ -874,6 +780,11 @@ export const appRoutes = [
         component: () => import("../pages/admin/DataManagement.vue"),
       },
       {
+        path: "b2b/registration",
+        name: "Registration",
+        component: () => import("../pages/b2b/B2BRegistration.vue"),
+      },
+      {
         path: "data/export",
         name: "DataExport",
         component: () => import("../pages/admin/DataExport.vue"),
@@ -888,6 +799,7 @@ export const appRoutes = [
         name: "WaitlistManagement",
         component: () => import("../pages/admin/WaitlistManagement.vue"),
       },
+
       {
         path: "analytics/events",
         name: "EventStats",

@@ -468,13 +468,14 @@ const showChildModal = computed({
 // Column visibility state
 const visibleColumns = ref([
   "childInfo",
-  "aid",
+  // "aid",
   "ageGender",
   "rules",
   "physical",
   "parent",
   "medical",
   "actions",
+  "limitations",
 ]);
 
 const availableColumns = [
@@ -502,7 +503,7 @@ const fieldMappings = {
     default: true,
     group: "medical",
   },
-  limitations: { title: "Limitations", default: false, group: "medical" },
+  limitations: { title: "Limitations", default: true, group: "medical" },
   notes: { title: "Notes", default: false, group: "other" },
   emergencyContact: {
     title: "Emergency Contact",
@@ -558,9 +559,11 @@ const formatDate = (dateString) => {
   });
 };
 
-const getParentName = (parentId) => {
+const getParentName = (parent) => {
   // In a real implementation, you would look up the parent's name
-  return "Parent";
+  return parent.firstName
+    ? `${parent.firstName} ${parent.lastName}`
+    : "Unknown Parent";
 };
 
 // Table columns configuration
@@ -574,7 +577,7 @@ const allColumns = [
   {
     key: "childInfo",
     title: "Child Info",
-    width: 150,
+    width: 230,
     render(row) {
       return h("div", { class: "flex items-center" }, [
         h(
@@ -597,18 +600,32 @@ const allColumns = [
             `${row.firstName || ""} ${row.lastName || ""}`
           ),
           h(
-            "div",
-            { class: "text-sm text-gray-500" },
-            `ID: ${row._id?.slice(-8) || "N/A"}`
+            NTag,
+            {
+              type: "success",
+              size: "small",
+            },
+            { default: () => row.aid || "N/A" }
           ),
         ]),
       ]);
     },
   },
   {
+    key: "parent",
+    title: "Parent",
+    width: 150,
+    render(row) {
+      return h("div", {}, [
+        h("div", { class: "text-sm font-medium" }, getParentName(row)),
+        h("div", { class: "text-xs text-gray-500" }, row.parentId || "N/A"),
+      ]);
+    },
+  },
+  {
     key: "aid",
     title: "AID",
-    width: 130,
+    width: 160,
     render(row) {
       return h(
         NTag,
@@ -682,14 +699,18 @@ const allColumns = [
       ]);
     },
   },
+
   {
-    key: "parent",
-    title: "Parent",
+    key: "limitations",
+    title: "Limitations",
     width: 150,
     render(row) {
       return h("div", {}, [
-        h("div", { class: "text-sm font-medium" }, getParentName(row.parent)),
-        h("div", { class: "text-xs text-gray-500" }, row.parentId || "N/A"),
+        h(
+          "div",
+          { class: "text-sm font-medium" },
+          row.limitations ? row.limitations : "No Limitations"
+        ),
       ]);
     },
   },

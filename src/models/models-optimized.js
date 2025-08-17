@@ -593,11 +593,11 @@ export const defaultEventForm = {
 
 // Router configuration
 export const appRoutes = [
-  {
-    path: "/",
-    name: "EventsList",
-    component: () => import("../pages/admin/EventManagement.vue"),
-  },
+  // {
+  //   path: "/",
+  //   name: "EventsList",
+  //   component: () => import("../pages/admin/EventManagement.vue"),
+  // },
   {
     path: "/login",
     name: "Login",

@@ -95,7 +95,11 @@
               <div
                 class="h-2 rounded-full font-bold"
                 :class="tile.barClass"
-                :style="{ width: tile.percent + '%' }"
+                :style="[
+                  tile.percent > 100
+                    ? { width: '100%' }
+                    : { width: tile.percent + '%' },
+                ]"
               ></div>
             </div>
           </div>
@@ -152,6 +156,7 @@
       </div>
 
       <SensorValuesLineChart
+        :chart-height="450"
         :sensor-values="analytics.sensorValues"
         :event-timeline="analytics.eventTimeline"
         :selected-event-type="selectedEventType"
@@ -489,13 +494,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, nextTick } from "vue";
 import { NSelect, NButton, NCard, NDropdown, NDatePicker } from "naive-ui";
 import VChart from "vue-echarts";
 import * as echarts from "echarts";
-import * as eventApi from "../../services/eventApi";
-import * as userApi from "../../services/userApi";
-import * as childUserApi from "../../services/childUserApi";
+import { useEventStore } from "../../stores/eventStore";
 import SensorValuesLineChart from "../../components/SensorValuesLineChart.vue";
 import EventDataTimeline from "../../components/EventDataTimeline.vue";
 import OverviewStatistics from "../../components/OverviewStatistics.vue";
@@ -509,6 +512,9 @@ import {
   distKeyToEventTypes,
   getDefaultAnalytics,
 } from "../../models/models";
+
+// Store
+const eventStore = useEventStore();
 
 // Reactive data
 const loading = ref(false);
@@ -701,49 +707,16 @@ const loadAnalytics = async () => {
     loading.value = true;
     console.log("🔄 Loading analytics data...");
 
-    // Load events data
-    const [response, usersRes, childUsersRes] = await Promise.all([
-      eventApi.getAll(),
-      userApi.getAll().catch(() => null),
-      childUserApi.getAll().catch(() => null),
-    ]);
+    // Load analytics data from store
+    const result = await eventStore.fetchAnalyticsData();
 
-    // Build parents map from users list (if available)
-    if (usersRes && Array.isArray(usersRes.data?.data)) {
-      const map = {};
-      usersRes.data.data.forEach((u) => {
-        const id = u?._id || u?.id;
-        if (!id) return;
-        const nameParts = [u?.firstName, u?.lastName].filter(Boolean);
-        const name = nameParts.length
-          ? nameParts.join(" ")
-          : u?.name || u?.email || u?.mobile || String(id);
-        map[id] = { id, label: name, raw: u };
-      });
-      // console.log("✅ Parents map built");
-      parentsById.value = map;
-    }
+    // Update local state with store data
+    parentsById.value = result.parentsById;
+    childrenById.value = result.childrenById;
+    childParentMap.value = result.childParentMap;
+    availableParents.value = result.availableParents;
 
-    // Build children map from child users list (if available)
-    if (childUsersRes) {
-      const raw = Array.isArray(childUsersRes.data?.data)
-        ? childUsersRes.data.data
-        : Array.isArray(childUsersRes.data)
-        ? childUsersRes.data
-        : [];
-      const cmap = {};
-      raw.forEach((c) => {
-        const cid = c?.aid || c?._id || c?.id;
-        if (!cid) return;
-        const nameParts = [c?.firstName, c?.lastName].filter(Boolean);
-        const label = nameParts.length
-          ? nameParts.join(" ")
-          : c?.name || c?.nickname || String(cid);
-        cmap[cid] = { id: cid, label, raw: c };
-      });
-      childrenById.value = cmap;
-    }
-    let allEvents = response.data || [];
+    let allEvents = result.events;
 
     // Apply parent filter to events if specific parents are selected
     const selParents = selectedParentIds.value || [];
@@ -757,22 +730,6 @@ const loadAnalytics = async () => {
       Boolean
     );
     availableChildren.value = uniqueChildren.sort();
-
-    // Build parent list and child->parent map from the complete dataset (unfiltered by parent)
-    const rawAll = response.data || [];
-    const parents = [...new Set(rawAll.map((e) => e.parentId))].filter(Boolean);
-    availableParents.value = parents.sort();
-
-    const map = {};
-    rawAll.forEach((e) => {
-      if (e.aid && e.parentId) map[e.aid] = e.parentId;
-    });
-    // Merge mapping from children list if present
-    Object.values(childrenById.value).forEach((c) => {
-      const pid = c.raw?.parentId;
-      if (c.id && pid && !map[c.id]) map[c.id] = pid;
-    });
-    childParentMap.value = map;
 
     // Filter events by custom date range or selected time range
     let filteredEvents = allEvents;
@@ -860,6 +817,11 @@ const loadAnalytics = async () => {
     analytics.value = calculateAnalytics(filteredEvents);
 
     console.log("✅ Analytics data loaded successfully");
+
+    // Auto-select first tile after analytics are loaded
+    nextTick(() => {
+      autoSelectFirstTile();
+    });
   } catch (error) {
     console.error("❌ Error loading analytics:", error);
     // Initialize with default values on error
@@ -1512,4 +1474,16 @@ onMounted(() => {
   selectedEventTypes.value = eventTypeOptionsMulti.map((o) => o.value);
   loadAnalytics();
 });
+
+// Function to auto-select first tile after analytics load
+const autoSelectFirstTile = () => {
+  if (distributionTiles.value.length > 0) {
+    const firstTile = distributionTiles.value[0];
+    const related = distKeyToEventTypes[firstTile.key] || [];
+    if (related.length > 0) {
+      quickViewSelectedEventTypes.value = [...related];
+      quickViewTitle.value = firstTile.label || "Selected Sensors";
+    }
+  }
+};
 </script>
