@@ -245,6 +245,19 @@ const moodSeries = computed(() => {
     data: moodTimeline.value.map((pt) => pt?.moodCount?.[label] ?? 0),
     connectNulls: true,
     lineStyle: { width: 2 },
+    areaStyle: {
+      color: {
+        type: "linear",
+        x: 0,
+        y: 0,
+        x2: 0,
+        y2: 1,
+        colorStops: [
+          { offset: 0, color: "#1890ff40" }, // 25% opacity
+          { offset: 1, color: "#1890ff10" }, // 6% opacity
+        ],
+      },
+    },
   }));
 });
 
@@ -269,6 +282,7 @@ const sensorValuesChartOption = computed(() =>
           },
         },
         legend: { data: moodSeries.value.map((s) => s.name), top: 30 },
+        backgroundColor: "#fafafa",
         grid: {
           left: "3%",
           right: "4%",
@@ -566,6 +580,19 @@ const getSensorValuesSeries = () => {
         itemStyle: { color: config.color },
         lineStyle: { width: 2 },
         connectNulls: false,
+        areaStyle: {
+          color: {
+            type: "linear",
+            x: 0,
+            y: 0,
+            x2: 0,
+            y2: 1,
+            colorStops: [
+              { offset: 0, color: config.color + "40" }, // 25% opacity
+              { offset: 1, color: config.color + "10" }, // 6% opacity
+            ],
+          },
+        },
       };
     })
     .filter(Boolean); // Remove null entries

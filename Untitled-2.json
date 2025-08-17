@@ -1,0 +1,33 @@
+{
+  "_id": "1",
+  "name": "Sunshine Pediatric Clinic",
+  "type": "clinic",
+  "address": "123 Main St, City, State 12345",
+  "phone": "(555) 123-4567",
+  "email": "info@sunshineclinic.com",
+  "website": "www.sunshineclinic.com",
+  "description": "Comprehensive pediatric care for children of all ages",
+  "createdAt": "2024-01-15",
+  "users": [
+    {
+      "_id": "u1",
+      "firstName": "Dr. Sarah",
+      "lastName": "Johnson",
+      "email": "sarah.johnson@sunshineclinic.com",
+      "phone": "(555) 123-4568",
+      "status": "active",
+      "invitedAt": "2024-01-15",
+      "joinedAt": "2024-01-16"
+    },
+    {
+      "_id": "u2",
+      "firstName": "Nurse",
+      "lastName": "Mike",
+      "email": "mike.nurse@sunshineclinic.com",
+      "phone": "(555) 123-4569",
+      "status": "pending",
+      "invitedAt": "2024-01-17",
+      "joinedAt": null
+    }
+  ]
+}
