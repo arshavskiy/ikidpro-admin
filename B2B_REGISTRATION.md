@@ -2,7 +2,7 @@
 
 ## Overview
 
-The B2B Registration system allows businesses such as clinics, hospitals, schools, and other child-related organizations to register and Add Users to join their platform.
+The B2B Registration system allows businesses such as clinics, hospitals, schools, and other child-related organizations to register and invite users to join their platform.
 
 ## Features
 
@@ -22,7 +22,7 @@ The B2B Registration system allows businesses such as clinics, hospitals, school
 
 ### User Invitation System
 
-- **Add Users**: Add multiple users to a business
+- **Invite Users**: Add multiple users to a business
 - **User Management**: Track user status (pending, active, inactive)
 - **Resend Invites**: Resend invitations to pending users
 - **Remove Users**: Remove users from businesses
@@ -65,7 +65,7 @@ The B2B Registration system allows businesses such as clinics, hospitals, school
 - `POST /b2b/businesses` - Create new business
 - `PUT /b2b/businesses/:id` - Update business
 - `DELETE /b2b/businesses/:id` - Delete business
-- `POST /b2b/businesses/:id/invite` - Add Users
+- `POST /b2b/businesses/:id/invite` - Invite users
 - `POST /b2b/businesses/:id/users/:userId/resend-invite` - Resend invitation
 - `DELETE /b2b/businesses/:id/users/:userId` - Remove user
 - `PATCH /b2b/businesses/:id/users/:userId/status` - Update user status
@@ -91,14 +91,14 @@ The B2B Registration system allows businesses such as clinics, hospitals, school
 
 ### Inviting Users
 
-1. Click "Add Users" on any business
+1. Click "Invite Users" on any business
 2. Add user information:
    - First Name
    - Last Name
    - Email
    - Phone
 3. Click "Add to List" to add users to the invitation list
-4. Click "Add Users" to send invitations
+4. Click "Invite Users" to send invitations
 
 ### Managing Users
 

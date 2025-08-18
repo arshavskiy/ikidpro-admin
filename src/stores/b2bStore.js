@@ -131,7 +131,7 @@ export const useB2BStore = defineStore("b2b", {
       }
     },
 
-    // Add Users to business
+    // Invite users to business
     async inviteUsers(businessId, users) {
       this.loading = true;
       this.error = null;

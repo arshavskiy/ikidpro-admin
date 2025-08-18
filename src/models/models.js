@@ -664,6 +664,11 @@ export const menuOptions = [
         key: "/admin/waitlist",
         icon: () => h("i", { class: "fas fa-clipboard-list" }),
       },
+      {
+        label: "B2B Registration",
+        key: "/admin/b2b",
+        icon: () => h("i", { class: "fas fa-building" }),
+      },
     ],
   },
   {
@@ -800,6 +805,11 @@ export const appRoutes = [
         component: () => import("../pages/admin/WaitlistManagement.vue"),
       },
 
+      {
+        path: "b2b",
+        name: "B2BRegistration",
+        component: () => import("../pages/admin/B2BRegistration.vue"),
+      },
       {
         path: "analytics/events",
         name: "EventStats",

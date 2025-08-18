@@ -18,7 +18,7 @@ export const b2bApi = {
   // Delete business
   delete: (id) => apiClient.delete(`/b2b/businesses/${id}`),
 
-  // Add Users to business
+  // Invite users to business
   inviteUsers: (businessId, users) =>
     apiClient.post(`/b2b/businesses/${businessId}/invite`, { users }),
 
