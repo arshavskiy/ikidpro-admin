@@ -458,7 +458,7 @@ const getSensorUnit = (seriesName) => {
       return " hPa";
     case "Light Level":
       return " lux";
-    case "Motion/Acceleration":
+    case "Motion":
       return " g";
     default:
       return "";

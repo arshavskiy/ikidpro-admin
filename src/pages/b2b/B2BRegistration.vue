@@ -241,32 +241,84 @@
           <h4 class="text-lg font-medium text-gray-900 mb-3">
             Business Information
           </h4>
+          <div class="flex justify-end mb-2">
+            <n-button size="small" @click="editMode = !editMode">
+              <template #icon>
+                <i :class="editMode ? 'fas fa-times' : 'fas fa-edit'"></i>
+              </template>
+              {{ editMode ? "Cancel Edit" : "Edit" }}
+            </n-button>
+          </div>
           <div class="grid grid-cols-2 gap-4">
             <div>
               <label class="text-sm font-medium text-gray-700">Name</label>
-              <p class="text-gray-900">{{ selectedBusiness.name }}</p>
+              <template v-if="editMode">
+                <n-input v-model:value="editBusinessForm.name" />
+              </template>
+              <template v-else>
+                <p class="text-gray-900">{{ selectedBusiness.name }}</p>
+              </template>
             </div>
             <div>
               <label class="text-sm font-medium text-gray-700">Type</label>
-              <p class="text-gray-900">{{ selectedBusiness.type }}</p>
+              <template v-if="editMode">
+                <n-select
+                  v-model:value="editBusinessForm.type"
+                  :options="businessTypeOptions"
+                />
+              </template>
+              <template v-else>
+                <p class="text-gray-900">{{ selectedBusiness.type }}</p>
+              </template>
             </div>
             <div>
               <label class="text-sm font-medium text-gray-700">Email</label>
-              <p class="text-gray-900">{{ selectedBusiness.email }}</p>
+              <template v-if="editMode">
+                <n-input v-model:value="editBusinessForm.email" />
+              </template>
+              <template v-else>
+                <p class="text-gray-900">{{ selectedBusiness.email }}</p>
+              </template>
             </div>
             <div>
               <label class="text-sm font-medium text-gray-700">Phone</label>
-              <p class="text-gray-900">{{ selectedBusiness.phone }}</p>
+              <template v-if="editMode">
+                <n-input v-model:value="editBusinessForm.phone" />
+              </template>
+              <template v-else>
+                <p class="text-gray-900">{{ selectedBusiness.phone }}</p>
+              </template>
             </div>
             <div class="col-span-2">
               <label class="text-sm font-medium text-gray-700">Address</label>
-              <p class="text-gray-900">{{ selectedBusiness.address }}</p>
+              <template v-if="editMode">
+                <n-input
+                  v-model:value="editBusinessForm.address"
+                  type="textarea"
+                  :rows="2"
+                />
+              </template>
+              <template v-else>
+                <p class="text-gray-900">{{ selectedBusiness.address }}</p>
+              </template>
             </div>
-            <div class="col-span-2" v-if="selectedBusiness.description">
+            <div
+              class="col-span-2"
+              v-if="selectedBusiness.description || editMode"
+            >
               <label class="text-sm font-medium text-gray-700"
                 >Description</label
               >
-              <p class="text-gray-900">{{ selectedBusiness.description }}</p>
+              <template v-if="editMode">
+                <n-input
+                  v-model:value="editBusinessForm.description"
+                  type="textarea"
+                  :rows="2"
+                />
+              </template>
+              <template v-else>
+                <p class="text-gray-900">{{ selectedBusiness.description }}</p>
+              </template>
             </div>
           </div>
           <!-- B2B API Action Buttons -->
@@ -281,8 +333,18 @@
               @click="fetchBusinessById(selectedBusiness._id)"
               >Get By ID</n-button
             >
-            <n-button size="small" @click="updateBusiness(selectedBusiness._id)"
+            <!-- <n-button
+              v-if="!editMode"
+              size="small"
+              @click="updateBusiness(selectedBusiness._id)"
               >Update</n-button
+            > -->
+            <n-button
+              v-if="editMode"
+              size="small"
+              type="primary"
+              @click="saveBusinessEdit"
+              >Save</n-button
             >
             <n-button
               size="small"
@@ -371,6 +433,57 @@
 </template>
 
 <script setup>
+// Edit mode for Business Details Modal
+import { reactive } from "vue";
+const editMode = ref(false);
+const editBusinessForm = reactive({
+  name: "",
+  type: "",
+  address: "",
+  phone: "",
+  email: "",
+  website: "",
+  description: "",
+  _id: "",
+});
+
+// watch(selectedBusiness, (val) => {
+//   if (val) {
+//     Object.assign(editBusinessForm, {
+//       name: val.name || "",
+//       type: val.type || "",
+//       address: val.address || "",
+//       phone: val.phone || "",
+//       email: val.email || "",
+//       website: val.website || "",
+//       description: val.description || "",
+//       _id: val._id || "",
+//     });
+//     editMode.value = false;
+//   }
+// });
+
+watch(editMode, (val) => {
+  if (val) {
+    Object.assign(editBusinessForm, { ...selectedBusiness.value });
+    editMode.value = true;
+  } else {
+    editMode.value = false;
+  }
+});
+
+const saveBusinessEdit = async () => {
+  try {
+    await b2bStore.updateBusiness(editBusinessForm._id, editBusinessForm);
+    message.success("Business updated successfully!");
+    editMode.value = false;
+    await b2bStore.fetchBusinesses();
+    // Optionally update selectedBusiness with new values
+    Object.assign(selectedBusiness.value, editBusinessForm);
+  } catch (error) {
+    message.error("Failed to update business");
+  }
+};
 import { ref, computed, onMounted, h, watch } from "vue";
 import {
   NButton,
@@ -646,14 +759,18 @@ const createBusiness = async () => {
   try {
     await businessFormRef.value?.validate();
     creatingBusiness.value = true;
-
-    await b2bStore.createBusiness(businessForm.value);
-    message.success("Business created successfully!");
+    if (businessForm.value._id) {
+      await b2bStore.updateBusiness(businessForm.value._id, businessForm.value);
+      message.success("Business updated successfully!");
+    } else {
+      await b2bStore.createBusiness(businessForm.value);
+      message.success("Business created successfully!");
+    }
     showCreateBusinessModal.value = false;
     resetBusinessForm();
   } catch (error) {
-    console.error("Error creating business:", error);
-    message.error("Failed to create business");
+    console.error("Error creating/updating business:", error);
+    message.error("Failed to save business");
   } finally {
     creatingBusiness.value = false;
   }
@@ -676,12 +793,20 @@ const fetchBusinessById = async (id) => {
     message.error("Failed to fetch business");
   }
 };
-const updateBusiness = async (id) => {
-  try {
-    await b2bStore.updateBusiness(id, businessForm.value);
-    message.success("Business updated");
-  } catch (error) {
-    message.error("Failed to update business");
+const updateBusiness = (id) => {
+  const business = businesses.value.find((b) => b._id === id);
+  if (business) {
+    businessForm.value = {
+      name: business.name || "",
+      type: business.type || "",
+      address: business.address || "",
+      phone: business.phone || "",
+      email: business.email || "",
+      website: business.website || "",
+      description: business.description || "",
+      _id: business._id,
+    };
+    showCreateBusinessModal.value = true;
   }
 };
 const deleteBusiness = async (id) => {
@@ -751,8 +876,7 @@ const removeUserFromList = (index) => {
 const inviteUsers = async () => {
   try {
     invitingUsers.value = true;
-    debugger;
-    await b2bStore.inviteUsers(selectedBusiness.value.aid, usersToInvite.value);
+    await b2bStore.inviteUsers(selectedBusiness.value._id, usersToInvite.value);
     message.success(
       `${usersToInvite.value.length} user(s) invited successfully!`
     );
@@ -768,7 +892,7 @@ const inviteUsers = async () => {
 
 const resendInvite = async (userId) => {
   try {
-    await b2bStore.resendInvite(selectedBusiness.value.aid, userId);
+    await b2bStore.resendInvite(selectedBusiness.value._id, userId);
     message.success("Invite resent successfully!");
   } catch (error) {
     console.error("Error resending invite:", error);
@@ -778,7 +902,7 @@ const resendInvite = async (userId) => {
 
 const removeUser = async (userId) => {
   try {
-    await b2bStore.removeUser(selectedBusiness.value.aid, userId);
+    await b2bStore.removeUser(selectedBusiness.value._id, userId);
     message.success("User removed successfully!");
   } catch (error) {
     console.error("Error removing user:", error);

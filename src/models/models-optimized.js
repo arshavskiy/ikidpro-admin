@@ -115,7 +115,7 @@ export const SENSOR_TYPES = {
   },
   // Motion sensors (grouped)
   motion: {
-    label: "Motion/Acceleration",
+    label: "Motion",
     field: "motion",
     dataField: ["AccelX", "AccelY", "AccelZ"],
     icon: "fa-running",

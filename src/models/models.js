@@ -44,7 +44,7 @@ export const eventTypeOptions = [
   { value: "light", label: "Light Level" },
   { value: "mood", label: "Mood" },
   // { value: "gps", label: "GPS Location" },
-  { value: "motion", label: "Motion/Acceleration" },
+  { value: "motion", label: "Motion" },
 ];
 
 // Predicate to hide certain event types from multi-select dropdowns
@@ -180,7 +180,7 @@ export const distributionMap = {
   },
   motion: {
     distKey: "motion",
-    label: "Motion/Acceleration",
+    label: "Motion",
     icon: "fa-running",
     iconClass: "text-teal-600",
     bgClass: "bg-teal-50",
@@ -834,7 +834,7 @@ export const availableSensorOptions = [
   { value: "EDA", label: "EDA" },
   { value: "scl", label: "SCL" },
   { value: "scr", label: "SCR" },
-  { value: "motion", label: "Motion/Acceleration" },
+  { value: "motion", label: "Motion" },
   { value: "Sp02", label: "Sp02" },
   { value: "Humidity", label: "Humidity" },
   { value: "Altitude", label: "Altitude" },
