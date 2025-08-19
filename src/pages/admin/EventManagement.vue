@@ -962,8 +962,6 @@ const columns = computed(() => {
 const filteredEvents = computed(() => {
   let filtered = events.value;
 
-  debugger;
-
   // Search filter
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase();

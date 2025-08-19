@@ -23,7 +23,6 @@ export const useRulesStore = defineStore("rules", {
     async createRule(payload) {
       this.saving = true;
       try {
-        debugger;
         const res = await apiClient.post("/rules", payload);
         const created = res.data?.data || res.data;
         if (created) this.rules.unshift(created);
