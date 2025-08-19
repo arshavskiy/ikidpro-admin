@@ -56,22 +56,22 @@
     </n-card>
 
     <!-- Statistics Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-      <StatisticsCard
+    <!-- <div class="grid grid-cols-1 md:grid-cols-4 gap-6"> -->
+      <!-- <StatisticsCard
         label="Total Children"
         :value="totalChildren"
         icon="fas fa-child"
         variant="blue"
-      />
+      /> -->
 
-      <StatisticsCard
+      <!-- <StatisticsCard
         label="Male/Female"
         :value="`${maleCount}/${femaleCount}`"
         icon="fas fa-venus-mars"
         variant="green"
-      />
+      /> -->
 
-      <StatisticsCard
+      <!-- <StatisticsCard
         label="Avg Age"
         :value="`${averageAge} years`"
         icon="fas fa-birthday-cake"
@@ -83,8 +83,8 @@
         :value="childrenWithConditions"
         icon="fas fa-heart"
         variant="red"
-      />
-    </div>
+      /> -->
+    <!-- </div> -->
 
     <!-- Children Table -->
     <n-card>
@@ -846,7 +846,7 @@ const columns = computed(() => {
 
 // Computed properties
 const filteredChildren = computed(() => {
-  let filtered = children.value;
+  let filtered = JSON.parse(JSON.stringify(children.value));
 
   // Search filter
   if (searchQuery.value) {
@@ -880,20 +880,21 @@ const filteredChildren = computed(() => {
 });
 
 const totalChildren = computed(() => children.value.length);
-const maleCount = computed(
-  () => children.value.filter((child) => child.gender === "Male").length
-);
-const femaleCount = computed(
-  () => children.value.filter((child) => child.gender === "Female").length
-);
-const averageAge = computed(() => {
-  const ages = children.value
-    .filter((child) => child.age)
-    .map((child) => child.age);
-  return ages.length > 0
-    ? Math.round(ages.reduce((a, b) => a + b, 0) / ages.length)
-    : 0;
-});
+// const maleCount = computed(
+//   () => children.value.filter((child) => child.gender === "Male").length
+// );
+// const femaleCount = computed(
+//   () => children.value.filter((child) => child.gender === "Female").length
+// );
+
+// const averageAge = computed(() => {
+//   const ages = children.value
+//     .filter((child) => child.age)
+//     .map((child) => child.age);
+//   return ages.length > 0
+//     ? Math.round(ages.reduce((a, b) => a + b, 0) / ages.length)
+//     : 0;
+// });
 const childrenWithConditions = computed(
   () =>
     children.value.filter((child) => child.medicalCondition?.length > 0).length

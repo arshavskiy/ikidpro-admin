@@ -664,11 +664,11 @@ export const menuOptions = [
         key: "/admin/waitlist",
         icon: () => h("i", { class: "fas fa-clipboard-list" }),
       },
-      {
-        label: "B2B Registration",
-        key: "/admin/b2b",
-        icon: () => h("i", { class: "fas fa-building" }),
-      },
+      // {
+      //   label: "B2B Registration",
+      //   key: "/admin/b2b",
+      //   icon: () => h("i", { class: "fas fa-building" }),
+      // },
     ],
   },
   {
