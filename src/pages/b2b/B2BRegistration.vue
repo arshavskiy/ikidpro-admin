@@ -238,9 +238,9 @@
       <div v-if="selectedBusiness" class="space-y-6">
         <!-- Business Info -->
         <div class="bg-gray-50 p-4 rounded-lg">
-          <h4 class="text-lg font-medium text-gray-900 mb-3">
+          <!-- <h4 class="text-lg font-medium text-gray-900 mb-3">
             Business Information
-          </h4>
+          </h4> -->
           <div class="flex justify-end mb-2">
             <n-button size="small" @click="editMode = !editMode">
               <template #icon>
@@ -392,6 +392,12 @@
                     Status:
                     <span :class="getStatusClass(user.status)">
                       {{ user.status }}
+                    </span>
+                  </div>
+                  <div class="text-xs text-gray-500">
+                    invite Link:
+                    <span>
+                      {{ user.inviteLink }}
                     </span>
                   </div>
                 </div>

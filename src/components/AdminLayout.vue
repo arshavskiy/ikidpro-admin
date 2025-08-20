@@ -69,7 +69,7 @@ import { computed, ref, h } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useUserStore } from "../stores/userStore";
 import { NMenu, NButton } from "naive-ui";
-import { menuOptions } from "../models/models";
+import { menuOptions } from "../router/models-route";
 
 const route = useRoute();
 const router = useRouter();

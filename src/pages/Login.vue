@@ -356,7 +356,7 @@
 
 <script setup>
 import { ref } from "vue";
-import { useUserStore } from "../../stores/userStore";
+import { useUserStore } from "../stores/userStore";
 import { useRouter, useRoute } from "vue-router";
 
 const userStore = useUserStore();
@@ -367,15 +367,24 @@ const password = ref("");
 const loading = ref(false);
 const error = ref("");
 
+const props = defineProps({
+  type: {
+    type: String,
+    default: "default",
+  },
+});
+
 async function handleLogin() {
   loading.value = true;
   error.value = "";
 
   try {
-    await userStore.login({
+    await userStore.login(props.type, {
       email: email.value,
       password: password.value,
     });
+
+    //TODO: Implement redirect logic for non admin
 
     const redirectPath = route.query.redirect || "/admin/analytics/events";
     router.push(redirectPath);

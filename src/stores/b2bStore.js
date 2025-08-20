@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { b2bApi } from "@/services/b2bApi"; // Adjust the import path as necessary
+import { b2bApi, b2bUserApi } from "@/services/b2bApi"; // Adjust the import path as necessary
 
 export const useB2BStore = defineStore("b2b", {
   state: () => ({
@@ -139,7 +139,7 @@ export const useB2BStore = defineStore("b2b", {
       try {
         // TODO: Replace with actual API call
         const response = await b2bApi.inviteUsers(businessId, users);
-        const invitedUsers = response.data.data || response.data;
+        let invitedUsers = response.data.data || response.data;
 
         // Mock invitation
         // await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -153,13 +153,13 @@ export const useB2BStore = defineStore("b2b", {
           business.users = [];
         }
 
-        // const invitedUsers = users.map((user) => ({
-        //   ...user,
-        //   _id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
-        //   status: "pending",
-        //   invitedAt: new Date().toISOString(),
-        //   joinedAt: null,
-        // }));
+        invitedUsers = users.map((user) => ({
+          ...user,
+          _id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+          status: "pending",
+          invitedAt: new Date().toISOString(),
+          joinedAt: null,
+        }));
 
         business.users.push(...invitedUsers);
         return invitedUsers;
@@ -303,6 +303,41 @@ export const useB2BStore = defineStore("b2b", {
         pendingUsers,
         businessTypes,
       };
+    },
+
+    async acceptInvite({ token, firstName, lastName, email, password }) {
+      this.loading = true;
+      this.error = null;
+      try {
+        // Call the b2bApi acceptInvite endpoint
+        const response = await b2bUserApi.acceptInvite(token, {
+          firstName,
+          lastName,
+          email,
+          password,
+        });
+        return response.data;
+      } catch (error) {
+        this.error = error.message;
+        throw error;
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    // Decline user invitation
+    async declineInvite(token) {
+      this.loading = true;
+      this.error = null;
+      try {
+        const response = await b2bUserApi.declineInvite(token);
+        return response.data;
+      } catch (error) {
+        this.error = error.message;
+        throw error;
+      } finally {
+        this.loading = false;
+      }
     },
 
     // Clear error

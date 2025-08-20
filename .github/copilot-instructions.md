@@ -42,7 +42,7 @@ Example:
   </n-card>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref } from "vue";
 import { NCard, NInput } from "naive-ui";
 
@@ -90,16 +90,16 @@ const username = ref("");
 # Composable for fetching data
 
 - Place reusable logic in src/composables.
-- Naming: useThing.ts (e.g., useFetch.ts).
+- Naming: useThing.js (e.g., useFetch.js).
 - Always type function return values.
 
 ```
-// src/composables/useFetch.ts
+// src/composables/useFetch.js
 import { ref } from 'vue'
 
-export function useFetch<T>(url: string) {
-  const data = ref<T | null>(null)
-  const error = ref<string | null>(null)
+export function useFetch(url) {
+  const data = ref(null)
+  const error = ref(null)
 
   async function fetchData() {
     try {

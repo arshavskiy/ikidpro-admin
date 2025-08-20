@@ -61,8 +61,8 @@ export const b2bUserApi = {
   delete: (id) => apiClient.delete(`/b2b/users/${id}`),
 
   // Accept invitation
-  acceptInvite: (inviteToken) =>
-    apiClient.post("/b2b/users/accept-invite", { inviteToken }),
+  acceptInvite: (inviteToken, data) =>
+    apiClient.post("/b2b/users/accept-invite", { inviteToken, ...data }),
 
   // Decline invitation
   declineInvite: (inviteToken) =>
