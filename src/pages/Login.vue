@@ -158,7 +158,7 @@
 
     <div class="max-w-md w-full space-y-8 relative z-10">
       <!-- Header Section -->
-      <div class="text-center">
+      <div v-if="!b2bType" class="text-center">
         <!-- Logo with Data Visualization Theme -->
         <div class="mb-8">
           <div
@@ -199,9 +199,9 @@
         <div
           class="bg-slate-800/40 backdrop-blur-xl rounded-2xl p-8 border border-slate-700/50 shadow-2xl"
         >
-          <p class="text-slate-400 text mb-4 text-center">
+          <h3 class="text-slate-400 text mb-4 text-center">
             Enter your credentials to access
-          </p>
+          </h3>
           <!-- Input Fields -->
           <div class="space-y-6">
             <!-- Email Field -->
@@ -355,7 +355,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { useUserStore } from "../stores/userStore";
 import { useRouter, useRoute } from "vue-router";
 
@@ -372,6 +372,10 @@ const props = defineProps({
     type: String,
     default: "default",
   },
+});
+
+const b2bType = computed(() => {
+  return props.type == "b2b" || router.currentRoute.value.name.includes("b2b");
 });
 
 async function handleLogin() {

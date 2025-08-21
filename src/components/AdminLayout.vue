@@ -13,7 +13,7 @@
         <div class="mt-4">
           <n-menu
             :value="selectedKey"
-            :options="menuOptions"
+            :options="filteredOptions"
             @update:value="handleMenuSelect"
             :default-expand-all="true"
             :accordion="false"
@@ -44,8 +44,9 @@
           <div class="px-6 py-4">
             <div class="flex items-center justify-end space-x-4">
               <span class="text-sm text-gray-600">
-                Welcome, {{ user?.firstName || "Admin" }}</span
-              >
+                Welcome, {{ user?.role || "user" }} -
+                {{ user?.firstName || "Admin" }}
+              </span>
               <div
                 class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center"
               >
@@ -79,6 +80,33 @@ const user = computed(() => userStore.user);
 
 // Selected menu key based on current route
 const selectedKey = computed(() => route.path);
+
+// Recursive role filter
+function filterMenuByRole(options, role) {
+  return options
+    .map((option) => {
+      if (option.children) {
+        const children = filterMenuByRole(option.children, role);
+        if (
+          children.length > 0 ||
+          option.roles?.includes(role) ||
+          !option.roles
+        ) {
+          return { ...option, children };
+        }
+      }
+      if (option.roles?.includes(role) || !option.roles) {
+        return option;
+      }
+      return null;
+    })
+    .filter(Boolean);
+}
+
+// Computed menu options
+const filteredOptions = computed(() => {
+  return filterMenuByRole(menuOptions, user.value.role);
+});
 
 // Handle menu selection
 const handleMenuSelect = (key) => {

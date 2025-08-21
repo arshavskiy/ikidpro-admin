@@ -1,3 +1,4 @@
+import { h, ref } from "vue";
 // Full router route table (for src/router/index.js)
 export const appRoutes = [
   {
@@ -16,7 +17,7 @@ export const appRoutes = [
     path: "/invite",
     name: "InviteAccept",
     component: () => import("../pages/b2b/B2BInviteAccept.vue"),
-    meta: { requiresAuth: false },
+    meta: { requiresAuth: true, requiredRole: ["admin"] },
     props: (route) => ({ token: route.query.token }), // Pass token param from URL as prop
   },
   {
@@ -30,13 +31,12 @@ export const appRoutes = [
     path: "/register",
     name: "Register",
     component: () => import("../pages/Register.vue"),
-    meta: { requiresAuth: false },
+    meta: { requiresAuth: true, requiredRole: ["admin"] },
   },
   {
     path: "/admin",
     component: () => import("../components/AdminLayout.vue"),
     meta: { requiresAuth: true },
-    meta: { requiredRole: "admin" },
     children: [
       {
         path: "users",
@@ -107,6 +107,7 @@ export const appRoutes = [
         path: "data/management",
         name: "DataManagement",
         component: () => import("../pages/admin/DataManagement.vue"),
+        meta: { requiresAuth: true, requiredRole: ["admin"] },
       },
       {
         path: "b2b/registration",
@@ -117,6 +118,7 @@ export const appRoutes = [
         path: "data/export",
         name: "DataExport",
         component: () => import("../pages/admin/DataExport.vue"),
+        meta: { requiresAuth: true, requiredRole: ["admin"] },
       },
       {
         path: "data/rules",
@@ -127,26 +129,30 @@ export const appRoutes = [
         path: "waitlist",
         name: "WaitlistManagement",
         component: () => import("../pages/admin/WaitlistManagement.vue"),
+        meta: { requiresAuth: true, requiredRole: ["admin"] },
       },
       {
         path: "analytics/events",
-        name: "EventStats",
+        name: "Analytics",
         component: () => import("../pages/admin/EventAnalytics.vue"),
       },
       {
         path: "system/database",
         name: "DatabaseInfo",
         component: () => import("../pages/admin/DatabaseInfo.vue"),
+        meta: { requiresAuth: true, requiredRole: ["admin"] },
       },
       {
         path: "system/api-test",
         name: "ApiTesting",
         component: () => import("../pages/admin/ApiTesting.vue"),
+        meta: { requiresAuth: true, requiredRole: ["admin"] },
       },
       {
         path: "system/logs",
         name: "SystemLogs",
         component: () => import("../pages/admin/SystemLogs.vue"),
+        meta: { requiresAuth: true, requiredRole: ["admin"] },
       },
     ],
   },
@@ -199,12 +205,14 @@ export const menuOptions = [
   },
   {
     label: "B2B Management",
+    roles: ["admin", "manager"],
     key: "/admin/b2b/registration",
     icon: () => h("i", { class: "fas fa-database" }),
     children: [
       {
         label: "Registration",
         key: "/admin/b2b/registration",
+        roles: ["admin", "manager"],
         icon: () => h("i", { class: "fas fa-building" }),
       },
     ],
@@ -222,6 +230,7 @@ export const menuOptions = [
       {
         label: "Data Export",
         key: "/admin/data/export",
+        roles: ["admin", "manager"],
         icon: () => h("i", { class: "fas fa-file-download" }),
       },
       {
@@ -232,6 +241,7 @@ export const menuOptions = [
       {
         label: "Waitlist",
         key: "/admin/waitlist",
+        roles: ["admin", "manager"],
         icon: () => h("i", { class: "fas fa-clipboard-list" }),
       },
       // {
@@ -245,16 +255,19 @@ export const menuOptions = [
     label: "System",
     key: "system",
     icon: () => h("i", { class: "fas fa-cog" }),
+    roles: ["admin", "manager"],
     children: [
       {
         label: "Database Info",
         key: "/admin/system/database",
         icon: () => h("i", { class: "fas fa-database" }),
+        roles: ["admin", "manager"],
       },
       {
         label: "API Testing",
         key: "/admin/system/api-test",
         icon: () => h("i", { class: "fas fa-flask" }),
+        roles: ["admin", "manager"],
       },
     ],
   },

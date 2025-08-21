@@ -5,7 +5,7 @@ import apiClient from "../services/apiClient";
 export const useUserStore = defineStore("user", {
   state: () => ({
     token: sessionStorage.getItem("userToken"),
-    user: null,
+    user: JSON.parse(sessionStorage.getItem("user")),
     loading: false,
     error: null,
     role: "user",
@@ -22,24 +22,23 @@ export const useUserStore = defineStore("user", {
       let response = {};
 
       try {
-        if (type === "B2B") {
+        if (type == "B2B") {
           response = await apiClient.post("/b2b/users/login", credentials);
         } else response = await apiClient.post("/admin/login", credentials);
 
         this.token = response.data?.data?.token;
-        this.user = response.data?.data?.admin;
-        this.role = this.user.role || "user";
-
         //TODO: Implement redirect logic for non admin
 
-        if (type === "B2B") {
+        if (type == "B2B") {
           this.user = response.data?.data?.user;
-          this.role = response.data?.data?.role;
+          this.role = this.user.role;
+        } else {
+          this.user = response.data?.data?.admin;
+          this.role = this.user.role || "user";
         }
 
-        debugger;
-
         sessionStorage.setItem("userToken", this.token);
+        sessionStorage.setItem("user", JSON.stringify(this.user));
       } catch (error) {
         this.error = error.response?.data?.message || "Login failed";
         throw error;

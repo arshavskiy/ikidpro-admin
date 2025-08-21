@@ -10,7 +10,6 @@ const router = createRouter({
 // Navigation guard
 router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore();
-  const requiredRole = to.meta.requiredRole;
 
   if (to.meta.requiresAuth) {
     if (!userStore.isAuthenticated) {
@@ -19,13 +18,12 @@ router.beforeEach(async (to, from, next) => {
       return;
     }
 
-    //TODO: Implement redirect logic for non admin
-
-    // if (requiredRole && userStore.role !== requiredRole) {
-    //   next("/unauthorized");
-    // } else {
-    //   next();
-    // }
+    if (
+      to.meta.requiredRole &&
+      !to.meta.requiredRole.includes(userStore.user.role)
+    ) {
+      return next({ name: "Analytics" });
+    }
   }
 
   next();
