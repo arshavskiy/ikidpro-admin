@@ -11,6 +11,9 @@ export const b2bApi = {
   // Create new business
   create: (businessData) => apiClient.post("/b2b/businesses", businessData),
 
+  createInvitedBusiness: (businessData) =>
+    apiClient.post("/b2b/invites/register", businessData),
+
   // Update business
   update: (id, businessData) =>
     apiClient.put(`/b2b/businesses/${id}`, businessData),
@@ -21,6 +24,13 @@ export const b2bApi = {
   // Invite users to business
   inviteUsers: (businessId, users) =>
     apiClient.post(`/b2b/businesses/${businessId}/invite`, { users }),
+
+  inviteBusiness: (email, name) =>
+    apiClient.post(`/b2b/businesses/invite`, {
+      email,
+      name,
+      invitedBy: JSON.parse(sessionStorage.getItem("user"))?._id || null,
+    }),
 
   // Resend invitation
   resendInvite: (businessId, userId) =>
@@ -44,6 +54,9 @@ export const b2bApi = {
 
   // Get business statistics
   getStats: () => apiClient.get("/b2b/statistics"),
+
+  // Get all business invites
+  fetchBusinessInvites: () => apiClient.get("/b2b/invites"),
 };
 
 // B2B User API endpoints

@@ -4,6 +4,7 @@ import { b2bApi, b2bUserApi } from "@/services/b2bApi"; // Adjust the import pat
 export const useB2BStore = defineStore("b2b", {
   state: () => ({
     businesses: [],
+    invitedBusinesses: [],
     loading: false,
     error: null,
   }),
@@ -29,6 +30,23 @@ export const useB2BStore = defineStore("b2b", {
   },
 
   actions: {
+    // Fetch all business invites
+    async fetchBusinessInvites() {
+      this.loading = true;
+      this.error = null;
+      try {
+        const response = await b2bApi.fetchBusinessInvites();
+        // Return invites array (response.data.invites or response.data.data.invites)
+        this.invitedBusinesses =
+          response.data.data.invitations || response.data.businesses;
+      } catch (error) {
+        this.error = error.message;
+        console.error("Error fetching business invites:", error);
+        throw error;
+      } finally {
+        this.loading = false;
+      }
+    },
     // Fetch all businesses
     async fetchBusinesses() {
       this.loading = true;
@@ -47,25 +65,32 @@ export const useB2BStore = defineStore("b2b", {
       }
     },
 
+    // Invite business
+    async inviteBusiness({ email, name }) {
+      this.loading = true;
+      this.error = null;
+      try {
+        const res = await b2bApi.inviteBusiness(email, name);
+        if (!res.ok) {
+          throw new Error("Failed to send invite");
+        }
+        return await res.json();
+      } catch (error) {
+        this.error = error.message;
+        throw error;
+      } finally {
+        this.loading = false;
+      }
+    },
+
     // Create new business
     async createBusiness(businessData) {
       this.loading = true;
       this.error = null;
 
       try {
-        // TODO: Replace with actual API call
-        const response = await b2bApi.create(businessData);
+        const response = await b2bApi.createInvitedBusiness(businessData);
         const newBusiness = response.data.data || response.data;
-
-        // Mock creation
-        // await new Promise((resolve) => setTimeout(resolve, 1000));
-        // const newBusiness = {
-        //   _id: Date.now().toString(),
-        //   ...businessData,
-        //   createdAt: new Date().toISOString(),
-        //   users: [],
-        // };
-
         // this.businesses.unshift(newBusiness);
         return newBusiness;
       } catch (error) {
@@ -137,12 +162,8 @@ export const useB2BStore = defineStore("b2b", {
       this.error = null;
 
       try {
-        // TODO: Replace with actual API call
         const response = await b2bApi.inviteUsers(businessId, users);
         let invitedUsers = response.data.data || response.data;
-
-        // Mock invitation
-        // await new Promise((resolve) => setTimeout(resolve, 1000));
 
         const business = this.businesses.find((b) => b._id === businessId);
         if (!business) {

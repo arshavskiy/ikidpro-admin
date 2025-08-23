@@ -6,7 +6,7 @@
         <h2 class="text-2xl font-bold text-gray-900">B2B Registration</h2>
         <p class="text-gray-600">Manage business registrations and Add Users</p>
       </div>
-      <div class="flex space-x-2">
+      <div class="flex space-x-2 invite-container">
         <n-button @click="refreshBusinesses" :loading="loading" type="primary">
           <template #icon>
             <i class="fas fa-sync-alt"></i>
@@ -19,6 +19,56 @@
           </template>
           Create Business
         </n-button>
+        <n-button @click="inviteBusiness" type="info">
+          <template #icon>
+            <i class="fas fa-paper-plane"></i>
+          </template>
+          Invite Business
+        </n-button>
+        <!-- Invite Business Modal -->
+        <n-modal
+          v-model:show="showInviteBusinessModal"
+          preset="card"
+          title="Invite New Business"
+          style="width: 600px"
+        >
+          <n-form
+            ref="inviteBusinessFormRef"
+            :model="inviteBusinessForm"
+            :rules="inviteBusinessRules"
+            label-placement="left"
+            label-width="120"
+            require-mark-placement="right-hanging"
+          >
+            <n-form-item label="Business Email" path="email">
+              <n-input
+                v-model:value="inviteBusinessForm.email"
+                placeholder="Enter business email"
+                type="email"
+              />
+            </n-form-item>
+            <n-form-item label="Contact Name" path="contactName">
+              <n-input
+                v-model:value="inviteBusinessForm.contactName"
+                placeholder="Enter contact name"
+              />
+            </n-form-item>
+          </n-form>
+          <template #footer>
+            <div class="flex justify-end space-x-2">
+              <n-button @click="showInviteBusinessModal = false">
+                Cancel
+              </n-button>
+              <n-button
+                @click="sendBusinessInvite"
+                type="primary"
+                :loading="invitingBusiness"
+              >
+                Send Invite
+              </n-button>
+            </div>
+          </template>
+        </n-modal>
       </div>
     </div>
 
@@ -46,6 +96,30 @@
       />
     </n-card>
 
+    <!-- Business List -->
+    <n-card>
+      <div class="flex justify-between items-center mb-4">
+        <!-- <h3 class="text-lg font-medium text-gray-900">Registered Businesses</h3> -->
+        <n-input
+          v-model:value="searchInvitedQuery"
+          placeholder="Search invited businesses..."
+          class="w-64"
+        >
+          <template #prefix>
+            <i class="fas fa-search text-gray-400"></i>
+          </template>
+        </n-input>
+      </div>
+
+      <n-data-table
+        :columns="businessInvitedColumns"
+        :data="filteredInvitedBusinesses"
+        :pagination="pagination"
+        :loading="b2bStore.loading"
+        :row-key="(row) => row._id"
+      />
+    </n-card>
+
     <!-- Create Business Modal -->
     <n-modal
       v-model:show="showCreateBusinessModal"
@@ -65,6 +139,33 @@
           <n-input
             v-model:value="businessForm.name"
             placeholder="Enter business name"
+          />
+        </n-form-item>
+        <n-form-item label="Contact Last Name" path="lastName">
+          <n-input
+            v-model:value="businessForm.lastName"
+            placeholder="Enter contact last name"
+          />
+        </n-form-item>
+        <n-form-item label="Contact Email" path="email">
+          <n-input
+            v-model:value="businessForm.email"
+            placeholder="Enter contact email"
+            type="email"
+          />
+        </n-form-item>
+        <n-form-item label="Contact Password" path="user_password">
+          <n-input
+            v-model:value="businessForm.user_password"
+            placeholder="Enter user_password"
+            type="user_password"
+            show-user_password-on="mousedown"
+          />
+        </n-form-item>
+        <n-form-item label="Contact Phone" path="phone">
+          <n-input
+            v-model:value="businessForm.phone"
+            placeholder="Enter contact phone"
           />
         </n-form-item>
 
@@ -504,15 +605,39 @@ import {
 import { useMessage } from "naive-ui";
 import { useB2BStore } from "../../stores/b2bStore";
 
+import { useRouter } from "vue-router";
+const router = useRouter();
+
+const showInviteBusinessModal = ref(false);
+const inviteBusinessFormRef = ref(null);
+const invitingBusiness = ref(false);
+const inviteBusinessForm = ref({
+  email: "",
+  contactName: "",
+});
+const inviteBusinessRules = {
+  email: {
+    required: true,
+    message: "Business email is required",
+    trigger: "blur",
+    type: "email",
+  },
+  contactName: {
+    required: true,
+    message: "Contact name is required",
+    trigger: "blur",
+  },
+};
+
 const message = useMessage();
 const b2bStore = useB2BStore();
-
 const loading = computed(() => b2bStore.loading);
 
 // Reactive data
 const creatingBusiness = ref(false);
 const invitingUsers = ref(false);
 const searchQuery = ref("");
+const searchInvitedQuery = ref("");
 const showCreateBusinessModal = ref(false);
 const showInviteUsersModal = ref(false);
 const showBusinessDetailsModal = ref(false);
@@ -522,6 +647,10 @@ const selectedBusiness = ref(null);
 const businessFormRef = ref(null);
 const businessForm = ref({
   name: "",
+  lastName: "",
+  email: "",
+  user_password: "",
+  phone: "",
   type: "",
   address: "",
   phone: "",
@@ -540,6 +669,47 @@ const newUser = ref({
 
 // Users to invite list
 const usersToInvite = ref([]);
+
+// Invited businesses list for new table
+
+const businessInvitedColumns = [
+  {
+    title: "Email",
+    key: "email",
+    width: 200,
+  },
+  {
+    title: "Contact Name",
+    key: "name",
+    width: 150,
+  },
+  {
+    title: "Status",
+    key: "status",
+    render: (row) => row.status || "invited",
+    width: 100,
+  },
+  {
+    title: "Invite Link",
+    key: "invitedLink",
+    render: (row) =>
+      h(
+        "a",
+        {
+          href: row.inviteLink,
+          target: "_blank",
+          class: "text-blue-500 hover:underline",
+        },
+        row.inviteLink
+      ),
+  },
+  {
+    title: "expires",
+    key: "expiresAt",
+    render: (row) => new Date(row.expiresAt).toLocaleString(),
+    width: 200,
+  },
+];
 
 // Business type options
 const businessTypeOptions = [
@@ -586,6 +756,7 @@ const businessRules = {
 
 // Get businesses from store
 const businesses = computed(() => b2bStore.businesses);
+const invitedBusinesses = computed(() => b2bStore.invitedBusinesses);
 
 watch(businesses, (val) => {
   console.log("Businesses changed:", val);
@@ -607,6 +778,17 @@ const pagination = ref({
 });
 
 // Computed properties
+const filteredInvitedBusinesses = computed(() => {
+  if (!searchInvitedQuery.value) return invitedBusinesses.value;
+
+  const query = searchInvitedQuery.value.toLowerCase();
+  return invitedBusinesses.value.filter(
+    (business) =>
+      business.name?.toLowerCase().includes(query) ||
+      business.email?.toLowerCase().includes(query)
+  );
+});
+
 const filteredBusinesses = computed(() => {
   if (!searchQuery.value) return businesses.value;
 
@@ -835,12 +1017,17 @@ const searchBusinesses = async () => {
 const resetBusinessForm = () => {
   businessForm.value = {
     name: "",
+    email: "",
+    phone: "",
     type: "",
     address: "",
-    phone: "",
-    email: "",
     website: "",
     description: "",
+    firstName: "",
+    lastName: "",
+    user_phone: "",
+    user_email: "",
+    user_password: "",
   };
   businessFormRef.value?.restoreValidation();
 };
@@ -896,6 +1083,49 @@ const inviteUsers = async () => {
   }
 };
 
+function inviteBusiness() {
+  showInviteBusinessModal.value = true;
+}
+
+async function sendBusinessInvite() {
+  invitingBusiness.value = true;
+  try {
+    // await inviteBusinessFormRef.value?.validate();
+    await b2bStore.inviteBusiness({
+      email: inviteBusinessForm.value.email,
+      name: inviteBusinessForm.value.contactName,
+    });
+
+    // const invitation = response?.data?.invitation;
+    // Add to invited businesses table
+    // debugger;
+    // invitedBusinesses.value.push({
+    //   _id: invitation?._id || Date.now().toString(),
+    //   email: invitation?.email || inviteBusinessForm.value.email,
+    //   contactName: inviteBusinessForm.value.contactName,
+    //   status: invitation?.status || "pending",
+    //   invitedAt: invitation?.createdAt || new Date().toISOString(),
+    //   inviteLink: invitation?.inviteLink || response?.data?.inviteLink,
+    //   role: invitation?.role,
+    //   permissions: invitation?.permissions,
+    //   expiresAt: invitation?.expiresAt,
+    //   businessId: invitation?.businessId,
+    //   token: invitation?.token,
+    // });
+
+    message.success(response?.message || "Business invite sent!");
+    showInviteBusinessModal.value = false;
+
+    refreshBusinesses();
+    // inviteBusinessForm.value = { email: "", contactName: "" };
+  } catch (error) {
+    console.error(error);
+  } finally {
+    showInviteBusinessModal.value = false;
+    invitingBusiness.value = false;
+  }
+}
+
 const resendInvite = async (userId) => {
   try {
     await b2bStore.resendInvite(selectedBusiness.value._id, userId);
@@ -932,12 +1162,14 @@ const getStatusClass = (status) => {
 // Lifecycle
 onMounted(async () => {
   await b2bStore.fetchBusinesses();
-  console.log("Businesses loaded:", b2bStore.businesses);
+  await b2bStore.fetchBusinessInvites();
   console.log("Businesses loaded:", businesses.value);
+  console.log("Invited businesses loaded:", invitedBusinesses.value);
 });
 
 const refreshBusinesses = async () => {
   await b2bStore.fetchBusinesses();
+  await b2bStore.fetchBusinessInvites();
   message.success("Business list refreshed");
 };
 </script>

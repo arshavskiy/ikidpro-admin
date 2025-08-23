@@ -14,10 +14,17 @@ export const appRoutes = [
     meta: { requiresAuth: false },
   },
   {
+    path: "/invite-b2b",
+    name: "RegisterB2B",
+    component: () => import("../pages/RegisterB2B.vue"),
+    meta: { requiresAuth: false },
+    props: (route) => ({ token: route.query.token }), // Pass token param from URL as prop
+  },
+  {
     path: "/invite",
     name: "InviteAccept",
     component: () => import("../pages/b2b/B2BInviteAccept.vue"),
-    meta: { requiresAuth: true, requiredRole: ["admin"] },
+    // meta: { requiresAuth: false, requiredRole: ["admin"] },
     props: (route) => ({ token: route.query.token }), // Pass token param from URL as prop
   },
   {
