@@ -264,6 +264,11 @@
             type="email"
           />
           <n-input v-model:value="newUser.phone" placeholder="Phone" />
+          <n-select
+            v-model:value="newUser.role"
+            :options="userRoleOptions"
+            placeholder="Select role"
+          />
         </div>
         <div class="mt-3">
           <n-button
@@ -431,7 +436,7 @@
           </div>
           <!-- B2B API Action Buttons -->
           <div class="flex flex-wrap gap-2 mt-4">
-            <n-button
+            <!-- <n-button
               size="small"
               @click="fetchBusinessStats(selectedBusiness._id)"
               >Get Stats</n-button
@@ -440,7 +445,7 @@
               size="small"
               @click="fetchBusinessById(selectedBusiness._id)"
               >Get By ID</n-button
-            >
+            > -->
             <!-- <n-button
               v-if="!editMode"
               size="small"
@@ -466,7 +471,7 @@
 
         <!-- Users List -->
         <div>
-          <div class="flex justify-between items-center mb-3">
+          <div class="flex justify-between items-center mb-1">
             <h4 class="text-lg font-medium text-gray-900">Registered Users</h4>
             <n-button
               @click="openInviteUsersModal(selectedBusiness)"
@@ -487,7 +492,65 @@
               <div
                 v-for="user in selectedBusiness.users"
                 :key="user._id"
-                class="flex items-center justify-between p-3 bg-white border rounded-lg"
+                class="flex items-center justify-between p-2 bg-white border rounded"
+              >
+                <div>
+                  <div class="font-medium">
+                    {{ user.firstName }} {{ user.lastName }}
+                  </div>
+                  <div class="text-sm text-gray-600">
+                    {{ user.email }} • {{ user.phone }}
+                  </div>
+                  <div class="text-xs text-gray-500">
+                    Status:
+                    <span :class="getStatusClass(user.status)">
+                      {{ user.status }}
+                    </span>
+                  </div>
+                  <div v-if="user.inviteLink" class="text-xs text-gray-500">
+                    invite Link:
+                    <span>
+                      {{ user.inviteLink }}
+                    </span>
+                  </div>
+                </div>
+                <div class="flex space-x-2">
+                  <n-button
+                    v-if="user.status === 'pending'"
+                    @click="resendInvite(user._id)"
+                    size="small"
+                    type="info"
+                    ghost
+                  >
+                    Resend Invite
+                  </n-button>
+                  <n-button
+                    @click="removeUser(user._id)"
+                    size="small"
+                    type="error"
+                    ghost
+                  >
+                    Remove
+                  </n-button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div v-else class="text-gray-500 text-center py-4">
+            No users registered yet
+          </div>
+          <h4 class="text-lg font-medium text-gray-900">Invited Users</h4>
+          <div
+            v-if="
+              selectedBusiness.usersInvited &&
+              selectedBusiness.usersInvited.length > 0
+            "
+          >
+            <div class="space-y-2">
+              <div
+                v-for="user in selectedBusiness.usersInvited"
+                :key="user._id"
+                class="flex items-center justify-between p-2 bg-white border rounded"
               >
                 <div>
                   <div class="font-medium">
@@ -530,9 +593,6 @@
                 </div>
               </div>
             </div>
-          </div>
-          <div v-else class="text-gray-500 text-center py-4">
-            No users registered yet
           </div>
         </div>
       </div>
@@ -674,7 +734,15 @@ const newUser = ref({
   lastName: "",
   email: "",
   phone: "",
+  role: "user",
 });
+
+const userRoleOptions = [
+  { label: "User", value: "user" },
+  { label: "Admin", value: "admin" },
+  { label: "Manager", value: "manager" },
+  { label: "Viewer", value: "viewer" },
+];
 
 // Users to invite list
 const usersToInvite = ref([]);
@@ -689,7 +757,7 @@ const businessInvitedColumns = [
   },
   {
     title: "Contact Name",
-    key: "name",
+    key: "firstName",
     width: 150,
   },
   {
@@ -816,7 +884,8 @@ const isValidNewUser = computed(() => {
     newUser.value.firstName &&
     newUser.value.lastName &&
     newUser.value.email &&
-    newUser.value.phone
+    newUser.value.phone &&
+    newUser.value.role
   );
 });
 
@@ -1072,6 +1141,7 @@ const addUserToList = () => {
     lastName: "",
     email: "",
     phone: "",
+    role: "viewer",
   };
 
   message.success("User added to invite list");

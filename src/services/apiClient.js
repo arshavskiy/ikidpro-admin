@@ -76,9 +76,9 @@ apiClient.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     } else {
-      const urlParams = new URLSearchParams(window.location.search);
-      const token = urlParams.get("token");
-      config.headers.Authorization = `Bearer ${token}`;
+      // const urlParams = new URLSearchParams(window.location.search);
+      // const token = urlParams.get("token");
+      // config.headers.Authorization = `Bearer ${token}`;
     }
 
     // Log the request for debugging

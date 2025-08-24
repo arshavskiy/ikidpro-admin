@@ -330,7 +330,6 @@ export const useB2BStore = defineStore("b2b", {
       this.loading = true;
       this.error = null;
       try {
-        debugger;
         // Call the b2bApi acceptInvite endpoint
         const response = await b2bUserApi.acceptInvite(token, {
           ...data,

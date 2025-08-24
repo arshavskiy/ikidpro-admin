@@ -41,12 +41,12 @@ export const b2bApi = {
     ),
 
   // Remove user from business
-  removeUser: (businessId, userId) =>
-    apiClient.delete(`/b2b/businesses/${businessId}/users/${userId}`),
+  removeUser: (id, userId) =>
+    apiClient.delete(`/b2b/businesses/${id}/users/${userId}`),
 
   // Update user status
-  updateUserStatus: (businessId, userId, status) =>
-    apiClient.patch(`/b2b/businesses/${businessId}/users/${userId}/status`, {
+  updateUserStatus: (id, userId, status) =>
+    apiClient.patch(`/b2b/businesses/${id}/users/${userId}/status`, {
       status,
     }),
 
