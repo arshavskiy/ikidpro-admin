@@ -326,16 +326,14 @@ export const useB2BStore = defineStore("b2b", {
       };
     },
 
-    async acceptInvite({ token, firstName, lastName, email, password }) {
+    async acceptInvite({ token, data }) {
       this.loading = true;
       this.error = null;
       try {
+        debugger;
         // Call the b2bApi acceptInvite endpoint
         const response = await b2bUserApi.acceptInvite(token, {
-          firstName,
-          lastName,
-          email,
-          password,
+          ...data,
         });
         return response.data;
       } catch (error) {

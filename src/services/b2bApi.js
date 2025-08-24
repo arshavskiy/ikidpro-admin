@@ -11,8 +11,10 @@ export const b2bApi = {
   // Create new business
   create: (businessData) => apiClient.post("/b2b/businesses", businessData),
 
-  createInvitedBusiness: (businessData) =>
-    apiClient.post("/b2b/invites/register", businessData),
+  createInvitedBusiness: (businessData) => {
+    // apiClient.post("/b2b/invites/register", businessData),
+    return apiClient.post("/b2b/businesses/invite", businessData);
+  },
 
   // Update business
   update: (id, businessData) =>
@@ -74,10 +76,10 @@ export const b2bUserApi = {
   delete: (id) => apiClient.delete(`/b2b/users/${id}`),
 
   // Accept invitation
-  acceptInvite: (inviteToken, data) =>
-    apiClient.post("/b2b/users/accept-invite", { inviteToken, ...data }),
+  acceptInvite: (token, data) =>
+    apiClient.post("/b2b/users/accept-invite", { token, ...data }),
 
   // Decline invitation
-  declineInvite: (inviteToken) =>
-    apiClient.post("/b2b/users/decline-invite", { inviteToken }),
+  declineInvite: (token) =>
+    apiClient.post("/b2b/users/decline-invite", { token }),
 };

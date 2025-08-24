@@ -14,6 +14,12 @@ export const appRoutes = [
     meta: { requiresAuth: false },
   },
   {
+    path: "/register",
+    name: "Register",
+    component: () => import("../pages/Register.vue"),
+    meta: { requiresAuth: true, requiredRole: ["admin"] },
+  },
+  {
     path: "/invite-b2b",
     name: "RegisterB2B",
     component: () => import("../pages/RegisterB2B.vue"),
@@ -21,7 +27,7 @@ export const appRoutes = [
     props: (route) => ({ token: route.query.token }), // Pass token param from URL as prop
   },
   {
-    path: "/invite",
+    path: "/invite-user",
     name: "InviteAccept",
     component: () => import("../pages/b2b/B2BInviteAccept.vue"),
     // meta: { requiresAuth: false, requiredRole: ["admin"] },
@@ -34,12 +40,7 @@ export const appRoutes = [
     props: () => ({ type: "B2B" }),
     meta: { requiresAuth: false },
   },
-  {
-    path: "/register",
-    name: "Register",
-    component: () => import("../pages/Register.vue"),
-    meta: { requiresAuth: true, requiredRole: ["admin"] },
-  },
+
   {
     path: "/admin",
     component: () => import("../components/AdminLayout.vue"),
@@ -248,7 +249,7 @@ export const menuOptions = [
       {
         label: "Waitlist",
         key: "/admin/waitlist",
-        roles: ["admin", "manager"],
+        roles: ["admin"],
         icon: () => h("i", { class: "fas fa-clipboard-list" }),
       },
       // {
@@ -262,19 +263,19 @@ export const menuOptions = [
     label: "System",
     key: "system",
     icon: () => h("i", { class: "fas fa-cog" }),
-    roles: ["admin", "manager"],
+    roles: ["admin"],
     children: [
       {
         label: "Database Info",
         key: "/admin/system/database",
         icon: () => h("i", { class: "fas fa-database" }),
-        roles: ["admin", "manager"],
+        roles: ["admin"],
       },
       {
         label: "API Testing",
         key: "/admin/system/api-test",
         icon: () => h("i", { class: "fas fa-flask" }),
-        roles: ["admin", "manager"],
+        roles: ["admin"],
       },
     ],
   },

@@ -141,31 +141,19 @@
             placeholder="Enter business name"
           />
         </n-form-item>
-        <n-form-item label="Contact Last Name" path="lastName">
-          <n-input
-            v-model:value="businessForm.lastName"
-            placeholder="Enter contact last name"
-          />
-        </n-form-item>
-        <n-form-item label="Contact Email" path="email">
-          <n-input
-            v-model:value="businessForm.email"
-            placeholder="Enter contact email"
-            type="email"
-          />
-        </n-form-item>
-        <n-form-item label="Contact Password" path="user_password">
+
+        <!-- <n-form-item label="Contact Password" path="user_password">
           <n-input
             v-model:value="businessForm.user_password"
             placeholder="Enter user_password"
             type="user_password"
             show-user_password-on="mousedown"
           />
-        </n-form-item>
-        <n-form-item label="Contact Phone" path="phone">
+        </n-form-item> -->
+        <n-form-item label="Phone" path="phone">
           <n-input
             v-model:value="businessForm.phone"
-            placeholder="Enter contact phone"
+            placeholder="Enter phone"
           />
         </n-form-item>
 
@@ -186,12 +174,12 @@
           />
         </n-form-item>
 
-        <n-form-item label="Phone" path="phone">
+        <!-- <n-form-item label="Phone" path="phone">
           <n-input
             v-model:value="businessForm.phone"
             placeholder="Enter business phone"
           />
-        </n-form-item>
+        </n-form-item> -->
 
         <n-form-item label="Email" path="email">
           <n-input
@@ -213,6 +201,25 @@
             type="textarea"
             placeholder="Enter business description (optional)"
             :rows="3"
+          />
+        </n-form-item>
+        <n-form-item label="Contact First Name" path="firstName">
+          <n-input
+            v-model:value="businessForm.firstName"
+            placeholder="Enter contact first name"
+          />
+        </n-form-item>
+        <n-form-item label="Contact Last Name" path="lastName">
+          <n-input
+            v-model:value="businessForm.lastName"
+            placeholder="Enter contact last name"
+          />
+        </n-form-item>
+        <n-form-item label="Contact Email" path="user_email">
+          <n-input
+            v-model:value="businessForm.user_email"
+            placeholder="Enter contact email"
+            type="email"
           />
         </n-form-item>
       </n-form>
@@ -647,6 +654,7 @@ const selectedBusiness = ref(null);
 const businessFormRef = ref(null);
 const businessForm = ref({
   name: "",
+  firstName: "",
   lastName: "",
   email: "",
   user_password: "",
@@ -655,6 +663,7 @@ const businessForm = ref({
   address: "",
   phone: "",
   email: "",
+  user_email: "",
   website: "",
   description: "",
 });
@@ -951,6 +960,8 @@ const createBusiness = async () => {
       await b2bStore.updateBusiness(businessForm.value._id, businessForm.value);
       message.success("Business updated successfully!");
     } else {
+      businessForm.value.invitedBy =
+        JSON.parse(sessionStorage.getItem("user"))?._id || null;
       await b2bStore.createBusiness(businessForm.value);
       message.success("Business created successfully!");
     }
@@ -1001,6 +1012,7 @@ const deleteBusiness = async (id) => {
   try {
     await b2bStore.deleteBusiness(id);
     message.success("Business deleted");
+    refreshBusinesses();
   } catch (error) {
     message.error("Failed to delete business");
   }
@@ -1096,9 +1108,10 @@ async function sendBusinessInvite() {
       name: inviteBusinessForm.value.contactName,
     });
 
+    // await b2bStore.createBusiness(businessForm.value);
+
     // const invitation = response?.data?.invitation;
     // Add to invited businesses table
-    // debugger;
     // invitedBusinesses.value.push({
     //   _id: invitation?._id || Date.now().toString(),
     //   email: invitation?.email || inviteBusinessForm.value.email,
@@ -1161,15 +1174,14 @@ const getStatusClass = (status) => {
 
 // Lifecycle
 onMounted(async () => {
-  await b2bStore.fetchBusinesses();
-  await b2bStore.fetchBusinessInvites();
-  console.log("Businesses loaded:", businesses.value);
-  console.log("Invited businesses loaded:", invitedBusinesses.value);
+  refreshBusinesses();
 });
 
 const refreshBusinesses = async () => {
   await b2bStore.fetchBusinesses();
   await b2bStore.fetchBusinessInvites();
+  console.log("Businesses loaded:", businesses.value);
+  console.log("Invited businesses loaded:", invitedBusinesses.value);
   message.success("Business list refreshed");
 };
 </script>

@@ -19,7 +19,7 @@
           @submit.prevent="handleInviteSubmit"
         >
           <div class="grid grid-cols-1 gap-6">
-            <n-form-item
+            <!-- <n-form-item
               label="First Name"
               path="firstName"
               :validation-status="errors.firstName ? 'error' : undefined"
@@ -43,7 +43,7 @@
                 placeholder="Enter your last name"
                 autocomplete="family-name"
               />
-            </n-form-item>
+            </n-form-item> -->
 
             <n-form-item
               label="Email Address"
@@ -140,6 +140,7 @@ import { ref, reactive, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { NForm, NFormItem, NInput, NButton } from "naive-ui";
 import { useB2BStore } from "@/stores/b2bStore";
+import apiClient from "@/services/apiClient";
 
 const b2bStore = useB2BStore();
 
@@ -147,8 +148,6 @@ const route = useRoute();
 const router = useRouter();
 
 const form = reactive({
-  firstName: "",
-  lastName: "",
   email: "",
   password: "",
   confirmPassword: "",
@@ -161,23 +160,18 @@ const submitError = ref("");
 
 const inviteToken = ref("");
 
-onMounted(() => {
-  inviteToken.value = route.query.token || "";
-  form.email = route.query.email || "";
-});
-
 function validateForm() {
   errors.value = {};
   let valid = true;
 
-  if (!form.firstName) {
-    errors.value.firstName = "First name is required.";
-    valid = false;
-  }
-  if (!form.lastName) {
-    errors.value.lastName = "Last name is required.";
-    valid = false;
-  }
+  // if (!form.firstName) {
+  //   errors.value.firstName = "First name is required.";
+  //   valid = false;
+  // }
+  // if (!form.lastName) {
+  //   errors.value.lastName = "Last name is required.";
+  //   valid = false;
+  // }
   if (!form.password) {
     errors.value.password = "Password is required.";
     valid = false;
@@ -217,12 +211,12 @@ async function handleInviteSubmit() {
   try {
     await b2bStore.acceptInvite({
       token: inviteToken.value,
-      firstName: form.firstName,
-      lastName: form.lastName,
-      email: form.email,
-      password: form.password,
+      data: form,
     });
-    router.push("/b2b/login");
+
+    setTimeout(() => {
+      router.push("/b2b/login?email=" + form.email);
+    }, 3000);
   } catch (error) {
     submitError.value =
       error?.response?.data?.message || "Failed to accept invitation.";
@@ -244,6 +238,30 @@ async function handleDecline() {
     declining.value = false;
   }
 }
+
+const getInviteData = async () => {
+  if (!inviteToken.value) return;
+  try {
+    const response = await apiClient.get(`/b2b/invite/${inviteToken.value}`);
+    const data = response.data.data || response.data;
+    // Populate form fields if available
+    if (data?.email) form.email = data.email;
+    if (data?.businessId) form.businessId = data.businessId;
+    // Add other fields as needed
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch invite data:", error);
+    return null;
+  }
+};
+
+// Optionally call getInviteData on mount to prefill form
+onMounted(async () => {
+  inviteToken.value = route.query.token || "";
+  if (inviteToken.value) {
+    await getInviteData();
+  }
+});
 </script>
 
 <style scoped>
