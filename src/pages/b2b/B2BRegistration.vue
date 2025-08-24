@@ -853,10 +853,13 @@ const businessColumns = [
     render: (row) => {
       const activeUsers =
         row.users?.filter((u) => u.status === "active").length || 0;
+      const acseptedUsers =
+        row.users?.filter((u) => u.status === "accepted").length || 0;
       const pendingUsers =
         row.users?.filter((u) => u.status === "pending").length || 0;
       return h("div", [
         h("div", { class: "text-gray-900" }, `${activeUsers} active`),
+        h("div", { class: "text-gray-700" }, `${acseptedUsers} accepted`),
         h("div", { class: "text-sm text-gray-500" }, `${pendingUsers} pending`),
       ]);
     },

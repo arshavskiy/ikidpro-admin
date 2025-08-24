@@ -75,6 +75,10 @@ apiClient.interceptors.request.use(
     const token = sessionStorage.getItem("userToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    } else {
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get("token");
+      config.headers.Authorization = `Bearer ${token}`;
     }
 
     // Log the request for debugging
